@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     [DbContext(typeof(KoiDeliveryOrderingDbContext))]
-    [Migration("20240908025947_Initial Database")]
-    partial class InitialDatabase
+    [Migration("20240911025933_Initital Database")]
+    partial class InititalDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
