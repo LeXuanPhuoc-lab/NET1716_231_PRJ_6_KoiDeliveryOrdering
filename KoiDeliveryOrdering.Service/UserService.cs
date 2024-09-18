@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using KoiDeliveryOrdering.Business.Base;
-using KoiDeliveryOrdering.Business.Services.Interfaces;
+using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Dtos;
@@ -8,7 +8,7 @@ using KoiDeliveryOrdering.Data.Entities;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace KoiDeliveryOrdering.Business.Services;
+namespace KoiDeliveryOrdering.Business;
 
 public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
 {

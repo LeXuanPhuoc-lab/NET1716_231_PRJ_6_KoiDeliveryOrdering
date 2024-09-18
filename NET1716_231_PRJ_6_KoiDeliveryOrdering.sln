@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KoiDeliveryOrdering.API", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KoiDeliveryOrdering.Data", "KoiDeliveryOrdering.Data\KoiDeliveryOrdering.Data.csproj", "{18B44921-0621-4B3D-A409-A8F0EC4EC290}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KoiDeliveryOrdering.Business", "KoiDeliveryOrdering.Business\KoiDeliveryOrdering.Business.csproj", "{0AA09059-C3C6-42DC-9901-E4D7981252C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KoiDeliveryOrdering.Service", "KoiDeliveryOrdering.Service\KoiDeliveryOrdering.Service.csproj", "{0AA09059-C3C6-42DC-9901-E4D7981252C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KoiDeliveryOrdering.Common", "KoiDeliveryOrdering.Common\KoiDeliveryOrdering.Common.csproj", "{F10490FB-0F07-4F17-8822-582608363656}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KoiDeliveryOrdering.RazorWebApp", "KoiDeliveryOrdering.RazorWebApp\KoiDeliveryOrdering.RazorWebApp.csproj", "{85639BB5-B8B0-427C-9D08-3737FAE94F44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KoiDeliveryOrdering.MVCWebApp", "KoiDeliveryOrdering.MVCWebApp\KoiDeliveryOrdering.MVCWebApp.csproj", "{46965551-362D-4CCA-B96A-4AC69908EFB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{F10490FB-0F07-4F17-8822-582608363656}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F10490FB-0F07-4F17-8822-582608363656}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F10490FB-0F07-4F17-8822-582608363656}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85639BB5-B8B0-427C-9D08-3737FAE94F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85639BB5-B8B0-427C-9D08-3737FAE94F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85639BB5-B8B0-427C-9D08-3737FAE94F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85639BB5-B8B0-427C-9D08-3737FAE94F44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46965551-362D-4CCA-B96A-4AC69908EFB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46965551-362D-4CCA-B96A-4AC69908EFB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46965551-362D-4CCA-B96A-4AC69908EFB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46965551-362D-4CCA-B96A-4AC69908EFB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

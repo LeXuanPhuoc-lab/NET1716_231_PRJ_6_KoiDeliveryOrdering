@@ -4,7 +4,7 @@ using KoiDeliveryOrdering.Data.Dtos;
 using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace KoiDeliveryOrdering.Business.Services.Interfaces;
+namespace KoiDeliveryOrdering.Business.Interfaces;
 
 public interface IUserService
 {

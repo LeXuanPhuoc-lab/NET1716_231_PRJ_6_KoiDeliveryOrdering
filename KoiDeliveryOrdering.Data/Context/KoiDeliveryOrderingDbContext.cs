@@ -1,7 +1,6 @@
 ﻿using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
 namespace KoiDeliveryOrdering.Data.Context;
 
 public partial class KoiDeliveryOrderingDbContext : DbContext
