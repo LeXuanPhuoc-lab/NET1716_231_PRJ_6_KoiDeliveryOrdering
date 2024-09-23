@@ -1,5 +1,7 @@
 ﻿using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.Business;
 using KoiDeliveryOrdering.Business.Base;
+using KoiDeliveryOrdering.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiDeliveryOrdering.API.Controllers;
@@ -7,16 +9,16 @@ namespace KoiDeliveryOrdering.API.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+    private readonly IUserService _userServices;
+
+    public UserController(UserService userServices)
+    {
+        _userServices = userServices;
+    }
     [HttpGet(ApiRoute.User.GetById, Name = nameof(GetUserByIdAsync))]
     public async Task<IBusinessResult> GetUserByIdAsync(Guid userId)
     {
-        await Task.CompletedTask;
-        return new BusinessResult
-        {
-            Status = 200,
-            Message = "User not found",
-            Data = null
-        };
-        // return await _productService.GetAll(); return theo cai t cmt thì sẽ giong cua thay, cai tren t de nhu vay de no ko loi
+        
+        return await _userServices.FindAsync(userId);
     }
 }
