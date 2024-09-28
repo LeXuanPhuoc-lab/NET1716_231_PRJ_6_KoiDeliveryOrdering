@@ -1,4 +1,7 @@
 using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.Business;
+using KoiDeliveryOrdering.Business.Base;
+using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +19,10 @@ public class UserController : ControllerBase
     }
     
     [HttpGet(ApiRoute.User.GetById, Name = nameof(GetUserByIdAsync))]
-    public async Task<IActionResult> GetUserByIdAsync(Guid userId)
+    public async Task<IServiceResult> GetUserByIdAsync(Guid userId)
     {
-        await Task.CompletedTask;
-        return Ok();
+        
+        return await _userService.FindAsync(userId);
     }
 
     [HttpGet(ApiRoute.User.GetAll, Name = nameof(GetAllAsync))]
