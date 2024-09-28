@@ -1,0 +1,154 @@
+﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.DeliveryOrderModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryOrderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecipientAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecipientLongitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecipientLatitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecipientAppointmentTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SenderAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SenderLongitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SenderLatitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaxFee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPurchased)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsSenderPurchase)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsInternational)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Document)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShippingFee)
+            </th>
+            <th>
+                 @* @Html.DisplayNameFor(model => model.VoucherPromotion) *@
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryOrderId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientLongitude)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientLatitude)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecipientAppointmentTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SenderAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SenderLongitude)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SenderLatitude)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaxFee)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsPurchased)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsSenderPurchase)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsInternational)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Document.ConsigneeAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Payment.PaymentMethod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippingFee.ShippingFeeId)
+            </td>
+            <td>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -6,13 +6,14 @@ using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Dtos;
 using KoiDeliveryOrdering.Data.Entities;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace KoiDeliveryOrdering.Business;
 
 public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
 {
-    public async Task<IBusinessResult> InsertAsync(UserDto test)
+    public async Task<IServiceResult> InsertAsync(UserDto test)
     {
         try
         {
@@ -24,18 +25,18 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
 
             return isInserted
                 // Insert successfully
-                ? new BusinessResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG)
+                ? new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG)
                 // Insert error
-                : new BusinessResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG);
+                : new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG);
         }
         catch (Exception ex)
         {
             // Invoke error
-            return new BusinessResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
         }
     }
 
-    public async Task<IBusinessResult> RemoveAsync(Guid userId)
+    public async Task<IServiceResult> RemoveAsync(Guid userId)
     {
         try
         {
@@ -43,7 +44,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
             var userEntity = await unitOfWork.UserRepository.FindOneWithConditionAsync(u => 
                 u.UserId == userId);
             
-            if(userEntity == null) return new BusinessResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+            if(userEntity == null) return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
         
             // Prepare remove 
             await unitOfWork.UserRepository.PrepareRemoveAsync(userEntity);
@@ -53,18 +54,18 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
         
             return isRemoved
                 // Delete successfully
-                ? new BusinessResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG)
+                ? new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG)
                 // Delete fail
-                : new BusinessResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+                : new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
         }
         catch (Exception ex)
         {
             // Invoke error
-            return new BusinessResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
         }
     }
     
-    public async Task<IBusinessResult> UpdateAsync(UserDto user)
+    public async Task<IServiceResult> UpdateAsync(UserDto user)
     {
         try
         {
@@ -72,7 +73,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
             var userEntity = await unitOfWork.UserRepository.FindOneWithConditionAsync(u => 
                 u.UserId == user.UserId);
         
-            if(userEntity == null) return new BusinessResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
+            if(userEntity == null) return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
         
             // Update entity properties 
             userEntity.Address = user.Address;
@@ -84,37 +85,58 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
         
             return isUpdated
                 // Is delete success
-                ? new BusinessResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG)
+                ? new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG)
                 // Invoke error
-                : new BusinessResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
+                : new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
         }catch (Exception ex)
         {
             // Invoke error
-            return new BusinessResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
         }
     }
 
-    public Task<IBusinessResult> FindAsync(Guid userId)
+    public Task<IServiceResult> FindAsync(Guid userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IBusinessResult> FindAllAsync()
+    public async Task<IServiceResult> FindAllAsync()
+    {
+        try
+        {
+            var userEntities = 
+                await unitOfWork.UserRepository.FindAllWithConditionAndThenIncludeAsync(
+                    filter: null,
+                    orderBy: null,
+                    includes: new ()
+                    {
+                        query => query.Include(u => u.SenderInformations)
+                    });
+
+            if (userEntities.Any())
+            {
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntities);
+            }
+            
+            return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<User>());
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
+
+    public Task<IServiceResult> FindOneWithConditionAsync(Expression<Func<User, User>>? filter, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
     {
         throw new NotImplementedException();
     }
 
-    public Task<IBusinessResult> FindOneWithConditionAsync(Expression<Func<User, User>>? filter, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
+    public Task<IServiceResult> FindAllWithConditionAsync(Expression<Func<User, User>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
     {
         throw new NotImplementedException();
     }
 
-    public Task<IBusinessResult> FindAllWithConditionAsync(Expression<Func<User, User>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IBusinessResult> FindAllWithConditionAndThenIncludeAsync(Expression<Func<User, bool>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, List<Func<IQueryable<User>, IIncludableQueryable<User, object>>>? includes = null)
+    public Task<IServiceResult> FindAllWithConditionAndThenIncludeAsync(Expression<Func<User, bool>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, List<Func<IQueryable<User>, IIncludableQueryable<User, object>>>? includes = null)
     {
         throw new NotImplementedException();
     }

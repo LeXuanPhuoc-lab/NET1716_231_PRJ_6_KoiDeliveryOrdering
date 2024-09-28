@@ -1,6 +1,6 @@
 ﻿namespace KoiDeliveryOrdering.Business.Base
 {
-    public interface IBusinessResult
+    public interface IServiceResult
     {
         int Status { get; set; }
         string? Message { get; set; }
