@@ -10,10 +10,17 @@ namespace KoiDeliveryOrdering.API.Controllers
     public class DeliveryOrderController : ControllerBase
     {
         private readonly IDeliveryOrderService _deliveryOrderService;
+        private readonly IShippingFeeService _shippingFeeService;
+        private readonly IPaymentService _paymentService;
 
-        public DeliveryOrderController(IDeliveryOrderService deliveryOrderService)
+        public DeliveryOrderController(
+            IDeliveryOrderService deliveryOrderService,
+            IShippingFeeService shippingFeeService,
+            IPaymentService paymentService)
         {
             _deliveryOrderService = deliveryOrderService;
+            _shippingFeeService = shippingFeeService;
+            _paymentService = paymentService;
         }
 
         [HttpGet(ApiRoute.DeliveryOrder.GetAll)]
@@ -46,5 +53,16 @@ namespace KoiDeliveryOrdering.API.Controllers
             return await _deliveryOrderService.RemoveAsync(id);
         }
 
+        [HttpGet(ApiRoute.DeliveryOrder.GetAllPayment)]
+        public async Task<IServiceResult> GetAllPaymentAsync()
+        {
+            return await _paymentService.FindAllAsync();
+        }
+        
+        [HttpGet(ApiRoute.DeliveryOrder.GetAllShippingFee)]
+        public async Task<IServiceResult> GetAllShippingFeeAsync()
+        {
+            return await _shippingFeeService.FindAllAsync();
+        }
     }
 }

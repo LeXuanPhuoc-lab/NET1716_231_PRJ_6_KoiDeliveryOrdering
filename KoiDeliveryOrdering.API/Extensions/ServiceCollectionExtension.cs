@@ -17,6 +17,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<UnitOfWork>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IDeliveryOrderService, DeliveryOrderService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IShippingFeeService, ShippingFeeService>();
         services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
         
         return services;

@@ -3,6 +3,7 @@ using KoiDeliveryOrdering.Common;
 using Newtonsoft.Json;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.MVCWebApp.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 {
@@ -55,40 +56,116 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
         //    return View(deliveryOrder);
         //}
 
-        //// GET: DeliveryOrder/Create
-        //public IActionResult Create()
-        //{
-        //    ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email");
-        //    ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress");
-        //    ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod");
-        //    ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId");
-        //    ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId");
-        //    return View();
-        //}
+        // GET: DeliveryOrder/Create
+        public async Task<IActionResult> Create()
+        {
+            // ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email");
+            // ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress");
+            ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod");
+            ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "BaseFee");
+            // ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId");
+            return View();
+        }
 
-        //// POST: DeliveryOrder/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        public async Task<IList<PaymentModel>> GetAllPaymentAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "payments"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if(result != null && result.Data != null)
+                        {
+                            var deliveryOrders = JsonConvert.DeserializeObject<List<PaymentModel>>(
+                                result.Data.ToString()!);
+
+                            return deliveryOrders ?? new List<PaymentModel>();
+                        }
+                    }
+                }
+            }
+            
+            return new List<PaymentModel>();
+        }
+
+        public async Task<IList<ShippingFeeModel>> GetAllShippingFeeAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "shipping-fees"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if(result != null && result.Data != null)
+                        {
+                            var shippingFees = JsonConvert.DeserializeObject<List<ShippingFeeModel>>(
+                                result.Data.ToString()!);
+
+                            return shippingFees ?? new List<ShippingFeeModel>();
+                        }
+                    }
+                }
+            }
+            
+            return new List<ShippingFeeModel>();
+        }
+        
+        
+        // POST: DeliveryOrder/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DeliveryOrderModel deliveryOrder)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                //_context.Add(deliveryOrder);
-                //await _context.SaveChangesAsync();
+                return View();
+            }
 
+            bool saveStatus = false;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.PostAsJsonAsync(
+                           Const.APIEndpoint + "delivery-orders/create", deliveryOrder))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context);
 
+                        if (result != null && result.Status == Const.SUCCESS_INSERT_CODE)
+                        {
+                            saveStatus = true;
+                        }
+                        else
+                        {
+                            saveStatus = false;
+                        }
+                    }
+                }
+            }
 
+            if (saveStatus)
+            {
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email", deliveryOrder.CustomerId);
-            //ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
-            //ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
-            //ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
-            //ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
-            // return View(deliveryOrder);
-            //}
+            else
+            {
+                // ViewData["CustomerId"] = new SelectList(await , "Id", "Email", deliveryOrder.CustomerId);
+                // ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
+                ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
+                ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
+                // ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
+                
+                return View();
+            }
+        }
 
             //// GET: DeliveryOrder/Edit/5
             //public async Task<IActionResult> Edit(int? id)
@@ -193,7 +270,5 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             //{
             //    return _context.DeliveryOrders.Any(e => e.Id == id);
             //}
-            return Ok();
-        }
     }
 }

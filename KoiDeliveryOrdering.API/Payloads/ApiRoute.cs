@@ -17,5 +17,7 @@ public static class ApiRoute
         public const string Insert = Base + "/delivery-orders/insert";
         public const string Update = Base + "/delivery-orders/update";
         public const string Remove = Base + "/delivery-orders/{id}/remove";
+        public const string GetAllPayment = Base + "/payments";
+        public const string GetAllShippingFee = Base + "/shipping-fees";
     }
 }
