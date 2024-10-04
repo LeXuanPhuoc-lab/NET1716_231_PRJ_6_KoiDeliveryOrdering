@@ -4,6 +4,11 @@ using Newtonsoft.Json;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.MVCWebApp.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using KoiDeliveryOrdering.Data.Entities;
+using KoiDeliveryOrdering.API.Payloads.Requests;
+using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.API.Models;
+using KoiDeliveryOrdering.Business.Contants;
 
 namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 {
@@ -33,41 +38,80 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             return View(new List<DeliveryOrderModel>());
         }
 
-        //// GET: DeliveryOrder/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: DeliveryOrder/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var deliveryOrder = await _context.DeliveryOrders
-        //        .Include(d => d.Customer)
-        //        .Include(d => d.Document)
-        //        .Include(d => d.Payment)
-        //        .Include(d => d.ShippingFee)
-        //        .Include(d => d.VoucherPromotion)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (deliveryOrder == null)
-        //    {
-        //        return NotFound();
-        //    }
+            DeliveryOrderModel? deliveryOrder = null!;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "delivery-orders/" + id))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            deliveryOrder = JsonConvert.DeserializeObject<DeliveryOrderModel>(
+                                result.Data.ToString()!);
+                        }
+                    }
+                }
+            }
 
-        //    return View(deliveryOrder);
-        //}
+            return deliveryOrder != null
+                ? View(deliveryOrder)
+                : NotFound();
+        }
 
         // GET: DeliveryOrder/Create
         public async Task<IActionResult> Create()
         {
-            // ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email");
             // ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress");
+            ViewData["SenderInformationId"] = new SelectList(await this.GetAllSenderInformationAsync(), "SenderInformationId", "SenderName");
             ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod");
             ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "BaseFee");
-            // ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId");
+            ViewData["OrderStatus"] = new SelectList(await this.GetAllDeliveryOrderStatusesAsync(), "OrderStatus");
+            ViewData["DeliveryAppointments"] = new SelectList(await this.GetAllDeliveryAppointmentAsync(), "RecipientAppointmentTime");
+            ViewData["Provinces"] = new SelectList(await this.GetProvincesAsync(), "Code", "Name");
+            ViewData["AnimalType"] = new SelectList(await this.GetAllAnimalTypeAsync(), "AnimalTypeId", "AnimalTypeDesc");
+
+            // Add Voucher Promotion View Data
+            await HandleAddVoucherPromotionViewDataAsync();
+            // Add Health Status View Data
+            await HandleAddHealthStatusViewDataAsync();
+
+
             return View();
         }
 
-        public async Task<IList<PaymentModel>> GetAllPaymentAsync()
+        private async Task HandleAddHealthStatusViewDataAsync()
+        {
+            var healthStatusList = await this.GetAllHealthStatusAsync();
+            ViewData["HealthStatus"] = new SelectList(healthStatusList.Select(status => new { Value = status, Text = status }), "Value", "Text");
+        }
+        
+        private async Task HandleAddVoucherPromotionViewDataAsync()
+        {
+            var promotions = await this.GetAllVoucherPromotionByUsernameAsync();
+
+            var combinedPromotions = promotions.Select(p => new {
+                p.VoucherPromotionId,
+                CombinedDisplayText = $"Code: {p.VoucherPromotionCode} - Reduction rate: {p.PromotionRate}%"
+            }).ToList();
+
+            ViewData["VoucherPromotionId"] = new SelectList(combinedPromotions,
+                "VoucherPromotionId",
+                "CombinedDisplayText");
+        }
+
+        public async Task<List<PaymentModel>> GetAllPaymentAsync()
         {
             using (var httpClient = new HttpClient())
             {
@@ -92,7 +136,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             return new List<PaymentModel>();
         }
 
-        public async Task<IList<ShippingFeeModel>> GetAllShippingFeeAsync()
+        public async Task<List<ShippingFeeModel>> GetAllShippingFeeAsync()
         {
             using (var httpClient = new HttpClient())
             {
@@ -116,23 +160,207 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             
             return new List<ShippingFeeModel>();
         }
-        
-        
+
+        public async Task<List<string>> GetAllDeliveryOrderStatusesAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "delivery-orders/statuses"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var orderStatuses = JsonConvert.DeserializeObject<List<string>>(
+                                result.Data.ToString()!);
+
+                            return orderStatuses ?? new List<string>();
+                        }
+                    }
+                }
+            }
+
+            return new List<string>();
+        }
+
+        public async Task<List<string>> GetAllDeliveryAppointmentAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "delivery-orders/appointment"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var orderStatuses = JsonConvert.DeserializeObject<List<string>>(
+                                result.Data.ToString()!);
+
+                            return orderStatuses ?? new List<string>();
+                        }
+                    }
+                }
+            }
+
+            return new List<string>();
+        }
+
+        public async Task<List<string>> GetAllHealthStatusAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "animals/health-statuses"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var healthStatuses = JsonConvert.DeserializeObject<List<string>>(
+                                result.Data.ToString()!);
+
+                            return healthStatuses ?? new List<string>();
+                        }
+                    }
+                }
+            }
+
+            return new List<string>();
+        }
+
+        public async Task<List<SenderInformationModel>> GetAllSenderInformationAsync()
+        {
+			using (var httpClient = new HttpClient())
+			{
+				using (var resp = await httpClient.GetAsync(
+						   Const.APIEndpoint + "users/sender-informations"))
+				{
+					if (resp.IsSuccessStatusCode)
+					{
+						var context = await resp.Content.ReadAsStringAsync();
+						var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+						if (result != null && result.Data != null)
+						{
+							var senderInformations = JsonConvert.DeserializeObject<List<SenderInformationModel>>(
+								result.Data.ToString()!);
+
+							return senderInformations ?? new List<SenderInformationModel>();
+						}
+					}
+				}
+			}
+
+			return new List<SenderInformationModel>();
+		}
+
+        public async Task<List<ProvinceModel>> GetProvincesAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(ApiRoute.VietnameProvincesOnline.GetListProvinces))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<List<ProvinceModel>>(context.ToString());
+                        if (result != null)
+                        {
+                            return result ?? new List<ProvinceModel>();
+                        }
+                    }
+                }
+            }
+
+            return new List<ProvinceModel>();
+        }
+
+        public async Task<List<VoucherPromotionModel>> GetAllVoucherPromotionByUsernameAsync()
+        {
+            // Get username from session
+            var username = HttpContext.Session.GetString("Username") ?? string.Empty;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "delivery-orders/vouchers/" + username))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var voucherPromotions = JsonConvert.DeserializeObject<List<VoucherPromotionModel>>(
+                                result.Data.ToString()!);
+
+                            return voucherPromotions ?? new List<VoucherPromotionModel>();
+                        }
+                    }
+                }
+            }
+
+            return new List<VoucherPromotionModel>();
+        }
+
+        public async Task<List<AnimalTypeModel>> GetAllAnimalTypeAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "animals/types"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var animalTypes = JsonConvert.DeserializeObject<List<AnimalTypeModel>>(
+                                result.Data.ToString()!);
+
+                            return animalTypes ?? new List<AnimalTypeModel>();
+                        }
+                    }
+                }
+            }
+
+            return new List<AnimalTypeModel>();
+        }
+
+
+
         // POST: DeliveryOrder/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DeliveryOrderModel deliveryOrder)
+        public async Task<IActionResult> Create(CreateDeliveryOrderRequest deliveryOrder)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
+            // Add missing properties required
+            deliveryOrder.CreateDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+            deliveryOrder.TotalAmount = 0;
+            deliveryOrder.TaxFee = (decimal?) 0.1;
+            deliveryOrder.IsPurchased = false;
+            deliveryOrder.OrderStatus = OrderStatusConstants.Pending;
+
+
             bool saveStatus = false;
             using (var httpClient = new HttpClient())
             {
                 using (var resp = await httpClient.PostAsJsonAsync(
-                           Const.APIEndpoint + "delivery-orders/create", deliveryOrder))
+                           Const.APIEndpoint + "delivery-orders", deliveryOrder))
                 {
                     if (resp.IsSuccessStatusCode)
                     {
@@ -157,118 +385,170 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             }
             else
             {
-                // ViewData["CustomerId"] = new SelectList(await , "Id", "Email", deliveryOrder.CustomerId);
-                // ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
-                ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
-                ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
-                // ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
-                
+                ViewData["SenderInformationId"] = new SelectList(await this.GetAllSenderInformationAsync(), "SenderInformationId", "SenderName");
+                ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod");
+                ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "BaseFee");
+                ViewData["OrderStatus"] = new SelectList(await this.GetAllDeliveryOrderStatusesAsync(), "OrderStatus");
+                ViewData["DeliveryAppointments"] = new SelectList(await this.GetAllDeliveryAppointmentAsync(), "RecipientAppointmentTime");
+                ViewData["Provinces"] = new SelectList(await this.GetProvincesAsync(), "Code", "Name");
+                ViewData["AnimalType"] = new SelectList(await this.GetAllAnimalTypeAsync(), "AnimalTypeId", "AnimalTypeDesc");
+
+                // Add Voucher Promotion View Data
+                await HandleAddVoucherPromotionViewDataAsync();
+                // Add Health Status View Data
+                await HandleAddHealthStatusViewDataAsync();
+
                 return View();
             }
         }
 
-            //// GET: DeliveryOrder/Edit/5
-            //public async Task<IActionResult> Edit(int? id)
-            //{
-            //    if (id == null)
-            //    {
-            //        return NotFound();
-            //    }
+        // GET: DeliveryOrder/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //    var deliveryOrder = await _context.DeliveryOrders.FindAsync(id);
-            //    if (deliveryOrder == null)
-            //    {
-            //        return NotFound();
-            //    }
-            //    ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email", deliveryOrder.CustomerId);
-            //    ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
-            //    ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
-            //    ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
-            //    ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
-            //    return View(deliveryOrder);
-            //}
+			DeliveryOrderModel? deliveryOrder = null!;
+			using (var httpClient = new HttpClient())
+			{
+				using (var resp = await httpClient.GetAsync(
+						   Const.APIEndpoint + "delivery-orders/" + id))
+				{
+					if (resp.IsSuccessStatusCode)
+					{
+						var context = await resp.Content.ReadAsStringAsync();
+						var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+						if (result != null && result.Data != null)
+						{
+							deliveryOrder = JsonConvert.DeserializeObject<DeliveryOrderModel>(
+								result.Data.ToString()!);
+						}
+					}
+				}
+			}
 
-            //// POST: DeliveryOrder/Edit/5
-            //// To protect from overposting attacks, enable the specific properties you want to bind to.
-            //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-            //[HttpPost]
-            //[ValidateAntiForgeryToken]
-            //public async Task<IActionResult> Edit(int id, [Bind("Id,DeliveryOrderId,RecipientAddress,RecipientLongitude,RecipientLatitude,RecipientAppointmentTime,SenderAddress,SenderLongitude,SenderLatitude,CreateDate,DeliveryDate,OrderStatus,TotalAmount,TaxFee,PaymentId,IsPurchased,IsSenderPurchase,IsInternational,VoucherPromotionId,ShippingFeeId,CustomerId,DocumentId")] DeliveryOrder deliveryOrder)
-            //{
-            //    if (id != deliveryOrder.Id)
-            //    {
-            //        return NotFound();
-            //    }
+			//ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email", deliveryOrder.CustomerId);
+			//ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
+			//ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
+			//ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
+			//ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
 
-            //    if (ModelState.IsValid)
-            //    {
-            //        try
-            //        {
-            //            _context.Update(deliveryOrder);
-            //            await _context.SaveChangesAsync();
-            //        }
-            //        catch (DbUpdateConcurrencyException)
-            //        {
-            //            if (!DeliveryOrderExists(deliveryOrder.Id))
-            //            {
-            //                return NotFound();
-            //            }
-            //            else
-            //            {
-            //                throw;
-            //            }
-            //        }
-            //        return RedirectToAction(nameof(Index));
-            //    }
-            //    ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email", deliveryOrder.CustomerId);
-            //    ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
-            //    ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
-            //    ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
-            //    ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
-            //    return View(deliveryOrder);
-            //}
+			ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod");
+			ViewData["ShippingFeeId"] = new SelectList(await this.GetAllShippingFeeAsync(), "ShippingFeeId", "BaseFee");
+            ViewData["OrderStatus"] = new SelectList(await this.GetAllDeliveryOrderStatusesAsync(), "OrderStatus");
 
-            //// GET: DeliveryOrder/Delete/5
-            //public async Task<IActionResult> Delete(int? id)
-            //{
-            //    if (id == null)
-            //    {
-            //        return NotFound();
-            //    }
+            return deliveryOrder != null
+				 ? View(deliveryOrder)
+				 : NotFound();
+		}
 
-            //    var deliveryOrder = await _context.DeliveryOrders
-            //        .Include(d => d.Customer)
-            //        .Include(d => d.Document)
-            //        .Include(d => d.Payment)
-            //        .Include(d => d.ShippingFee)
-            //        .Include(d => d.VoucherPromotion)
-            //        .FirstOrDefaultAsync(m => m.Id == id);
-            //    if (deliveryOrder == null)
-            //    {
-            //        return NotFound();
-            //    }
+        //// POST: DeliveryOrder/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("Id,DeliveryOrderId,RecipientAddress,RecipientLongitude,RecipientLatitude,RecipientAppointmentTime,SenderAddress,SenderLongitude,SenderLatitude,CreateDate,DeliveryDate,OrderStatus,TotalAmount,TaxFee,PaymentId,IsPurchased,IsSenderPurchase,IsInternational,VoucherPromotionId,ShippingFeeId,CustomerId,DocumentId")] DeliveryOrder deliveryOrder)
+        //{
+        //    if (id != deliveryOrder.Id)
+        //    {
+        //        return NotFound();
+        //    }
 
-            //    return View(deliveryOrder);
-            //}
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(deliveryOrder);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!DeliveryOrderExists(deliveryOrder.Id))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["CustomerId"] = new SelectList(_context.Users, "Id", "Email", deliveryOrder.CustomerId);
+        //    ViewData["DocumentId"] = new SelectList(_context.Documents, "Id", "ConsigneeAddress", deliveryOrder.DocumentId);
+        //    ViewData["PaymentId"] = new SelectList(_context.Payments, "PaymentId", "PaymentMethod", deliveryOrder.PaymentId);
+        //    ViewData["ShippingFeeId"] = new SelectList(_context.ShippingFees, "ShippingFeeId", "ShippingFeeId", deliveryOrder.ShippingFeeId);
+        //    ViewData["VoucherPromotionId"] = new SelectList(_context.VoucherPromotions, "VoucherPromotionId", "VoucherPromotionId", deliveryOrder.VoucherPromotionId);
+        //    return View(deliveryOrder);
+        //}
 
-            //// POST: DeliveryOrder/Delete/5
-            //[HttpPost, ActionName("Delete")]
-            //[ValidateAntiForgeryToken]
-            //public async Task<IActionResult> DeleteConfirmed(int id)
-            //{
-            //    var deliveryOrder = await _context.DeliveryOrders.FindAsync(id);
-            //    if (deliveryOrder != null)
-            //    {
-            //        _context.DeliveryOrders.Remove(deliveryOrder);
-            //    }
+        // GET: DeliveryOrder/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //    await _context.SaveChangesAsync();
-            //    return RedirectToAction(nameof(Index));
-            //}
+            DeliveryOrderModel? deliveryOrder = null!;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "delivery-orders/" + id))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            deliveryOrder = JsonConvert.DeserializeObject<DeliveryOrderModel>(
+                                result.Data.ToString()!);
+                        }
+                    }
+                }
+            }
 
-            //private bool DeliveryOrderExists(int id)
-            //{
-            //    return _context.DeliveryOrders.Any(e => e.Id == id);
-            //}
+            return deliveryOrder != null
+                ? View(deliveryOrder)
+                : NotFound();
+        }
+
+        // POST: DeliveryOrder/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            bool deleteStatus = false;
+
+            using(var httpClient = new HttpClient())
+            {
+                using(var response = await httpClient.DeleteAsync(
+                    Const.APIEndpoint + "delivery-orders/" + id))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                        if(result != null && result.Status == Const.SUCCESS_REMOVE_CODE)
+                        {
+                            deleteStatus = true;
+                        }
+                    }
+                }
+            }
+
+
+            return deleteStatus
+                ? RedirectToAction(nameof(Index))
+                : RedirectToAction(nameof(Delete));
+        }
+
+        //private bool DeliveryOrderExists(int id)
+        //{
+        //    return _context.DeliveryOrders.Any(e => e.Id == id);
+        //}
     }
 }

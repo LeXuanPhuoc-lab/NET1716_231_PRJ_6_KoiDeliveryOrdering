@@ -221,7 +221,8 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("create_date");
-            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            //entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.SenderInformationId).HasColumnName("sender_information_id");
             entity.Property(e => e.DeliveryDate)
                 .HasColumnType("datetime")
                 .HasColumnName("delivery_date");
@@ -236,6 +237,12 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("order_status");
             entity.Property(e => e.PaymentId).HasColumnName("payment_id");
+            entity.Property(e => e.RecipientName)
+                .HasMaxLength(255)
+                .HasColumnName("recipient_name");
+            entity.Property(e => e.RecipientPhone)
+                .HasMaxLength(15)
+                .HasColumnName("recipient_phone");
             entity.Property(e => e.RecipientAddress)
                 .HasMaxLength(255)
                 .HasColumnName("recipient_address");
@@ -244,11 +251,11 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasColumnName("recipient_appointment_time");
             entity.Property(e => e.RecipientLatitude).HasColumnName("recipient_latitude");
             entity.Property(e => e.RecipientLongitude).HasColumnName("recipient_longitude");
-            entity.Property(e => e.SenderAddress)
-                .HasMaxLength(255)
-                .HasColumnName("sender_address");
-            entity.Property(e => e.SenderLatitude).HasColumnName("sender_latitude");
-            entity.Property(e => e.SenderLongitude).HasColumnName("sender_longitude");
+            //entity.Property(e => e.SenderAddress)
+            //    .HasMaxLength(255)
+            //    .HasColumnName("sender_address");
+            //entity.Property(e => e.SenderLatitude).HasColumnName("sender_latitude");
+            //entity.Property(e => e.SenderLongitude).HasColumnName("sender_longitude");
             entity.Property(e => e.ShippingFeeId).HasColumnName("shipping_fee_id");
             entity.Property(e => e.TaxFee)
                 .HasColumnType("decimal(10, 2)")
@@ -258,10 +265,14 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasColumnName("total_amount");
             entity.Property(e => e.VoucherPromotionId).HasColumnName("voucher_promotion_id");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.DeliveryOrders)
-                .HasForeignKey(d => d.CustomerId)
+            entity.HasOne(d => d.SenderInformation).WithMany(p => p.DeliveryOrders)
+                .HasForeignKey(d => d.SenderInformationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DeliveryOrder_User");
+                .HasConstraintName("FK_DeliveryOrder_SenderInformation");
+            //entity.HasOne(d => d.Customer).WithMany(p => p.DeliveryOrders)
+            //    .HasForeignKey(d => d.CustomerId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull)
+            //    .HasConstraintName("FK_DeliveryOrder_User");
 
             entity.HasOne(d => d.Document).WithMany(p => p.DeliveryOrders)
                 .HasForeignKey(d => d.DocumentId)
@@ -535,14 +546,13 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(155)
                 .HasColumnName("street");
             entity.Property(e => e.UserId)
-                .HasDefaultValueSql("(newsequentialid())")
+                //.HasDefaultValueSql("(newsequentialid())")
                 .HasColumnName("user_id");
             entity.Property(e => e.Ward)
                 .HasMaxLength(100)
                 .HasColumnName("ward");
 
             entity.HasOne(d => d.User).WithMany(p => p.SenderInformations)
-                .HasPrincipalKey(p => p.UserId)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_SenderInformation_User");
         });
@@ -693,6 +703,25 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(155)
                 .HasColumnName("username");
+
+            entity.HasMany(d => d.VoucherPromotions).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserVoucherPromotion",
+                    r => r.HasOne<VoucherPromotion>().WithMany()
+                        .HasForeignKey("VoucherPromotionId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_UserVoucherPromotion_VoucherPromotion"),
+                    l => l.HasOne<User>().WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_UserVoucherPromotion_User"),
+                    j =>
+                    {
+                        j.HasKey("VoucherPromotionId", "Id").HasName("PK_UserVoucherPromotion");
+                        j.ToTable("User_VoucherPromotion");
+                        j.IndexerProperty<int>("VoucherPromotionId").HasColumnName("voucher_promotion_id");
+                        j.IndexerProperty<int>("Id").HasColumnName("user_id");
+                    });
         });
 
         modelBuilder.Entity<VoucherPromotion>(entity =>
@@ -702,6 +731,9 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.ToTable("Voucher_Promotion");
 
             entity.Property(e => e.VoucherPromotionId).HasColumnName("voucher_promotion_id");
+            entity.Property(e => e.PromotionRate)
+                .HasColumnType("decimal")
+                .HasColumnName("promotion_rate");
             entity.Property(e => e.VoucherPromotionCode)
                 .HasMaxLength(100)
                 .HasColumnName("voucher_promotion_code");

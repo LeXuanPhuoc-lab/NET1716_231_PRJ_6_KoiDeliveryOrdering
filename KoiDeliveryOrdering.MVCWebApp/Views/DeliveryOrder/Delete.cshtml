@@ -1,4 +1,4 @@
-﻿@model KoiDeliveryOrdering.Data.Entities.DeliveryOrder
+﻿ @model KoiDeliveryOrdering.MVCWebApp.Models.DeliveryOrderModel;
 
 @{
     ViewData["Title"] = "Delete";
@@ -40,24 +40,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.RecipientAppointmentTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SenderAddress)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SenderAddress)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SenderLongitude)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SenderLongitude)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SenderLatitude)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SenderLatitude)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreateDate)
@@ -108,10 +90,10 @@
             @Html.DisplayFor(model => model.IsInternational)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer)
+            @Html.DisplayNameFor(model => model.SenderInformation)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Customer.Email)
+            @Html.DisplayFor(model => model.SenderInformation.User.Email)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Document)
@@ -131,12 +113,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ShippingFee.ShippingFeeId)
         </dd>
+        @*
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.VoucherPromotion)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.VoucherPromotion.VoucherPromotionId)
         </dd>
+        *@
     </dl>
     
     <form asp-action="Delete">

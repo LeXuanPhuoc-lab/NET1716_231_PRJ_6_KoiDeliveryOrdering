@@ -1,0 +1,105 @@
+﻿<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">Bank List</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="add();">
+            Add
+        </button>
+    </div>
+</div>
+<div class="row container">
+	<div class="col-md-12">
+		<table class="table table-striped table-hover table-bordered">
+			<thead>
+				<tr class="card-header">
+					<th class="card-title text-center">DocumentNumber</th>
+					<th class="card-title text-center">DocumentType</th>
+					<th class="card-title text-center">IssueDate</th>
+					<th class="card-title text-center">ExpirationDate</th>
+					<th class="card-title text-center">ConsigneeName</th>
+					<th class="card-title text-center">ExporterName</th>
+					<th class="card-title text-center">DispatchMethod</th>
+					<th class="card-title text-center">FinalDestination</th>
+					<th class="card-title text-center">TransportationType</th>
+					<th class="card-title text-center">TaxFee</th>
+					<th class="card-title text-center">ShippingFee</th>
+					<th class="card-title text-center">AssurranceFee</th>
+				</tr>
+			</thead>
+			<tbody class="tblDocuments">
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modal fade" id="deliveryOrderModal" tabindex="-1" aria-labelledby="deliveryOrderModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			@using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+			{
+				@Html.AntiForgeryToken()
+				<div class="modal-header">
+					<h5 class="modal-title" id="deliveryOrderModalLabel">Bank</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+				</div>
+				<div class="modal-footer">
+					<button id="btSave" type="button" class="btn btn-primary">Save</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script type="text/javascript">
+		$(document).ready(function () {
+			loadData();
+		});
+
+		function loadData() {
+			// alert("Load data progressing ...");
+
+			$.ajax({
+				url: 'http://localhost:7000/api/documents',
+				type: "GET",
+				contentType: "application/json;charset=utf-8",
+				dataType: "json",
+				success: function (result) {
+					alert('Server response: ' + result.message);
+					console.log(result);
+					var html = '';
+					$.each(result.data, function (key, item) {
+						html += '<tr>';
+						html += '<td>' + item.documentNumber + '</td>';
+						html += '<td>' + item.documentType + '</td>';
+						html += '<td>' + item.issueDate + '</td>';
+						html += '<td>' + item.expirationDate + '</td>';
+						html += '<td>' + item.dispatchMethod + '</td>';
+						html += '<td>' + item.finalDestination + '</td>';
+						html += '<td>' + item.transportationType + '</td>';
+						html += '<td>' + item.taxFee + '</td>';
+						html += '<td>' + item.shippingFee + '</td>';
+						html += '<td>' + item.assurranceFee + '</td>';
+						html += '<td></td>';
+						html += '</tr>';
+					});
+						$('.tblDocuments').html(html);
+				},
+				error: function (xhr, error) {
+					alert(xhr.statusText);
+				}
+			});
+
+		}
+		function add() {
+			$("#deliveryOrderModalContent").html("");
+			$("#deliveryOrderModalLabel").html("Add New");
+
+			$('#deliveryOrderModal').modal('show');
+		}
+	</script>
+}

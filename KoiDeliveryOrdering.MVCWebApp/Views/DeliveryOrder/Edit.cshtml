@@ -1,4 +1,4 @@
-﻿@model KoiDeliveryOrdering.Data.Entities.DeliveryOrder
+﻿@model KoiDeliveryOrdering.MVCWebApp.Models.DeliveryOrderModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -37,21 +37,6 @@
                 <label asp-for="RecipientAppointmentTime" class="control-label"></label>
                 <input asp-for="RecipientAppointmentTime" class="form-control" />
                 <span asp-validation-for="RecipientAppointmentTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SenderAddress" class="control-label"></label>
-                <input asp-for="SenderAddress" class="form-control" />
-                <span asp-validation-for="SenderAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SenderLongitude" class="control-label"></label>
-                <input asp-for="SenderLongitude" class="form-control" />
-                <span asp-validation-for="SenderLongitude" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SenderLatitude" class="control-label"></label>
-                <input asp-for="SenderLatitude" class="form-control" />
-                <span asp-validation-for="SenderLatitude" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CreateDate" class="control-label"></label>
@@ -109,9 +94,9 @@
                 <span asp-validation-for="ShippingFeeId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CustomerId" class="control-label"></label>
-                <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId"></select>
-                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                <label asp-for="SenderInformationId" class="control-label"></label>
+                <select asp-for="SenderInformationId" class="form-control" asp-items="ViewBag.SenderInformationId"></select>
+                <span asp-validation-for="SenderInformationId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DocumentId" class="control-label"></label>

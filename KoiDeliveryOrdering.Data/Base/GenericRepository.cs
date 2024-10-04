@@ -34,22 +34,56 @@ public class GenericRepository<TEntity> where TEntity : class
 
     public TEntity? Find(params object[] keyValues)
     {
-        return _dbSet.Find(keyValues);
+        var entity = _dbSet.Find(keyValues);
+        if(entity == null) return null;
+
+        if (_dbSet.Entry(entity).State == EntityState.Added)
+        {
+            _dbSet.Entry(entity).State = EntityState.Detached;
+        }
+
+        return entity;
+
+        //return _dbSet.Find(keyValues);
     }
 
     public IEnumerable<TEntity> FindAll()
     {
-        return _dbSet.ToList();
+        var entities = _dbSet.ToList();
+
+        foreach (var entity in entities)
+        {
+            _dbSet.Entry(entity).State = EntityState.Detached;
+        }
+
+        return entities;
+        //return _dbSet.ToList(); 
     }
 
     public async Task<TEntity?> FindAsync(params object[] keyValues)
     {
-        return await _dbSet.FindAsync(keyValues);
+        var entity = await _dbSet.FindAsync(keyValues);
+        if (entity == null) return null;
+
+        _dbSet.Entry(entity).State = EntityState.Detached;
+
+        return entity;
+
+        //return await _dbSet.FindAsync(keyValues);
     }
 
-    public async Task<IEnumerable<TEntity>> FindAllAsync()
+    public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        var entities = await _dbSet.ToListAsync();
+
+        foreach (var entity in entities)
+        {
+            _dbSet.Entry(entity).State = EntityState.Detached;
+        }
+
+        return entities;
+
+        //return await _dbSet.ToListAsync();
     }
 
     public async Task<TEntity?> FindOneWithConditionAsync(
@@ -74,10 +108,16 @@ public class GenericRepository<TEntity> where TEntity : class
             }
         }
 
+        TEntity? result;
         if (orderBy != null)
-            return await orderBy(query).FirstOrDefaultAsync();
+            result = await orderBy(query).FirstOrDefaultAsync();
         else
-            return await query.FirstOrDefaultAsync();
+            result = await query.FirstOrDefaultAsync();
+
+        if (result == null) return null;
+
+        _dbSet.Entry(result).State = EntityState.Detached;
+        return result;
     }
 
     public async Task<IEnumerable<TEntity>> FindAllWithConditionAsync(
@@ -102,13 +142,23 @@ public class GenericRepository<TEntity> where TEntity : class
             }
         }
 
+        IEnumerable<TEntity> result;
         if (orderBy != null)
-            return await orderBy(query).ToListAsync();
-        else
-            return await query.ToListAsync();
+            result = await orderBy(query).ToListAsync();
+        else       
+            result = await query.ToListAsync();
+
+        if(!result.Any()) return new List<TEntity>();
+
+        foreach (var entity in result)
+        {
+            _dbSet.Entry(entity).State = EntityState.Detached;
+        }
+
+        return result;
     }
 
-    public async Task<IList<TEntity>> FindAllWithConditionAndThenIncludeAsync(
+    public async Task<IEnumerable<TEntity>> FindAllWithConditionAndThenIncludeAsync(
         Expression<Func<TEntity, bool>>? filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         List<Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>>? includes = null)
@@ -129,10 +179,20 @@ public class GenericRepository<TEntity> where TEntity : class
             }
         }
 
+        IEnumerable<TEntity> result;
         if (orderBy != null)
-            return await orderBy(query).ToListAsync();
+            result = await orderBy(query).ToListAsync();
         else
-            return await query.ToListAsync();
+            result = await query.ToListAsync();
+
+        if (!result.Any()) return new List<TEntity>();
+
+        foreach (var entity in result)
+        {
+            _dbSet.Entry(entity).State = EntityState.Detached;
+        }
+
+        return result;
     }
 
     #endregion

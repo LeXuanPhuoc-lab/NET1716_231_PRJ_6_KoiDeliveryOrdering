@@ -34,8 +34,8 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public bool? IsActive { get; set; }
 
-        public virtual ICollection<DeliveryOrderModel> DeliveryOrders { get; set; } = new List<DeliveryOrderModel>();
+        //public virtual ICollection<DeliveryOrderModel> DeliveryOrders { get; set; } = new List<DeliveryOrderModel>();
 
-        //public virtual ICollection<SenderInformation> SenderInformations { get; set; } = new List<SenderInformation>();
+        //public virtual ICollection<SenderInformationModel> SenderInformations { get; set; } = new List<SenderInformationModel>();
     }
 }

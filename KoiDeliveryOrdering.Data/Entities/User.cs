@@ -35,7 +35,8 @@ public partial class User
 
     public bool? IsActive { get; set; }
 
-    public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();
+    //public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();
 
     public virtual ICollection<SenderInformation> SenderInformations { get; set; } = new List<SenderInformation>();
+    public virtual ICollection<VoucherPromotion> VoucherPromotions { get; set; } = new List<VoucherPromotion>();
 }

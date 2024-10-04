@@ -10,6 +10,8 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
     private DeliveryOrderRepository _deliveryOrderRepository = null!;
     private PaymentRepository _paymentRepository = null!;
     private ShippingFeeRepository _shippingFeeRepository = null!;
+    private DocumentRepository _documentRepository = null!;
+    private AnimalRepository _animalRepository = null!;
     
     public UserRepository UserRepository
         // New instance is require, as an application not define abstractions for 
@@ -20,11 +22,17 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
         => _deliveryOrderRepository ??= new (unitOfWorkContext);
     
     public PaymentRepository PaymentRepository
-        => _paymentRepository =  new (unitOfWorkContext);
+        => _paymentRepository ??= new (unitOfWorkContext);
     
     public ShippingFeeRepository ShippingFeeRepository
-        => _shippingFeeRepository =  new (unitOfWorkContext);
-    
+        => _shippingFeeRepository ??= new (unitOfWorkContext);
+
+	public DocumentRepository DocumentRepository
+		=> _documentRepository ??= new(unitOfWorkContext);
+
+    public AnimalRepository AnimalRepository
+        => _animalRepository ??= new(unitOfWorkContext);
+
     #region Diposable 
     private bool _disposed = false;
     protected virtual void Dispose(bool disposing)

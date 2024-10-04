@@ -1,8 +1,10 @@
 using KoiDeliveryOrdering.Business.Base;
+using KoiDeliveryOrdering.Business.Contants;
 using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace KoiDeliveryOrdering.Business;
 
@@ -28,11 +30,31 @@ public class DeliveryOrderService(UnitOfWork unitOfWork) : IDeliveryOrderService
         }
     }
 
+    public async Task<IServiceResult> FindAsync(int id)
+    {
+        try
+        {
+            var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(
+                d => d.Id == id);
+
+            if (deliveryOrderEntity == null)
+            {
+                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new DeliveryOrder());
+            }
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, deliveryOrderEntity);
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
+
     public async Task<IServiceResult> FindAllAsync()
     {
         try
         {
-            var deliveryOrderEntities = await unitOfWork.DeliveryOrderRepository.FindAllWithConditionAsync();
+            var deliveryOrderEntities = await unitOfWork.DeliveryOrderRepository.FindAllAsync();
 
             if (!deliveryOrderEntities.Any())
             {
@@ -114,5 +136,63 @@ public class DeliveryOrderService(UnitOfWork unitOfWork) : IDeliveryOrderService
         {
             return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
         }
+    }
+
+    public async Task<IServiceResult> RemoveAsync(int id)
+    {
+        try
+        {
+            var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(d =>
+                d.Id == id);
+
+            // Check exist delivery order
+            if (deliveryOrderEntity == null)
+            {
+                return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+            }
+
+            await unitOfWork.DeliveryOrderRepository.PrepareRemoveAsync(deliveryOrderEntity.Id);
+            var isRemoved = await unitOfWork.DeliveryOrderRepository.SaveChangeWithTransactionAsync() > 0;
+
+            if (!isRemoved)
+            {
+                return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+            }
+
+            return new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG, true);
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
+
+    public async Task<IServiceResult> FindAllDeliveryOrderStatusesAsync()
+    {
+        List<string> orderStatutes = new()
+        {
+            OrderStatusConstants.Pending,
+            OrderStatusConstants.Completed,
+            OrderStatusConstants.Canceled,
+        };
+
+        return await Task.FromResult(
+            new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, orderStatutes));
+    }
+
+    public async Task<IServiceResult> FindAllAppointmentTimeAsync()
+    {
+        List<string> deliveryAppointments = new()
+        {
+            DeliveryAppointmentConstants.AllDay,
+            DeliveryAppointmentConstants.MorningTime,
+            DeliveryAppointmentConstants.EveningTime,
+            DeliveryAppointmentConstants.NightTime,
+            DeliveryAppointmentConstants.WithinOfficeHours,
+            DeliveryAppointmentConstants.Sunday,
+        };
+
+        return await Task.FromResult(
+            new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, deliveryAppointments));
     }
 }
