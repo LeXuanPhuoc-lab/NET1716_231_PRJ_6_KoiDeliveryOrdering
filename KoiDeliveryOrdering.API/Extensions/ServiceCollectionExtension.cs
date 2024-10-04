@@ -8,6 +8,7 @@ using KoiDeliveryOrdering.Data.Context;
 using KoiDeliveryOrdering.Data.Entities;
 using Mapster;
 using MapsterMapper;
+using System.Reflection;
 
 namespace KoiDeliveryOrdering.API.Extensions;
 
@@ -25,7 +26,10 @@ public static class ServiceCollectionExtension
         services.AddScoped<IAnimalService, AnimalService>();
         services.AddScoped<IImageService, ImageService>();
         services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
-        
+        services.AddScoped<IDailyCareScheduleService, DailyCareScheduleService>();
+        services.AddScoped<IDeliveryOrderDetailService, DeliveryOrderDetailService>();
+        services.AddScoped<ICareTaskService, CareTaskService>();
+
         return services;
     }
 
@@ -36,7 +40,7 @@ public static class ServiceCollectionExtension
         // Configure App settings
         services.Configure<AppSettings>(
             configuration.GetSection("AppSettings"));
-        
+
         return services;
     }
 
@@ -60,14 +64,14 @@ public static class ServiceCollectionExtension
         // Register the mapper as Singleton service for my application
         var mapperConfig = new Mapper(typeAdapterConfig);
         services.AddSingleton<IMapper>(mapperConfig);
-        
+
         return services;
     }
 
     public static IServiceCollection ConfigureCloudinary(this IServiceCollection services)
     {
         // Configure this later...
-        
+
         return services;
     }
 }

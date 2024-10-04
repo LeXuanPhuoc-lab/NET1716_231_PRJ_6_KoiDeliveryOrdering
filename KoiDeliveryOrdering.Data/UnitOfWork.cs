@@ -1,5 +1,4 @@
 using KoiDeliveryOrdering.Data.Context;
-using KoiDeliveryOrdering.Data.Entities;
 using KoiDeliveryOrdering.Data.Repositories;
 
 namespace KoiDeliveryOrdering.Data;
@@ -12,15 +11,18 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
     private ShippingFeeRepository _shippingFeeRepository = null!;
     private DocumentRepository _documentRepository = null!;
     private AnimalRepository _animalRepository = null!;
-    
+    private DailyCareScheduleRepository _dailyCareScheduleRepository = null!;
+    private DeliveryOrderDetailRepository _deliveryOrderDetailRepository = null!;
+    private CareTaskRepository _careTaskRepository = null!;
+
     public UserRepository UserRepository
         // New instance is require, as an application not define abstractions for 
         // repositories to utilizing [Service Lifetime in ASP.NET Core] 
-        => _userRepository ??= new (unitOfWorkContext);
-    
+        => _userRepository ??= new(unitOfWorkContext);
+
     public DeliveryOrderRepository DeliveryOrderRepository
-        => _deliveryOrderRepository ??= new (unitOfWorkContext);
-    
+        => _deliveryOrderRepository ??= new(unitOfWorkContext);
+
     public PaymentRepository PaymentRepository
         => _paymentRepository ??= new (unitOfWorkContext);
     
@@ -32,6 +34,15 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
 
     public AnimalRepository AnimalRepository
         => _animalRepository ??= new(unitOfWorkContext);
+
+    public DailyCareScheduleRepository DailyCareScheduleRepository
+        => _dailyCareScheduleRepository ??= new(unitOfWorkContext);
+
+    public DeliveryOrderDetailRepository DeliveryOrderDetailRepository
+        => _deliveryOrderDetailRepository ??= new(unitOfWorkContext);
+
+    public CareTaskRepository CareTaskRepository
+        => _careTaskRepository ??= new(unitOfWorkContext);
 
     #region Diposable 
     private bool _disposed = false;

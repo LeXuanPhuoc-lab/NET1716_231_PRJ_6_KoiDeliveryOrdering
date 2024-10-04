@@ -1,7 +1,6 @@
-using KoiDeliveryOrdering.Data.Context;
+﻿using KoiDeliveryOrdering.Data.Context;
 using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace KoiDeliveryOrdering.Data;
 
@@ -75,11 +74,12 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             if (!dbContext.ShippingFees.Any()) await SeedShippingFeeAsync();
             // Delivery Orders
             if (!dbContext.DeliveryOrders.Any()) await SeedDeliveryOrderAsync();
-			// Delivery Orders
-			if (!dbContext.Documents.Any()) await SeedDocumentAsync();
             // Animal Types
-            if (!dbContext.AnimalTypes.Any()) await SeedAnimalTypeAsync();
-
+            if (!dbContext.AnimalTypes.Any()) await SeedAnimalTypesAsync();
+            // Animal
+            if (!dbContext.Animals.Any()) await SeedAnimalsAsync();
+            // Delivery Order Details
+            if (!dbContext.DeliveryOrderDetails.Any()) await SeedDeliveryOrderDetailsAsync();
 
             // More seeding here...
             // Each table need to create private method to seeding data
@@ -696,19 +696,100 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
 
     //  Summary:
     //      Seeding Animal Type
-    private async Task SeedAnimalTypeAsync()
+    private async Task SeedAnimalTypesAsync()
     {
         List<AnimalType> animalTypes = new()
         {
-            new() { AnimalTypeDesc = "Mammal" },
+            new() { AnimalTypeDesc = "Dog" },
             new() { AnimalTypeDesc = "Bird" },
-            new() { AnimalTypeDesc = "Reptile" },
-            new() { AnimalTypeDesc = "Amphibian" },
+            new() { AnimalTypeDesc = "Cat" },
             new() { AnimalTypeDesc = "Fish" },
-            new() { AnimalTypeDesc = "Insect" },
         };
 
         await dbContext.AnimalTypes.AddRangeAsync(animalTypes);
+        await dbContext.SaveChangesAsync();
+    }
+
+    private async Task SeedAnimalsAsync()
+    {
+        List<Animal> animals = new()
+    {
+        new Animal
+        {
+            AnimalId = Guid.NewGuid(),
+            Breed = "Golden Retriever",
+            ColorPattern = "Golden",
+            Size = 30.5m,
+            Age = 2,
+            EstimatedPrice = 1200.50m,
+            HealthStatus = "Healthy",
+            IsAvailable = true,
+            OriginCountry = "USA",
+            Description = "Friendly and intelligent dog.",
+            ImageUrl = "https://example.com/golden_retriever.jpg",
+            AnimalTypeId = 1 // Giả sử AnimalTypeId = 1 là Dog
+        },
+        new Animal
+        {
+            AnimalId = Guid.NewGuid(),
+            Breed = "Persian",
+            ColorPattern = "White",
+            Size = 10.3m,
+            Age = 3,
+            EstimatedPrice = 800.00m,
+            HealthStatus = "Healthy",
+            IsAvailable = true,
+            OriginCountry = "Iran",
+            Description = "Calm and loving cat.",
+            ImageUrl = "https://example.com/persian_cat.jpg",
+            AnimalTypeId = 2 // Giả sử AnimalTypeId = 2 là Cat
+        },
+        new Animal
+        {
+            AnimalId = Guid.NewGuid(),
+            Breed = "Parrot",
+            ColorPattern = "Green",
+            Size = 0.8m,
+            Age = 1,
+            EstimatedPrice = 300.00m,
+            HealthStatus = "Healthy",
+            IsAvailable = true,
+            OriginCountry = "Australia",
+            Description = "Talkative and colorful bird.",
+            ImageUrl = "https://example.com/parrot.jpg",
+            AnimalTypeId = 3 // Giả sử AnimalTypeId = 3 là Bird
+        }
+    };
+
+        await dbContext.Animals.AddRangeAsync(animals);
+        await dbContext.SaveChangesAsync();
+    }
+
+    private async Task SeedDeliveryOrderDetailsAsync()
+    {
+        var rnd = new Random();
+        var deliveryOrders = await dbContext.DeliveryOrders.ToListAsync();
+        var animals = await dbContext.Animals.ToListAsync();
+
+        var deliveryOrderDetails = new List<DeliveryOrderDetail>();
+
+        foreach (var deliveryOrder in deliveryOrders)
+        {
+            // Giả sử mỗi đơn giao hàng có 2 chi tiết giao hàng
+            for (int i = 0; i < 2; i++)
+            {
+                deliveryOrderDetails.Add(new DeliveryOrderDetail
+                {
+                    DeliveryOrderDetailId = Guid.NewGuid(),
+                    AnimalId = animals[rnd.Next(animals.Count)].Id,  // Chọn một con vật ngẫu nhiên
+                    DeliveryOrderId = deliveryOrder.Id,
+                    PreDeliveryHealthStatus = "Healthy", // Thông tin sức khỏe trước khi giao
+                    PostDeliveryHealthStatus = i % 2 == 0 ? "Healthy" : "Tired", // Thông tin sức khỏe sau khi giao (ngẫu nhiên)
+                });
+            }
+        }
+
+        await dbContext.DeliveryOrderDetails.AddRangeAsync(deliveryOrderDetails);
         await dbContext.SaveChangesAsync();
     }
 }
