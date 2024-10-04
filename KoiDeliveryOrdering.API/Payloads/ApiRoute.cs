@@ -20,4 +20,15 @@ public static class ApiRoute
         public const string GetAllPayment = Base + "/payments";
         public const string GetAllShippingFee = Base + "/shipping-fees";
     }
+
+    public static class DailyCareSchedule
+    {
+        public const string GetById = Base + "/daily-care-schedule/{id}";
+        public const string GetAll = Base + "/daily-care-schedule";
+        public const string Insert = Base + "/daily-care-schedule/insert";
+        public const string Update = Base + "/daily-care-schedule/update";
+        public const string Remove = Base + "/daily-care-schedule/{id}/remove";
+        public const string GetAllCareTask = Base + "/care-task";
+        public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
+    }
 }
