@@ -160,7 +160,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.id);
-                    table.UniqueConstraint("AK_User_user_id", x => x.user_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,7 +168,8 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 {
                     voucher_promotion_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    voucher_promotion_code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    voucher_promotion_code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    promotion_rate = table.Column<decimal>(type: "decimal(18,0)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -290,7 +290,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 {
                     sender_information_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newsequentialid())"),
+                    user_id = table.Column<int>(type: "int", nullable: false),
                     sender_name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
                     sender_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     city_province = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -308,8 +308,30 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         name: "FK_SenderInformation_User",
                         column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "user_id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User_VoucherPromotion",
+                columns: table => new
+                {
+                    voucher_promotion_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserVoucherPromotion", x => new { x.voucher_promotion_id, x.user_id });
+                    table.ForeignKey(
+                        name: "FK_UserVoucherPromotion_User",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_UserVoucherPromotion_VoucherPromotion",
+                        column: x => x.voucher_promotion_id,
+                        principalTable: "Voucher_Promotion",
+                        principalColumn: "voucher_promotion_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -319,13 +341,12 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     delivery_order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newsequentialid())"),
+                    recipient_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    recipient_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     recipient_address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     recipient_longitude = table.Column<double>(type: "float", nullable: true),
                     recipient_latitude = table.Column<double>(type: "float", nullable: true),
                     recipient_appointment_time = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
-                    sender_address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    sender_longitude = table.Column<double>(type: "float", nullable: true),
-                    sender_latitude = table.Column<double>(type: "float", nullable: true),
                     create_date = table.Column<DateTime>(type: "datetime", nullable: false),
                     delivery_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     order_status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -333,11 +354,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     tax_fee = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
                     payment_id = table.Column<int>(type: "int", nullable: false),
                     is_purchased = table.Column<bool>(type: "bit", nullable: true),
-                    is_sender_purchase = table.Column<bool>(type: "bit", nullable: true),
+                    is_sender_purchase = table.Column<bool>(type: "bit", nullable: false),
                     is_international = table.Column<bool>(type: "bit", nullable: false),
                     voucher_promotion_id = table.Column<int>(type: "int", nullable: true),
                     shipping_fee_id = table.Column<int>(type: "int", nullable: false),
-                    customer_id = table.Column<int>(type: "int", nullable: false),
+                    sender_information_id = table.Column<int>(type: "int", nullable: false),
                     document_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -354,15 +375,15 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         principalTable: "Payment",
                         principalColumn: "payment_id");
                     table.ForeignKey(
+                        name: "FK_DeliveryOrder_SenderInformation",
+                        column: x => x.sender_information_id,
+                        principalTable: "Sender_Information",
+                        principalColumn: "sender_information_id");
+                    table.ForeignKey(
                         name: "FK_DeliveryOrder_ShippingFee",
                         column: x => x.shipping_fee_id,
                         principalTable: "Shipping_Fee",
                         principalColumn: "shipping_fee_id");
-                    table.ForeignKey(
-                        name: "FK_DeliveryOrder_User",
-                        column: x => x.customer_id,
-                        principalTable: "User",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_DeliveryOrder_VoucherPromotion",
                         column: x => x.voucher_promotion_id,
@@ -523,11 +544,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 column: "deliver_order_detail_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Delivery_Order_customer_id",
-                table: "Delivery_Order",
-                column: "customer_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Delivery_Order_document_id",
                 table: "Delivery_Order",
                 column: "document_id");
@@ -536,6 +552,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 name: "IX_Delivery_Order_payment_id",
                 table: "Delivery_Order",
                 column: "payment_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivery_Order_sender_information_id",
+                table: "Delivery_Order",
+                column: "sender_information_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Delivery_Order_shipping_fee_id",
@@ -647,6 +668,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 table: "User",
                 column: "user_id",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_VoucherPromotion_user_id",
+                table: "User_VoucherPromotion",
+                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -662,7 +688,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 name: "Order_Assignment");
 
             migrationBuilder.DropTable(
-                name: "Sender_Information");
+                name: "User_VoucherPromotion");
 
             migrationBuilder.DropTable(
                 name: "Daily_Care_Schedule");
@@ -701,13 +727,16 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 name: "Payment");
 
             migrationBuilder.DropTable(
+                name: "Sender_Information");
+
+            migrationBuilder.DropTable(
                 name: "Shipping_Fee");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Voucher_Promotion");
 
             migrationBuilder.DropTable(
-                name: "Voucher_Promotion");
+                name: "User");
         }
     }
 }

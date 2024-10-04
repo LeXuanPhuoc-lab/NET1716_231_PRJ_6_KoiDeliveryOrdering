@@ -98,7 +98,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
     public Task<IServiceResult> FindAsync(Guid userId)
     {
         throw new NotImplementedException();
-    }
+	}
 
     public async Task<IServiceResult> FindAllAsync()
     {
@@ -139,5 +139,66 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
     public Task<IServiceResult> FindAllWithConditionAndThenIncludeAsync(Expression<Func<User, bool>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, List<Func<IQueryable<User>, IIncludableQueryable<User, object>>>? includes = null)
     {
         throw new NotImplementedException();
+    }
+
+	public async Task<IServiceResult> FindAllSenderInformationAsync()
+	{
+        try
+        {
+            var senderInformations = await unitOfWork.UserRepository.FindAllSenderInformationAsync();
+
+            if (senderInformations.Any())
+            {
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, senderInformations);
+            }
+
+            return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<SenderInformation>());
+
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
+
+    public async Task<IServiceResult> FindByUsernameAsync(string username)
+    {
+        try
+        {
+            // Get by username
+            var userEntity = await unitOfWork.UserRepository.FindOneWithConditionAsync(u =>
+                u.Username == username);
+
+            return userEntity != null
+                // Get successfully
+                ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntity)
+                // Get fail
+                : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new User());
+        }
+        catch (Exception ex)
+        {
+            // Invoke error
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
+
+    public async Task<IServiceResult> FindAllVoucherByUsernameAsync(string username)
+    {
+        try
+        {
+            // Get by username
+            var voucherPromotions = await unitOfWork.UserRepository.FindAllVoucherByUsernameAsync(username);
+
+            return voucherPromotions.Any()
+                // Get successfully
+                ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, voucherPromotions)
+                // Get fail
+                : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<VoucherPromotion>());
+        }
+        catch (Exception ex)
+        {
+            // Invoke error
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
     }
 }

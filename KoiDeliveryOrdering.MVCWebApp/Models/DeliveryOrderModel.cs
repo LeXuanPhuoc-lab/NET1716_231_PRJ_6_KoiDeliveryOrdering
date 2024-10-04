@@ -8,6 +8,10 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public Guid DeliveryOrderId { get; set; }
 
+        public string RecipientName { get; set; } = null!;
+
+        public string RecipientPhone { get; set; } = null!;
+
         public string RecipientAddress { get; set; } = null!;
 
         public double? RecipientLongitude { get; set; }
@@ -16,19 +20,13 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public string? RecipientAppointmentTime { get; set; }
 
-        public string SenderAddress { get; set; } = null!;
-
-        public double? SenderLongitude { get; set; }
-
-        public double? SenderLatitude { get; set; }
-
-        public DateTime CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
 
         public DateTime? DeliveryDate { get; set; }
 
         public string OrderStatus { get; set; } = null!;
 
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
         public decimal? TaxFee { get; set; }
 
@@ -36,7 +34,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public bool? IsPurchased { get; set; }
 
-        public bool? IsSenderPurchase { get; set; }
+        public bool IsSenderPurchase { get; set; }
 
         public bool IsInternational { get; set; }
 
@@ -44,11 +42,11 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public int ShippingFeeId { get; set; }
 
-        public int CustomerId { get; set; }
+        public int SenderInformationId { get; set; }
 
         public int? DocumentId { get; set; }
 
-        public virtual UserModel Customer { get; set; } = null!;
+        public virtual SenderInformationModel SenderInformation { get; set; } = null!;
 
         public virtual ICollection<DeliveryOrderDetailModel> DeliveryOrderDetails { get; set; } = new List<DeliveryOrderDetailModel>();
 
