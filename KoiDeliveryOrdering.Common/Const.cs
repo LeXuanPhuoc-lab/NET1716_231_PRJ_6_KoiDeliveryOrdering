@@ -2,6 +2,8 @@ namespace KoiDeliveryOrdering.Common;
 
 public static class Const
 {
+    public static string APIEndpoint = "http://localhost:7000/api/";
+
     #region Error Codes
 
     public static int ERROR_EXCEPTION_CODE = 4;

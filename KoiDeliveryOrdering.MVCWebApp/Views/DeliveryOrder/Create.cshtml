@@ -1,0 +1,463 @@
+﻿@model KoiDeliveryOrdering.API.Payloads.Requests.CreateDeliveryOrderRequest
+
+@{
+    int totalAnimal = 0;
+}
+
+<h1>Create</h1>
+
+<div class="row container mt-5">
+    <form asp-action="Create">
+        <div class="col-md-6">
+            <div class="">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/user-forward.svg" class="me-2">
+                    <span class="fw-bold fs-4">SENDER</span>
+                </div>
+                <div class="border rounded-bottom">
+                    <div class="form-group mt-3 p-2 px-3">
+                        <label asp-for="SenderInformationId" class="control-label">Sender Information</label>
+                        <select asp-for="SenderInformationId" class="form-control" asp-items="ViewBag.SenderInformationId"></select>
+                    </div>
+                    <div class="d-flex justify-content-end m-3" role="button">
+                        <span style="font-size: small;">Manage Sender Information</span>
+                        <img src="https://viettelpost.vn/assets/images/arrow-right.svg" class="mx-2">
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/user-check.svg" class="me-2">
+                    <span class="fw-bold fs-4">RECIEVER</span>
+                </div>
+                <div class="border rounded-bottom">
+                    <div class="form-group mt-3 p-2 px-3">
+                        <label asp-for="RecipientPhone" class="control-label">Phone Number</label>
+                        <input asp-for="RecipientPhone" class="form-control mt-1" placeholder="Input recipient phone number" />
+                        <span asp-validation-for="RecipientPhone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-1 p-2 px-3">
+                        <label asp-for="RecipientName" class="control-label">Fullname</label>
+                        <input asp-for="RecipientName" class="form-control mt-1" placeholder="Input recipient fullname" />
+                        <span asp-validation-for="RecipientName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-1 p-2 px-3">
+                        <label asp-for="RecipientAddress" class="control-label">Address</label>
+                        <input asp-for="RecipientAddress" class="form-control mt-1" placeholder="Input recipient address" />
+                        <span asp-validation-for="RecipientAddress" class="text-danger"></span>
+                    </div>
+                    <div class="row form-group mt-1 p-2 px-3">
+                        <div class="col-md-6">
+                            <select asp-for="ProvinceName" asp-items="ViewBag.Provinces"
+                                    class="form-control selectpicker"
+                                    data-live-search="true"
+                                    id="provinceSelect">
+                                <option value="" disabled selected>Select a Province</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <select asp-for="DistrictName"
+                                    class="district form-control selectpicker"
+                                    data-live-search="true"
+                                    id="districtSelect">
+                                <option value="" disabled selected>Select a District</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group mt-1 p-2 px-3">
+                        <div class="col-md-6">
+                            <select asp-for="WardName"
+                                    class="form-control selectpicker"
+                                    data-live-search="true"
+                                    id="wardSelect">
+                                <option value="" disabled selected>Select a Ward</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mt-1 p-2 px-3">
+                        <label asp-for="RecipientAppointmentTime" class="control-label">Delivery Appointment</label>
+                        <select asp-for="RecipientAppointmentTime" asp-items="ViewBag.DeliveryAppointments"
+                                class="form-control selectpicker"
+                                data-live-search="true">
+                            <option value="" disabled selected>Select a Delivery Appointment</option>
+                        </select>
+                        <span asp-validation-for="RecipientAppointmentTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-5 mt-3">
+                <div class="mt-3">
+                    <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                        <img src="https://viettelpost.vn/assets/images/truck.svg" class="me-2">
+                        <span class="fw-bold fs-4">SERVICE & PROMOTION</span>
+                    </div>
+                    <div class="border rounded-bottom">
+                        <div class="mt-4 p-2">
+                            <img src="https://viettelpost.vn/assets/images/icon/icon-voucher.svg" class="mx-4">
+                            <span class="fw-bold fs-5">PROMOTION</span>
+                        </div>
+                    <div class="form-group p-2 px-3">
+                        <select asp-for="VoucherPromotionId" asp-items="ViewBag.VoucherPromotionId"
+                            class="form-control selectpicker"
+                            data-live-search="true">
+                            <option value="" disabled selected>Select a Promotion</option>
+                        </select>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="border">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/package.svg" class="me-2">
+                    <span class="fw-bold fs-4">ITEMS INFORMATION</span>
+                </div>
+                <div class="border rounded-bottom p-3">
+                    <div id="animalContainer">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="addAnimal">Add Another Animal</button>
+                </div>
+            </div>
+            <div class="border col-md-6">
+                abc2
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create Order" class="btn btn-primary form-control"/>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RecipientAddress" class="control-label"></label>
+                <input asp-for="RecipientAddress" class="form-control" />
+                <span asp-validation-for="RecipientAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipientLongitude" class="control-label"></label>
+                <input asp-for="RecipientLongitude" class="form-control" />
+                <span asp-validation-for="RecipientLongitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipientLatitude" class="control-label"></label>
+                <input asp-for="RecipientLatitude" class="form-control" />
+                <span asp-validation-for="RecipientLatitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipientAppointmentTime" class="control-label"></label>
+                <input asp-for="RecipientAppointmentTime" class="form-control" />
+                <span asp-validation-for="RecipientAppointmentTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryDate" class="control-label"></label>
+                <input asp-for="DeliveryDate" class="form-control" />
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrderStatus" class="control-label"></label>
+                <select asp-for="OrderStatus" class="form-control" asp-items="ViewBag.OrderStatus"></select>
+            </div>
+            @* <div class="form-group">
+                <label asp-for="TotalAmount" class="control-label"></label>
+                <input asp-for="TotalAmount" class="form-control" />
+                <span asp-validation-for="TotalAmount" class="text-danger"></span>
+            </div> *@
+            @* <div class="form-group">
+                <label asp-for="TaxFee" class="control-label"></label>
+                <input asp-for="TaxFee" class="form-control" />
+                <span asp-validation-for="TaxFee" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="PaymentId" class="control-label"></label>
+                <select asp-for="PaymentId" class ="form-control" asp-items="ViewBag.PaymentId"></select>
+            </div>
+           @*  <div class="form-group">
+                <label asp-for="IsPurchased" class="control-label"></label>
+                <input asp-for="IsPurchased" class="form-control" />
+                <span asp-validation-for="IsPurchased" class="text-danger"></span>
+            </div> *@
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsSenderPurchase" /> @Html.DisplayNameFor(model => model.IsSenderPurchase)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsInternational" /> @Html.DisplayNameFor(model => model.IsInternational)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShippingFeeId" class="control-label"></label>
+                <select asp-for="ShippingFeeId" class ="form-control" asp-items="ViewBag.ShippingFeeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SenderInformationId" class="control-label"></label>
+                <select asp-for="SenderInformationId" class="form-control" asp-items="ViewBag.SenderInformationId"></select>
+            </div>
+          @*   <div class="form-group">
+                <label asp-for="DocumentId" class="control-label"></label>
+                <select asp-for="DocumentId" class ="form-control" asp-items="ViewBag.DocumentId"></select>
+            </div> *@
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $('.selectpicker').selectpicker();
+
+            // Initiate select handling methods
+            handleProvinceSelect();
+            handleDistrictSelect();
+            addAnimalHandler();
+        });
+
+        function handleProvinceSelect(){
+            $('#provinceSelect').change(function () {
+                // Get selected value 
+                var selectedProvinceCode = $(this).val(); 
+                console.log("Selected Province Code: " + selectedProvinceCode);
+
+                // Get all district by province code
+                $.ajax({
+                    url: 'http://localhost:7000/api/delivery-orders/provinces/' + selectedProvinceCode,
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+
+                        // Clear all district & ward option
+                        $('#districtSelect').empty();
+                        // Append placeholder value
+                        $('#districtSelect').append('<option value="">Select a District</option>');
+
+                        // Check if districts are returned
+                        if (result.status == 1 && result.data != null) {
+                            // Iterate through the districts and add each one as an option
+                            $.each(result.data.districts, function (index, district) {
+                                $('#districtSelect').append('<option value="' + district.code + '">' + district.name + '</option>');
+                            });
+
+                            $('#districtSelect').selectpicker('refresh');
+                        } else {
+                            // Handle case where no districts are returned
+                            $('#districtSelect').append('<option value="">No Districts Available</option>');
+                            $('#districtSelect').selectpicker('refresh');
+                        }
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                        console.log(error);
+                    }
+                });
+            });
+        }
+
+        function handleDistrictSelect(){
+            $('#districtSelect').change(function () {
+                // Get selected value
+                var selectedDistrictCode = $(this).val();
+                console.log("Selected District Code: " + selectedDistrictCode);
+
+                // Get all ward by district code
+                $.ajax({
+                    url: 'http://localhost:7000/api/delivery-orders/districts/' + selectedDistrictCode,
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+
+                        // Clear all ward option
+                        $('#wardSelect').empty();
+                        // Append placeholder value
+                        $('#wardSelect').append('<option value="">Select a Ward</option>');
+
+                        // Check if wards are returned
+                        if (result.status == 1 && result.data != null) {
+                            // Iterate through the wards and add each one as an option
+                            $.each(result.data.wards, function (index, ward) {
+                                $('#wardSelect').append('<option value="' + ward.code + '">' + ward.name + '</option>');
+                            });
+
+                            $('#wardSelect').selectpicker('refresh');
+                        } else {
+                            // Handle case where no wards are returned
+                            $('#wardSelect').append('<option value="">No Wards Available</option>');
+                            $('#wardSelect').selectpicker('refresh');
+                        }
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                        console.log(error);
+                    }
+                });
+            });
+        }
+
+        function addAnimalHandler(){
+            $('#addAnimal').on("click", function () {
+                // Get animal container by id
+                var container = document.getElementById("animalContainer");
+                // Current count of animals
+                var animalIndex = container.children.length; 
+                // Initiate HTML code statement
+                var newAnimalEntry = `
+                    <div class="animal-entry mb-3 border rounded p-4">
+                        <div class="row mb-3">
+                            <h5 class="col-md-8 fw-bold fs-4 align-content-center">Animal ${animalIndex + 1}</h5>
+                            <div class="col-md-4 mb-3">
+                                <select name="Animals[${animalIndex}].AnimalTypeId"
+                                                class="form-control"
+                                                data-live-search="true">
+                                    <option value="" disabled selected>Animal Type</option>
+                                @foreach (var item in ViewBag.AnimalType)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-9">
+                                <label for="Animals_${animalIndex}__Breed" class="control-label">Breed*</label>
+                                <input name="Animals[${animalIndex}].Breed" class="form-control mt-1" placeholder="Enter breed"/>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="Animals_${animalIndex}__ColorPattern" class="control-label">Color Pattern</label>
+                                <input name="Animals[${animalIndex}].ColorPattern" type="color" class="form-control mt-1" placeholder="Enter color pattern"/>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__Size" class="control-label">Size*</label>
+                                <input name="Animals[${animalIndex}].Size" type="number" class="form-control mt-1" placeholder="Enter size"/>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__Age" class="control-label">Age</label>
+                                <input name="Animals[${animalIndex}].Age" type="number" class="form-control mt-1" placeholder="Enter age"/>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__EstimatedPrice" class="control-label">Estimate Price*</label>
+                                <input name="Animals[${animalIndex}].EstimatedPrice" type="number" class="form-control mt-1" placeholder="Enter estimated price"/>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__HealthStatus" class="control-label">Health Status*</label>
+                                <select name="Animals[${animalIndex}].HealthStatus"
+                                                class="form-control"
+                                                data-live-search="true">
+                                    <option value="" disabled selected>Health Status</option>
+                                    @foreach (var item in ViewBag.HealthStatus)
+                                    {
+                                    <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__Description" class="control-label">Description</label>
+                                <textarea name="Animals[${animalIndex}].Description" class="form-control mt-1" placeholder="Enter description"></textarea>
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Animals_${animalIndex}__OriginCountry" class="control-label">Origin Country</label>
+                                <input name="Animals[${animalIndex}].OriginCountry" class="form-control mt-1" placeholder="Enter origin country"/>
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                             <div class="col-md-3">
+                                <label name="Animals_${animalIndex}__ImageUrl"class="control-label">Image</label>
+
+                                <img src="" id="animalImageDisplay_${animalIndex}" width="300px" class="mb-4" style="display:none" />
+
+                                <input type="button"
+                                       id="animalImageTarget_${animalIndex}"
+                                       value="Browse"
+                                       class="btn btn-success text-white fw-medium rounded me-2 mb-2 px-3 py-2 shadow"
+                                       style="background-color: #28a745; border: none;"
+                                       onclick="document.getElementById('file_${animalIndex}').click();" />
+                                <input
+                                    type="file" 
+                                    style="display:none;" 
+                                    id="file_${animalIndex}" 
+                                    onChange="handleImageAction(event, ${animalIndex})" />
+                            </div>
+                            <div>
+                                <input name="Animals[${animalIndex}].IsAvailable" value="true" type="hidden" />
+                                <input name="Animals[${animalIndex}].ImageUrl" id="imageReturnUrl_${animalIndex}" type="hidden" />
+                            <div/>
+                        </div>
+
+                        <button type="button" class="btn btn-danger remove-animal mt-3">Remove Animal</button>
+                    </div>
+                `;
+
+                // Insert HTMl code statement to animal container
+                container.insertAdjacentHTML('beforeend', newAnimalEntry);
+
+                // Refresh the selectpicker
+                $('.selectpicker').selectpicker('refresh');
+            });
+
+            document.addEventListener("click", function (e) {
+                if (e.target.classList.contains("remove-animal")) {
+                    e.target.closest(".animal-entry").remove();
+                }
+            });
+        }
+
+        async function handleImageAction(e, animalIndex) {
+            // Get handling image properties using jQuery
+            const $animalImageDisplay = $(`#animalImageDisplay_${animalIndex}`);
+            const $inputImageValue = $(`#imageReturnUrl_${animalIndex}`);
+
+            let data = new FormData();
+            data.append('file', e.target.files[0]);
+
+            $.ajax({
+                url: 'http://localhost:7000/api/images/upload',
+                type: "POST",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    $animalImageDisplay.css('display', 'block'); 
+                    $animalImageDisplay.attr('src', result.link);
+                    $inputImageValue.val(result.link);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                    console.log(error);
+                }
+            });
+        }
+        
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
