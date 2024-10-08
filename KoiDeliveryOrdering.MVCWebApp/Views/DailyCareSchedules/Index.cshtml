@@ -1,0 +1,95 @@
+﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.DailyCareScheduleModels>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskFrequency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecommendedValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TaskDuration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsCritical)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CaregiverName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastPerformedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CareTask)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliverOrderDetail)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaskFrequency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RecommendedValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TaskDuration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCritical)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CaregiverName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastPerformedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CareTask.TaskName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliverOrderDetail.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.DailyCareScheduleId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.DailyCareScheduleId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.DailyCareScheduleId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

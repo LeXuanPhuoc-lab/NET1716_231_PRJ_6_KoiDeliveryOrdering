@@ -53,19 +53,19 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
     public virtual DbSet<VoucherPromotion> VoucherPromotions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString(), o 
+        => optionsBuilder.UseSqlServer(GetConnectionString(), o
             => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-    
+
     private string GetConnectionString()
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
-        
+
         return configuration.GetConnectionString("DefaultConnectionString")!;
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>
@@ -174,6 +174,36 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.Unit)
                 .HasMaxLength(50)
                 .HasColumnName("unit");
+            entity.Property(e => e.Priority)
+                .HasMaxLength(20)
+                .HasColumnName("priority");
+
+            entity.Property(e => e.UpdateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.Property(e => e.DueDate)
+                .HasColumnType("datetime")
+                .HasColumnName("due_date");
+
+            entity.Property(e => e.AssignedTo)
+                .HasMaxLength(100)
+                .HasColumnName("assigned_to");
+
+            entity.Property(e => e.CompletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("completed_at");
+
+            entity.Property(e => e.IsRecurring)
+                .HasColumnName("is_recurring");
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500)
+                .HasColumnName("notes");
         });
 
         modelBuilder.Entity<DailyCareSchedule>(entity =>
