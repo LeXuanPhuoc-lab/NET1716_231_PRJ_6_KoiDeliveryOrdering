@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace KoiDeliveryOrdering.Data.Entities;
+﻿namespace KoiDeliveryOrdering.Data.Entities;
 
 public partial class CareTask
 {
@@ -12,6 +9,18 @@ public partial class CareTask
     public string? Description { get; set; }
 
     public string? Unit { get; set; }
+    public string? Priority { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdateAt { get; set; } = DateTime.Now;
+    public DateTime? DueDate { get; set; } // Ngày đến hạn của task
+
+    public string? AssignedTo { get; set; } // Người phụ trách thực hiện task
+
+    public DateTime? CompletedAt { get; set; } // Ngày hoàn thành task (nếu có)
+
+    public bool IsRecurring { get; set; } // Task có lặp lại không
+
+    public string? Notes { get; set; } // Ghi chú bổ sung cho task
 
     public virtual ICollection<DailyCareSchedule> DailyCareSchedules { get; set; } = new List<DailyCareSchedule>();
 }
