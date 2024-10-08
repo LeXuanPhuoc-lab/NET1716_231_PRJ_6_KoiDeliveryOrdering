@@ -31,4 +31,13 @@ public static class ApiRoute
         public const string GetAllCareTask = Base + "/care-task";
         public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
     }
+
+    public static class CareTask
+    {
+        public const string GetById = Base + "/care-task/{id}";
+        public const string GetAll = Base + "/care-task";
+        public const string Insert = Base + "/care-task/insert";
+        public const string Update = Base + "/care-task/update";
+        public const string Remove = Base + "/care-task/{id}/remove";
+    }
 }
