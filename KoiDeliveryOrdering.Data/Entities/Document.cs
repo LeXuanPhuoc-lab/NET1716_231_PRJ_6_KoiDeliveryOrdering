@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace KoiDeliveryOrdering.Data.Entities;
 
@@ -47,6 +48,7 @@ public partial class Document
 
     public decimal? AssurranceFee { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();
 
     public virtual ICollection<DocumentDetail> DocumentDetails { get; set; } = new List<DocumentDetail>();

@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 using KoiDeliveryOrdering.API.Extensions;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +58,8 @@ builder.Services.AddCors(p => p.AddPolicy("Cors", policy =>
 // Configure Mapster
 builder.Services.ConfigureMapster();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => 
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()

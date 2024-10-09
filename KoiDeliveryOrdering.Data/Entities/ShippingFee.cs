@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace KoiDeliveryOrdering.Data.Entities;
 
@@ -19,5 +20,6 @@ public partial class ShippingFee
 
     public string? EstimatedTime { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();
 }
