@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KoiDeliveryOrdering.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class DailyScheduleController : ControllerBase
     {

@@ -80,6 +80,8 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             if (!dbContext.Animals.Any()) await SeedAnimalsAsync();
             // Delivery Order Details
             if (!dbContext.DeliveryOrderDetails.Any()) await SeedDeliveryOrderDetailsAsync();
+            // Care Task
+            if (!dbContext.CareTasks.Any()) await SeedCareTasksAsync();
 
             // More seeding here...
             // Each table need to create private method to seeding data
@@ -530,6 +532,53 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
         await dbContext.Animals.AddRangeAsync(animals);
         await dbContext.SaveChangesAsync();
     }
+
+    private async Task SeedCareTasksAsync()
+    {
+        List<CareTask> careTasks = new()
+    {
+        new CareTask
+        {
+            TaskName = "Feed Dog",
+            Description = "Provide daily meals for the dog.",
+            Unit = "kg",
+            Priority = "High",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(1),
+            AssignedTo = "John Doe",
+            IsRecurring = true,
+            Notes = "Feed the dog twice a day.",
+        },
+        new CareTask
+        {
+            TaskName = "Groom Cat",
+            Description = "Regular grooming for the Persian cat.",
+            Unit = null,
+            Priority = "Medium",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(7),
+            AssignedTo = "Jane Smith",
+            IsRecurring = true,
+            Notes = "Groom the cat once a week.",
+        },
+        new CareTask
+        {
+            TaskName = "Clean Bird Cage",
+            Description = "Ensure the parrot's cage is clean.",
+            Unit = null,
+            Priority = "Low",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(2),
+            AssignedTo = "Jim Brown",
+            IsRecurring = false,
+            Notes = "Use disinfectant to clean the cage.",
+        }
+    };
+
+        await dbContext.CareTasks.AddRangeAsync(careTasks);
+        await dbContext.SaveChangesAsync();
+    }
+
 
     private async Task SeedDeliveryOrderDetailsAsync()
     {

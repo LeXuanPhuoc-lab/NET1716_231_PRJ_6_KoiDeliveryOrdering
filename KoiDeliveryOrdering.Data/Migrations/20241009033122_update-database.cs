@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InititalDatabase : Migration
+    public partial class updatedatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,15 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     task_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    priority = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    due_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    assigned_to = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    completed_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    is_recurring = table.Column<bool>(type: "bit", nullable: false),
+                    notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -446,7 +454,12 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     recommended_value = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
                     start_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     end_date = table.Column<DateTime>(type: "datetime", nullable: true),
-                    deliver_order_detail_id = table.Column<int>(type: "int", nullable: false)
+                    TaskDuration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsCritical = table.Column<bool>(type: "bit", nullable: false),
+                    deliver_order_detail_id = table.Column<int>(type: "int", nullable: false),
+                    CaregiverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastPerformedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
