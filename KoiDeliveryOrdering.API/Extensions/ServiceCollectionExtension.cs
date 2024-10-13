@@ -9,6 +9,8 @@ using KoiDeliveryOrdering.Data.Entities;
 using Mapster;
 using MapsterMapper;
 using System.Reflection;
+using KoiDeliveryOrdering.Service;
+using KoiDeliveryOrdering.Service.Interfaces;
 
 namespace KoiDeliveryOrdering.API.Extensions;
 
