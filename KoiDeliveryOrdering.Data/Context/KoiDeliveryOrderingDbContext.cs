@@ -259,7 +259,6 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.DeliveryOrderId)
                 .HasDefaultValueSql("(newsequentialid())")
                 .HasColumnName("delivery_order_id");
-            entity.Property(e => e.DocumentId).HasColumnName("document_id");
             entity.Property(e => e.IsInternational).HasColumnName("is_international");
             entity.Property(e => e.IsPurchased).HasColumnName("is_purchased");
             entity.Property(e => e.IsSenderPurchase).HasColumnName("is_sender_purchase");
@@ -303,10 +302,6 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             //    .HasForeignKey(d => d.CustomerId)
             //    .OnDelete(DeleteBehavior.ClientSetNull)
             //    .HasConstraintName("FK_DeliveryOrder_User");
-
-            entity.HasOne(d => d.Document).WithMany(p => p.DeliveryOrders)
-                .HasForeignKey(d => d.DocumentId)
-                .HasConstraintName("FK_DeliveryOrder_Document");
 
             entity.HasOne(d => d.Payment).WithMany(p => p.DeliveryOrders)
                 .HasForeignKey(d => d.PaymentId)
@@ -364,9 +359,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.HasIndex(e => e.DocumentNumber, "UQ__Document__C8FE0D8C5D2DDE9F").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AssurranceFee)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("assurrance_fee");
+
             entity.Property(e => e.ConsigneeAddress)
                 .HasMaxLength(155)
                 .HasColumnName("consignee_address");
@@ -415,9 +408,11 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.ShippingFee)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("shipping_fee");
-            entity.Property(e => e.TaxFee)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("tax_fee");
+            
+            entity.HasOne(d => d.DeliveryOrder).WithMany(p => p.Documents)
+                .HasForeignKey(d => d.DeliveryOrderId)
+                .HasConstraintName("FK_Document_DeliveryOrder");
+
             entity.Property(e => e.TransportationNo)
                 .HasMaxLength(50)
                 .HasColumnName("transportation_no");
