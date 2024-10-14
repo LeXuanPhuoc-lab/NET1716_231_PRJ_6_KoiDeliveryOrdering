@@ -129,6 +129,10 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                 return NotFound();
             }
 
+            ViewData["CareTaskId"] = new SelectList(await this.GetAllCareTaskAsync(), "CareTaskId", "TaskName");
+            ViewData["DeliverOrderDetailId"] = new SelectList(await this.GetAllDeliveryOrderDetailAsync(), "Id", "Id");
+            ViewData["CaregiverName"] = new SelectList(await this.GetAllStaffAsync(), "FullName", "FullName");
+
             return View(dailyCareSchedule);
         }
 

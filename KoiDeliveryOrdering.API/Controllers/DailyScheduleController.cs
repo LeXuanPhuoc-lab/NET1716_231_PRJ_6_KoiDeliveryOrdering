@@ -49,9 +49,11 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpPut(ApiRoute.DailyCareSchedule.Update)]
-        public async Task<IServiceResult> UpdateDailyCareScheduleAsync([FromBody] DailyCareSchedule req)
+        public async Task<IServiceResult> UpdateDailyCareScheduleAsync([FromBody] DailyCareScheduleRequest req)
         {
-            return await dailyCareScheduleService.UpdateAsync(req);
+            // Map to DailyCareSchedule entity
+            var dailyCareScheduleEntity = req.Adapt<DailyCareSchedule>();
+            return await dailyCareScheduleService.UpdateAsync(dailyCareScheduleEntity);
         }
 
         [HttpDelete(ApiRoute.DailyCareSchedule.Remove)]

@@ -39,7 +39,7 @@ namespace KoiDeliveryOrdering.Business
             try
             {
                 var dailyCareScheduleEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAndThenIncludeAsync(
-                    filter: null,
+                    filter: x => x.DailyCareScheduleId == id,
                     includes: new()
                     {
                     query => query.Include(u => u.CareTask)
