@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<KoiDeliveryOrdering.Data.Dtos.Documents.DocumentDto>
 
+@{
+    var index = 0;
+}
 
 <div class="container w-100">
     <h1>Document list</h1>
@@ -13,6 +16,7 @@
             <table class="table">
                 <thead>
                 <tr>
+                    <th></th>
                     <th class="text-nowrap">Id</th>
                     <th class="text-nowrap">Delivery order id</th>
                     <th class="text-nowrap">Document number</th>
@@ -35,6 +39,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td class="text-nowrap">
+                            <button style="width: 30px;height: 30px" id="show-button-@index" onclick="showDocumentDetails(@index)" class="btn btn-sm btn-primary fw-bold fs-5">+</button>
+                        </td>
                         <td class="text-nowrap">
                             @item.Id
                         </td>
@@ -85,9 +92,62 @@
                             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         </td>
                     </tr>
+
+                    <tr class="dd-item-@index d-none">
+                        <th></th>
+                        <th class="text-nowrap">Item name</th>
+                        <th class="text-nowrap">Item category</th>
+                        <th class="text-nowrap">Quantity</th>
+                        <th class="text-nowrap">Weight(kg)</th>
+                    </tr>
+
+                    @foreach (var documentDetail in item.DocumentDetails)
+                    {
+                        <tr class="dd-item-@index d-none">
+                            <td></td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemName
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemCategory
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemQuantity
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemWeight
+                            </td>
+                        </tr>
+                    }
+                    
+                    index++;
                 }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+
+@section Scripts {
+    <script>
+            const isShowDocumentDetails = Array(@Model.Count()).fill(false);
+            
+            function showDocumentDetails(index){
+                console.log(index)
+                isShowDocumentDetails[index]=!isShowDocumentDetails[index];
+                document.getElementById(`show-button-${index}`).innerHTML=isShowDocumentDetails[index]?"-":"+"
+                
+                if (isShowDocumentDetails[index])
+                {
+                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
+                        item.classList.remove("d-none");
+                    })
+                }else{
+                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
+                        item.classList.add("d-none");
+                    })
+                }
+            }
+    </script>
+}
