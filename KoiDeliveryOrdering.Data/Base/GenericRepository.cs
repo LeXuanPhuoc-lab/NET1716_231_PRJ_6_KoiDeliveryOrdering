@@ -3,10 +3,10 @@
 // using Microsoft.EntityFrameworkCore.Query;
 //
 
-using System.Linq.Expressions;
 using KoiDeliveryOrdering.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
 namespace KoiDeliveryOrdering.Data.Base;
 
@@ -35,7 +35,7 @@ public class GenericRepository<TEntity> where TEntity : class
     public TEntity? Find(params object[] keyValues)
     {
         var entity = _dbSet.Find(keyValues);
-        if(entity == null) return null;
+        if (entity == null) return null;
 
         if (_dbSet.Entry(entity).State == EntityState.Added)
         {
@@ -145,10 +145,10 @@ public class GenericRepository<TEntity> where TEntity : class
         IEnumerable<TEntity> result;
         if (orderBy != null)
             result = await orderBy(query).ToListAsync();
-        else       
+        else
             result = await query.ToListAsync();
 
-        if(!result.Any()) return new List<TEntity>();
+        if (!result.Any()) return new List<TEntity>();
 
         foreach (var entity in result)
         {
@@ -195,10 +195,42 @@ public class GenericRepository<TEntity> where TEntity : class
         return result;
     }
 
+    public async Task<TEntity?> FindOneWithConditionAndThenIncludeAsync(
+    Expression<Func<TEntity, bool>>? filter = null,
+    List<Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>>? includes = null)
+    {
+        IQueryable<TEntity> query = _dbSet.AsQueryable();
+
+        if (filter != null)
+            query = query.Where(filter);
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = include(query);
+
+                // Add AsSplitQuery when includes are present
+                query = query.AsSplitQuery();
+            }
+        }
+
+        // S? d?ng FirstOrDefaultAsync ?? tìm m?t ??i t??ng
+        var result = await query.FirstOrDefaultAsync();
+
+        if (result != null)
+        {
+            _dbSet.Entry(result).State = EntityState.Detached;
+        }
+
+        return result;
+    }
+
+
     #endregion
-    
+
     #region Insert/Update/Remove operations
-    
+
     public void PrepareInsert(TEntity entity)
     {
         _dbContext.Add(entity);
@@ -220,7 +252,7 @@ public class GenericRepository<TEntity> where TEntity : class
         await _dbContext.SaveChangesAsync();
     }
 
-  
+
     public void PrepareRemove(object id)
     {
         var entityToDelete = _dbSet.Find(id);

@@ -1,7 +1,10 @@
 ﻿using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.API.Payloads.Requests;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Data.Entities;
+using KoiDeliveryOrdering.Service.Interfaces;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiDeliveryOrdering.API.Controllers
@@ -12,12 +15,17 @@ namespace KoiDeliveryOrdering.API.Controllers
         private readonly IDailyCareScheduleService dailyCareScheduleService;
         private readonly IDeliveryOrderDetailService deliveryOrderDetailService;
         private readonly ICareTaskService careTaskService;
+        private readonly IStaffService staffService;
 
-        public DailyScheduleController(IDailyCareScheduleService dailyCareScheduleService, IDeliveryOrderDetailService deliveryOrderDetailService, ICareTaskService careTaskService)
+        public DailyScheduleController(IDailyCareScheduleService dailyCareScheduleService,
+            IDeliveryOrderDetailService deliveryOrderDetailService,
+            ICareTaskService careTaskService,
+            IStaffService staffService)
         {
             this.dailyCareScheduleService = dailyCareScheduleService;
             this.deliveryOrderDetailService = deliveryOrderDetailService;
             this.careTaskService = careTaskService;
+            this.staffService = staffService;
         }
 
         [HttpGet(ApiRoute.DailyCareSchedule.GetAll)]
@@ -33,9 +41,11 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpPost(ApiRoute.DailyCareSchedule.Insert)]
-        public async Task<IServiceResult> InsertDailyCareScheduleAsync([FromBody] DailyCareSchedule req)
+        public async Task<IServiceResult> InsertDailyCareScheduleAsync([FromBody] DailyCareScheduleRequest req)
         {
-            return await dailyCareScheduleService.InsertAsync(req);
+            // Map to DailyCareSchedule entity
+            var dailyCareScheduleEntity = req.Adapt<DailyCareSchedule>();
+            return await dailyCareScheduleService.InsertAsync(dailyCareScheduleEntity);
         }
 
         [HttpPut(ApiRoute.DailyCareSchedule.Update)]
@@ -60,6 +70,12 @@ namespace KoiDeliveryOrdering.API.Controllers
         public async Task<IServiceResult> GetAllDeliveryOrderDetailAsync()
         {
             return await deliveryOrderDetailService.FindAllAsync();
+        }
+
+        [HttpGet(ApiRoute.DailyCareSchedule.GetAllStaff)]
+        public async Task<IServiceResult> GetAllStaff()
+        {
+            return await staffService.FindAllAsync();
         }
 
     }
