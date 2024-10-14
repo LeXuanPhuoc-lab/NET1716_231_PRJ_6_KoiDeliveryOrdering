@@ -107,7 +107,7 @@
                 var lastPerformedDate = new Date($('#LastPerformedDate').val());
 
                 // Validate tất cả các trường required không được bỏ trống
-                if (!careTaskId || !taskFrequency || !recommendedValue || !startDate || !endDate || !taskDuration || !notes || !deliverOrderDetailId || !caregiverName || !lastPerformedDate) {
+                if (!careTaskId || !taskFrequency || !recommendedValue || !startDate || !endDate || !taskDuration || !notes || !deliverOrderDetailId || !caregiverName) {
                     alert('All fields are required.');
                     return;
                 }
@@ -118,10 +118,12 @@
                     return; // Ngăn không cho tiếp tục submit
                 }
 
-                // Validate LastPerformedDate phải lớn hơn EndDate
-                if (lastPerformedDate <= endDate) {
-                    alert('Last Performed Date must be greater than End Date.');
-                    return;
+                if (lastPerformedDate != null) {
+                    // Validate LastPerformedDate phải lớn hơn EndDate
+                    if (lastPerformedDate <= endDate) {
+                        alert('Last Performed Date must be greater than End Date.');
+                        return;
+                    }
                 }
 
                 // Validate các giá trị số không được nhỏ hơn 0
@@ -152,7 +154,7 @@
                     IsCritical: $('#IsCritical').is(':checked'),
                     DeliverOrderDetailId: deliverOrderDetailId,
                     CaregiverName: caregiverName,
-                    LastPerformedDate: $('#LastPerformedDate').val()
+                    LastPerformedDate: $('#LastPerformedDate').val() ? $('#LastPerformedDate').val() : null
                 };
 
                 // Gửi yêu cầu AJAX sau khi validate thành công
