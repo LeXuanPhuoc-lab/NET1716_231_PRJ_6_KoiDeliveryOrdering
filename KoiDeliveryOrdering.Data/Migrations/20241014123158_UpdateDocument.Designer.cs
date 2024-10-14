@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     [DbContext(typeof(KoiDeliveryOrderingDbContext))]
-    [Migration("20241013205522_UpdateDocument")]
+    [Migration("20241014123158_UpdateDocument")]
     partial class UpdateDocument
     {
         /// <inheritdoc />
@@ -1253,6 +1253,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.Document", "Document")
                         .WithMany("DocumentDetails")
                         .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_DocumentDetail_Document");
 

@@ -1250,6 +1250,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.Document", "Document")
                         .WithMany("DocumentDetails")
                         .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_DocumentDetail_Document");
 

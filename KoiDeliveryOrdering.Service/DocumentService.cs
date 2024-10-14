@@ -23,8 +23,31 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var documents = await _unitOfWork.DocumentRepository.FindAll(false).ToListAsync();
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, documents.ToList());
+                var documents = await _unitOfWork.DocumentRepository
+                    .FindAll(false)
+                    .Include(d => d.DocumentDetails)
+                    .ToListAsync();
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG,
+                    documents.Adapt<List<DocumentDto>>());
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult> GetById(int id)
+        {
+            try
+            {
+                var document = await _unitOfWork.DocumentRepository
+                    .FindByCondition(d => d.Id == id, false)
+                    .Include(d => d.DocumentDetails)
+                    .FirstOrDefaultAsync();
+                if (document is not null)
+                    return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG,
+                        document.Adapt<DocumentDto>());
+                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
             }
             catch (Exception ex)
             {
@@ -45,7 +68,7 @@ namespace KoiDeliveryOrdering.Service
                 var entity = dto.Adapt<Document>();
                 entity.ShippingFee = totalShippingFee;
                 entity.DocumentId = new Guid();
-                entity.DocumentNumber = "DOC" + ((long)new Random().Next(100000000, 1000000000)).ToString();
+                entity.DocumentNumber = "DOC" + ((long)new Random().Next(100000, 1000000)).ToString();
                 _unitOfWork.DocumentRepository.Create(entity);
                 await _unitOfWork.SaveAsync();
                 Console.WriteLine(entity);
@@ -57,18 +80,45 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<ServiceResult> UpdateDocument(Guid id, DocumentMutationDto dto)
+        public async Task<ServiceResult> UpdateDocument(int id, DocumentMutationDto dto)
         {
             try
             {
-                var entity = await _unitOfWork.DocumentRepository.FindByCondition(d => d.DocumentId == id, true)
+                var entity = await _unitOfWork.DocumentRepository.FindByCondition(d => d.Id == id, true)
                     .FirstOrDefaultAsync();
                 if (entity is null)
                     return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
 
+                decimal totalShippingFee = 0;
+                dto.DocumentDetails.ForEach(dd =>
+                {
+                    dd.ItemEstimatePrice = dd.ItemQuantity * dd.ItemWeight * Const.PRICE_PER_KILOGAM;
+                    totalShippingFee += dd.ItemEstimatePrice;
+                });
+
                 dto.Adapt(entity);
+                entity.ShippingFee = totalShippingFee;
                 await _unitOfWork.SaveAsync();
                 return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult> DeleteDocument(int id)
+        {
+            try
+            {
+                var entity = await _unitOfWork.DocumentRepository.FindByCondition(d => d.Id == id, true)
+                    .FirstOrDefaultAsync();
+                if (entity is null)
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+
+                _unitOfWork.DocumentRepository.PrepareRemove(entity);
+                await _unitOfWork.SaveAsync();
+                return new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG);
             }
             catch (Exception ex)
             {

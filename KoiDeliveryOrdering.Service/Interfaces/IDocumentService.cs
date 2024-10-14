@@ -6,7 +6,9 @@ namespace KoiDeliveryOrdering.Service.Interfaces
     public interface IDocumentService
     {
         Task<ServiceResult> GetAll();
+        Task<ServiceResult> GetById(int id);
         Task<ServiceResult> CreateDocument(DocumentMutationDto dto);
-        Task<ServiceResult> UpdateDocument(Guid id, DocumentMutationDto dto);
+        Task<ServiceResult> UpdateDocument(int id, DocumentMutationDto dto);
+        Task<ServiceResult> DeleteDocument(int id);
     }
 }

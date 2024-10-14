@@ -451,7 +451,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
 
             entity.HasOne(d => d.Document).WithMany(p => p.DocumentDetails)
                 .HasForeignKey(d => d.DocumentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_DocumentDetail_Document");
         });
 

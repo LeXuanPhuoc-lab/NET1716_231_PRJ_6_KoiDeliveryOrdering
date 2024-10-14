@@ -1,8 +1,8 @@
 ﻿@model KoiDeliveryOrdering.Data.Dtos.Documents.DocumentMutationDto
 
 <div class="container mt-5">
-    <h2 class="mb-4">Create document</h2>
-    <form asp-action="Create">
+    <h2 class="mb-4">Edit document</h2>
+    <form asp-action="Edit" asp-route-id="@ViewData["Id"]">
         <div class="row mb-3">
             <div class="col-md-4">
                 <label asp-for="DocumentType" class="control-label">Document type</label>
@@ -140,12 +140,12 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            var productIndex = @Model.DocumentDetails.Count;
+    $(document).ready(function () {
+        var productIndex = @Model.DocumentDetails.Count;
 
-            // Add new product row
-            $('#addDocumentDetail').click(function () {
-                var newRow = `
+        // Add new product row
+        $('#addDocumentDetail').click(function () {
+            var newRow = `
                                <tr>
                                 <td>
                                     <input name="DocumentDetails[${productIndex}].ItemName" class="form-control" />
@@ -167,33 +167,33 @@
                                     <button type="button" class="btn btn-danger remove-product">Remove</button>
                                 </td>
                             </tr>`;
-                $('#productsTable tbody').append(newRow);
-                productIndex++;
-            });
+            $('#productsTable tbody').append(newRow);
+            productIndex++;
+        });
 
-            // Remove product row
-            $(document).on('click', '.remove-product', function () {
-                $(this).closest('tr').remove();
-                
-                const rows = document.querySelectorAll("#productsTable tbody tr");
-                console.log(rows)
-                productIndex=rows.length;
-                console.log(productIndex)
-                const documentDetails = [];
-                
-                rows.forEach(r => {
-                    const inputs = r.querySelectorAll("input");
-                    documentDetails.push({
-                        itemName:inputs[0].value || "",
-                        itemCategory:inputs[1].value || "",
-                        quantity:inputs[2].value || "",
-                        weight:inputs[3].value || "",
-                    })
+        // Remove product row
+        $(document).on('click', '.remove-product', function () {
+            $(this).closest('tr').remove();
+
+            const rows = document.querySelectorAll("#productsTable tbody tr");
+            console.log(rows)
+            productIndex=rows.length;
+            console.log(productIndex)
+            const documentDetails = [];
+
+            rows.forEach(r => {
+                const inputs = r.querySelectorAll("input");
+                documentDetails.push({
+                    itemName:inputs[0].value || "",
+                    itemCategory:inputs[1].value || "",
+                    quantity:inputs[2].value || "",
+                    weight:inputs[3].value || "",
                 })
+            })
 
-                console.log(documentDetails)
+            console.log(documentDetails)
 
-                const newRows = documentDetails.map((dd, i) => 
+            const newRows = documentDetails.map((dd, i) =>
                 `<tr>
                     <td>
                         <input name="DocumentDetails[${i}].ItemName" value="${dd.itemName}" class="form-control" />
@@ -216,44 +216,49 @@
                     </td>
                 </tr>`).join("");
 
-                console.log(newRows)
-                $('#productsTable tbody').empty().append(newRows);
-            });
-
-
-            const dispatchMethod = document.getElementById("dispatch-method");
-            const transportType = document.getElementById("transportation-type");
-
-            // Define transportation types for each dispatch method
-            const transportOptions = {
-                road: ["Truck", "Van", "Lorry", "Container Truck", "Pickup Truck"],
-                rail: ["Freight Train", "Cargo Wagon", "Container Train", "Flatbed Railcar", "Boxcar"],
-                sea: ["Container Ship", "Bulk Carrier", "Tanker", "Cargo Ship", "Roll-on/Roll-off Ship (Ro-Ro)"],
-                air: ["Cargo Plane", "Freighter Aircraft", "Wide-body Aircraft", "Airbus A330 Freighter", "Boeing 747 Freighter"]
-            };
-
-            // Function to populate transport type options based on selected dispatch method
-            function updateTransportTypes() {
-                const selectedMethod = dispatchMethod.value;
-                const types = transportOptions[selectedMethod];
-
-                // Clear current transport type options
-                transportType.innerHTML = "";
-
-                // Populate new transport type options
-                types.forEach(function(type) {
-                    const option = document.createElement("option");
-                    option.value = type.toLowerCase().replace(/\s+/g, "-");
-                    option.textContent = type;
-                    transportType.appendChild(option);
-                });
-            }
-
-            // Initial load of transport types based on default selected method
-            updateTransportTypes();
-
-            // Update transport types when dispatch method changes
-            dispatchMethod.addEventListener("change", updateTransportTypes);
+            console.log(newRows)
+            $('#productsTable tbody').empty().append(newRows);
         });
-    </script>
+
+
+        const dispatchMethod = document.getElementById("dispatch-method");
+        const transportType = document.getElementById("transportation-type");
+
+        // Define transportation types for each dispatch method
+        const transportOptions = {
+            road: ["Truck", "Van", "Lorry", "Container Truck", "Pickup Truck"],
+            rail: ["Freight Train", "Cargo Wagon", "Container Train", "Flatbed Railcar", "Boxcar"],
+            sea: ["Container Ship", "Bulk Carrier", "Tanker", "Cargo Ship", "Roll-on/Roll-off Ship (Ro-Ro)"],
+            air: ["Cargo Plane", "Freighter Aircraft", "Wide-body Aircraft", "Airbus A330 Freighter", "Boeing 747 Freighter"]
+        };
+
+        // Function to populate transport type options based on selected dispatch method
+        function updateTransportTypes(init) {
+            const selectedMethod = dispatchMethod.value;
+            const types = transportOptions[selectedMethod];
+
+            // Clear current transport type options
+            transportType.innerHTML = "";
+
+            // Populate new transport type options
+            types.forEach(function(type) {
+                const option = document.createElement("option");
+                option.value = type.toLowerCase().replace(/\s+/g, "-");
+                option.textContent = type;
+                transportType.appendChild(option);
+            });
+            
+            if (init)
+            {
+                transportType.value="@Model.TransportationType"
+            }
+        }
+
+        // Initial load of transport types based on default selected method
+        updateTransportTypes(true);
+
+        // Update transport types when dispatch method changes
+        dispatchMethod.addEventListener("change", ()=>updateTransportTypes(false));
+    });
+</script>
 }

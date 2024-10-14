@@ -489,7 +489,8 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         name: "FK_DocumentDetail_Document",
                         column: x => x.document_id,
                         principalTable: "Document",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
