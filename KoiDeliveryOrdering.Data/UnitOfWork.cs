@@ -48,6 +48,8 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
 
     public TruckRepository TruckRepository
         => _truckRepository ??= new(unitOfWorkContext);
+    
+    public Task SaveAsync() => unitOfWorkContext.SaveChangesAsync();
 
     public StaffRepository StaffRepository
     => _staffRepository ??= new(unitOfWorkContext);

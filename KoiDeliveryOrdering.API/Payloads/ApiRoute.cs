@@ -48,6 +48,10 @@ public static class ApiRoute
     public static class Document
     {
         public const string GetAll = Base + "/documents";
+        public const string GetById = Base + "/documents/{id}";
+        public const string CreateDocument = Base + "/documents";
+        public const string UpdateDocument = Base + "/documents/{id}";
+        public const string DeleteDocument = Base + "/documents/{id}";
     }
 
     public static class Image

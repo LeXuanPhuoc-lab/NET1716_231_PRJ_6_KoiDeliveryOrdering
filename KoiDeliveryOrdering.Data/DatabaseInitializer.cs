@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KoiDeliveryOrdering.Data;
 
-
 public interface IDatabaseInitializer
 {
     Task InitializeAsync();
@@ -111,7 +110,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 Email = "admin@admin.com",
                 SenderInformations = new List<SenderInformation>()
                 {
-                    new ()
+                    new()
                     {
                         District = "ABC",
                         Latitude = 12,
@@ -122,7 +121,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                         Ward = "Random Ward",
                         SenderPhone = "0123456789"
                     },
-                    new ()
+                    new()
                     {
                         District = "ABC",
                         Latitude = 12,
@@ -658,8 +657,8 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             {
                 DocumentNumber = "DOC001",
                 DocumentType = "Invoice",
-                IssueDate = new DateTime(2023, 1, 15),
-                ExpirationDate = new DateTime(2024, 1, 15),
+                IssueDate = new DateOnly(2023, 1, 15),
+                ExpirationDate = new DateOnly(2024, 1, 15),
                 ConsigneeName = "ABC Company",
                 ConsigneePhone = "+1234567890",
                 ConsigneeAddress = "123 Main Street, Springfield",
@@ -667,20 +666,19 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+1987654321",
                 ExporterAddress = "789 Business Rd, Shelbyville",
                 DispatchMethod = "Air",
-                FinalDestination = "New York, USA",
-                TransportationNo = "TRANS001",
+                // FinalDestination = "New York, USA",
+                // TransportationNo = "TRANS001",
                 TransportationType = "Airplane",
-                PortOfLoading = "London Heathrow Airport",
-                PortOfDischarge = "JFK International Airport",
-                TaxFee = 500.00m,
+                // PortOfLoading = "London Heathrow Airport",
+                // PortOfDischarge = "JFK International Airport",
+
                 ShippingFee = 1500.00m,
-                AssurranceFee = 250.00m
             },
             new Document
             {
                 DocumentNumber = "DOC002",
                 DocumentType = "Packing List",
-                IssueDate = new DateTime(2023, 2, 1),
+                IssueDate = new DateOnly(2023, 2, 1),
                 ExpirationDate = null,
                 ConsigneeName = "XYZ Industries",
                 ConsigneePhone = "+9876543210",
@@ -689,21 +687,20 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+1234098765",
                 ExporterAddress = "12 Logistic Ln, Gotham City",
                 DispatchMethod = "Sea",
-                FinalDestination = "San Francisco, USA",
-                TransportationNo = "TRANS002",
+                // FinalDestination = "San Francisco, USA",
+                // TransportationNo = "TRANS002",
                 TransportationType = "Ship",
-                PortOfLoading = "Port of Rotterdam",
-                PortOfDischarge = "Port of Oakland",
-                TaxFee = 350.00m,
+                // PortOfLoading = "Port of Rotterdam",
+                // PortOfDischarge = "Port of Oakland",
+
                 ShippingFee = 2000.00m,
-                AssurranceFee = 300.00m
             },
             new Document
             {
                 DocumentNumber = "DOC003",
                 DocumentType = "Bill of Lading",
-                IssueDate = new DateTime(2023, 3, 10),
-                ExpirationDate = new DateTime(2023, 9, 10),
+                IssueDate = new DateOnly(2023, 3, 10),
+                ExpirationDate = new DateOnly(2023, 9, 10),
                 ConsigneeName = "PQR Traders",
                 ConsigneePhone = "+1122334455",
                 ConsigneeAddress = "789 Market St, Star City",
@@ -711,20 +708,19 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+9988776655",
                 ExporterAddress = "99 Export Blvd, Central City",
                 DispatchMethod = "Road",
-                FinalDestination = "Chicago, USA",
-                TransportationNo = "TRANS003",
+                // FinalDestination = "Chicago, USA",
+                // TransportationNo = "TRANS003",
                 TransportationType = "Truck",
-                PortOfLoading = "Houston Port",
-                PortOfDischarge = "Chicago Terminal",
-                TaxFee = 250.00m,
+                // PortOfLoading = "Houston Port",
+                // PortOfDischarge = "Chicago Terminal",
+
                 ShippingFee = 1200.00m,
-                AssurranceFee = 200.00m
             },
             new Document
             {
                 DocumentNumber = "DOC004",
                 DocumentType = "Certificate of Origin",
-                IssueDate = new DateTime(2023, 4, 5),
+                IssueDate = new DateOnly(2023, 4, 5),
                 ExpirationDate = null,
                 ConsigneeName = "LMN Enterprises",
                 ConsigneePhone = "+1029384756",
@@ -733,21 +729,20 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+5647382910",
                 ExporterAddress = "55 Heritage St, Emerald City",
                 DispatchMethod = "Rail",
-                FinalDestination = "Dallas, USA",
-                TransportationNo = "TRANS004",
+                // FinalDestination = "Dallas, USA",
+                // TransportationNo = "TRANS004",
                 TransportationType = "Train",
-                PortOfLoading = "Los Angeles Terminal",
-                PortOfDischarge = "Dallas Terminal",
-                TaxFee = 400.00m,
+                // PortOfLoading = "Los Angeles Terminal",
+                // PortOfDischarge = "Dallas Terminal",
+
                 ShippingFee = 800.00m,
-                AssurranceFee = 150.00m
             },
             new Document
             {
                 DocumentNumber = "DOC005",
                 DocumentType = "Commercial Invoice",
-                IssueDate = new DateTime(2023, 5, 18),
-                ExpirationDate = new DateTime(2024, 5, 18),
+                IssueDate = new DateOnly(2023, 5, 18),
+                ExpirationDate = new DateOnly(2024, 5, 18),
                 ConsigneeName = "RST Company",
                 ConsigneePhone = "+6758493021",
                 ConsigneeAddress = "45 Trade Dr, Gotham City",
@@ -755,20 +750,19 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+7849301023",
                 ExporterAddress = "600 Export Way, Metropolis",
                 DispatchMethod = "Air",
-                FinalDestination = "Seattle, USA",
-                TransportationNo = "TRANS005",
+                // FinalDestination = "Seattle, USA",
+                // TransportationNo = "TRANS005",
                 TransportationType = "Airplane",
-                PortOfLoading = "Paris Charles de Gaulle Airport",
-                PortOfDischarge = "Seattle-Tacoma International Airport",
-                TaxFee = 600.00m,
+                // PortOfLoading = "Paris Charles de Gaulle Airport",
+                // PortOfDischarge = "Seattle-Tacoma International Airport",
+
                 ShippingFee = 1700.00m,
-                AssurranceFee = 350.00m
             },
             new Document
             {
                 DocumentNumber = "DOC006",
                 DocumentType = "Export Declaration",
-                IssueDate = new DateTime(2023, 6, 25),
+                IssueDate = new DateOnly(2023, 6, 25),
                 ExpirationDate = null,
                 ConsigneeName = "UVW Group",
                 ConsigneePhone = "+1231231234",
@@ -777,21 +771,20 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+3213214321",
                 ExporterAddress = "99 Export Street, Central City",
                 DispatchMethod = "Sea",
-                FinalDestination = "Miami, USA",
-                TransportationNo = "TRANS006",
+                // FinalDestination = "Miami, USA",
+                // TransportationNo = "TRANS006",
                 TransportationType = "Ship",
-                PortOfLoading = "Shanghai Port",
-                PortOfDischarge = "Port of Miami",
-                TaxFee = 500.00m,
+                // PortOfLoading = "Shanghai Port",
+                // PortOfDischarge = "Port of Miami",
+
                 ShippingFee = 2500.00m,
-                AssurranceFee = 400.00m
             },
             new Document
             {
                 DocumentNumber = "DOC007",
                 DocumentType = "Insurance Certificate",
-                IssueDate = new DateTime(2023, 7, 12),
-                ExpirationDate = new DateTime(2024, 7, 12),
+                IssueDate = new DateOnly(2023, 7, 12),
+                ExpirationDate = new DateOnly(2024, 7, 12),
                 ConsigneeName = "DEF Logistics",
                 ConsigneePhone = "+4564564567",
                 ConsigneeAddress = "23 Shipping Lane, Keystone City",
@@ -799,20 +792,19 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+6546547654",
                 ExporterAddress = "32 Insurance Blvd, Star City",
                 DispatchMethod = "Road",
-                FinalDestination = "Los Angeles, USA",
-                TransportationNo = "TRANS007",
+                // FinalDestination = "Los Angeles, USA",
+                // TransportationNo = "TRANS007",
                 TransportationType = "Truck",
-                PortOfLoading = "Houston Port",
-                PortOfDischarge = "Los Angeles Terminal",
-                TaxFee = 300.00m,
+                // PortOfLoading = "Houston Port",
+                // PortOfDischarge = "Los Angeles Terminal",
+
                 ShippingFee = 1000.00m,
-                AssurranceFee = 250.00m
             },
             new Document
             {
                 DocumentNumber = "DOC008",
                 DocumentType = "Shipping Order",
-                IssueDate = new DateTime(2023, 8, 20),
+                IssueDate = new DateOnly(2023, 8, 20),
                 ExpirationDate = null,
                 ConsigneeName = "GHI Retailers",
                 ConsigneePhone = "+7897897890",
@@ -821,21 +813,20 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+8908908901",
                 ExporterAddress = "77 Global Rd, Emerald City",
                 DispatchMethod = "Air",
-                FinalDestination = "Denver, USA",
-                TransportationNo = "TRANS008",
+                // FinalDestination = "Denver, USA",
+                // TransportationNo = "TRANS008",
                 TransportationType = "Airplane",
-                PortOfLoading = "Frankfurt Airport",
-                PortOfDischarge = "Denver International Airport",
-                TaxFee = 700.00m,
+                // PortOfLoading = "Frankfurt Airport",
+                // PortOfDischarge = "Denver International Airport",
+
                 ShippingFee = 1800.00m,
-                AssurranceFee = 300.00m
             },
             new Document
             {
                 DocumentNumber = "DOC009",
                 DocumentType = "Proforma Invoice",
-                IssueDate = new DateTime(2023, 9, 5),
-                ExpirationDate = new DateTime(2024, 9, 5),
+                IssueDate = new DateOnly(2023, 9, 5),
+                ExpirationDate = new DateOnly(2024, 9, 5),
                 ConsigneeName = "JKL Suppliers",
                 ConsigneePhone = "+0980980987",
                 ConsigneeAddress = "88 Supplier St, Metropolis",
@@ -843,20 +834,19 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+8768768765",
                 ExporterAddress = "123 Export Avenue, Gotham City",
                 DispatchMethod = "Rail",
-                FinalDestination = "Boston, USA",
-                TransportationNo = "TRANS009",
+                // FinalDestination = "Boston, USA",
+                // TransportationNo = "TRANS009",
                 TransportationType = "Train",
-                PortOfLoading = "Vancouver Terminal",
-                PortOfDischarge = "Boston Terminal",
-                TaxFee = 450.00m,
+                // PortOfLoading = "Vancouver Terminal",
+                // PortOfDischarge = "Boston Terminal",
+
                 ShippingFee = 900.00m,
-                AssurranceFee = 180.00m
             },
             new Document
             {
                 DocumentNumber = "DOC010",
                 DocumentType = "Inspection Certificate",
-                IssueDate = new DateTime(2023, 10, 15),
+                IssueDate = new DateOnly(2023, 10, 15),
                 ExpirationDate = null,
                 ConsigneeName = "MNO Warehousing",
                 ConsigneePhone = "+6543219870",
@@ -865,14 +855,13 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterPhone = "+3459872345",
                 ExporterAddress = "456 Verification Ln, Central City",
                 DispatchMethod = "Sea",
-                FinalDestination = "Houston, USA",
-                TransportationNo = "TRANS010",
+                // FinalDestination = "Houston, USA",
+                // TransportationNo = "TRANS010",
                 TransportationType = "Ship",
-                PortOfLoading = "Port of Singapore",
-                PortOfDischarge = "Port of Houston",
-                TaxFee = 380.00m,
+                // PortOfLoading = "Port of Singapore",
+                // PortOfDischarge = "Port of Houston",
+
                 ShippingFee = 2200.00m,
-                AssurranceFee = 320.00m
             }
         };
 
@@ -899,53 +888,53 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
     private async Task SeedAnimalsAsync()
     {
         List<Animal> animals = new()
-    {
-        new Animal
         {
-            AnimalId = Guid.NewGuid(),
-            Breed = "Golden Retriever",
-            ColorPattern = "Golden",
-            Size = 30.5m,
-            Age = 2,
-            EstimatedPrice = 1200.50m,
-            HealthStatus = "Healthy",
-            IsAvailable = true,
-            OriginCountry = "USA",
-            Description = "Friendly and intelligent dog.",
-            ImageUrl = "https://example.com/golden_retriever.jpg",
-            AnimalTypeId = 1 // Giả sử AnimalTypeId = 1 là Dog
-        },
-        new Animal
-        {
-            AnimalId = Guid.NewGuid(),
-            Breed = "Persian",
-            ColorPattern = "White",
-            Size = 10.3m,
-            Age = 3,
-            EstimatedPrice = 800.00m,
-            HealthStatus = "Healthy",
-            IsAvailable = true,
-            OriginCountry = "Iran",
-            Description = "Calm and loving cat.",
-            ImageUrl = "https://example.com/persian_cat.jpg",
-            AnimalTypeId = 2 // Giả sử AnimalTypeId = 2 là Cat
-        },
-        new Animal
-        {
-            AnimalId = Guid.NewGuid(),
-            Breed = "Parrot",
-            ColorPattern = "Green",
-            Size = 0.8m,
-            Age = 1,
-            EstimatedPrice = 300.00m,
-            HealthStatus = "Healthy",
-            IsAvailable = true,
-            OriginCountry = "Australia",
-            Description = "Talkative and colorful bird.",
-            ImageUrl = "https://example.com/parrot.jpg",
-            AnimalTypeId = 3 // Giả sử AnimalTypeId = 3 là Bird
-        }
-    };
+            new Animal
+            {
+                AnimalId = Guid.NewGuid(),
+                Breed = "Golden Retriever",
+                ColorPattern = "Golden",
+                Size = 30.5m,
+                Age = 2,
+                EstimatedPrice = 1200.50m,
+                HealthStatus = "Healthy",
+                IsAvailable = true,
+                OriginCountry = "USA",
+                Description = "Friendly and intelligent dog.",
+                ImageUrl = "https://example.com/golden_retriever.jpg",
+                AnimalTypeId = 1 // Giả sử AnimalTypeId = 1 là Dog
+            },
+            new Animal
+            {
+                AnimalId = Guid.NewGuid(),
+                Breed = "Persian",
+                ColorPattern = "White",
+                Size = 10.3m,
+                Age = 3,
+                EstimatedPrice = 800.00m,
+                HealthStatus = "Healthy",
+                IsAvailable = true,
+                OriginCountry = "Iran",
+                Description = "Calm and loving cat.",
+                ImageUrl = "https://example.com/persian_cat.jpg",
+                AnimalTypeId = 2 // Giả sử AnimalTypeId = 2 là Cat
+            },
+            new Animal
+            {
+                AnimalId = Guid.NewGuid(),
+                Breed = "Parrot",
+                ColorPattern = "Green",
+                Size = 0.8m,
+                Age = 1,
+                EstimatedPrice = 300.00m,
+                HealthStatus = "Healthy",
+                IsAvailable = true,
+                OriginCountry = "Australia",
+                Description = "Talkative and colorful bird.",
+                ImageUrl = "https://example.com/parrot.jpg",
+                AnimalTypeId = 3 // Giả sử AnimalTypeId = 3 là Bird
+            }
+        };
 
         await dbContext.Animals.AddRangeAsync(animals);
         await dbContext.SaveChangesAsync();
@@ -1014,10 +1003,11 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 deliveryOrderDetails.Add(new DeliveryOrderDetail
                 {
                     DeliveryOrderDetailId = Guid.NewGuid(),
-                    AnimalId = animals[rnd.Next(animals.Count)].Id,  // Chọn một con vật ngẫu nhiên
+                    AnimalId = animals[rnd.Next(animals.Count)].Id, // Chọn một con vật ngẫu nhiên
                     DeliveryOrderId = deliveryOrder.Id,
                     PreDeliveryHealthStatus = "Healthy", // Thông tin sức khỏe trước khi giao
-                    PostDeliveryHealthStatus = i % 2 == 0 ? "Healthy" : "Tired", // Thông tin sức khỏe sau khi giao (ngẫu nhiên)
+                    PostDeliveryHealthStatus =
+                        i % 2 == 0 ? "Healthy" : "Tired", // Thông tin sức khỏe sau khi giao (ngẫu nhiên)
                 });
             }
         }

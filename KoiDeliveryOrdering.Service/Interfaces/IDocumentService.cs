@@ -1,16 +1,14 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
-using KoiDeliveryOrdering.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KoiDeliveryOrdering.Data.Dtos.Documents;
 
-namespace KoiDeliveryOrdering.Business.Interfaces
+namespace KoiDeliveryOrdering.Service.Interfaces
 {
     public interface IDocumentService
     {
-        Task<ServiceResult> GetAllAsync();
-
-	}
+        Task<ServiceResult> GetAll();
+        Task<ServiceResult> GetById(int id);
+        Task<ServiceResult> CreateDocument(DocumentMutationDto dto);
+        Task<ServiceResult> UpdateDocument(int id, DocumentMutationDto dto);
+        Task<ServiceResult> DeleteDocument(int id);
+    }
 }

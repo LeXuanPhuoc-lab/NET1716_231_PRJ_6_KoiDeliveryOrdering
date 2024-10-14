@@ -195,6 +195,20 @@ public class GenericRepository<TEntity> where TEntity : class
         return result;
     }
 
+    public IQueryable<TEntity> FindAll(bool trackChanges) =>
+        !trackChanges
+            ? _dbContext.Set<TEntity>()
+                .AsNoTracking()
+            : _dbContext.Set<TEntity>();
+
+    public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges) =>
+        !trackChanges
+            ? _dbContext.Set<TEntity>()
+                .Where(expression)
+                .AsNoTracking()
+            : _dbContext.Set<TEntity>()
+                .Where(expression);
+
     public async Task<TEntity?> FindOneWithConditionAndThenIncludeAsync(
     Expression<Func<TEntity, bool>>? filter = null,
     List<Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>>? includes = null)
@@ -215,7 +229,7 @@ public class GenericRepository<TEntity> where TEntity : class
             }
         }
 
-        // S? d?ng FirstOrDefaultAsync ?? tìm m?t ??i t??ng
+        // S? d?ng FirstOrDefaultAsync ?? tï¿½m m?t ??i t??ng
         var result = await query.FirstOrDefaultAsync();
 
         if (result != null)
@@ -231,10 +245,13 @@ public class GenericRepository<TEntity> where TEntity : class
 
     #region Insert/Update/Remove operations
 
+    public void Create(TEntity entity) => _dbContext.Set<TEntity>().Add(entity);
+
     public void PrepareInsert(TEntity entity)
     {
-        _dbContext.Add(entity);
+        _dbSet.Add(entity);
     }
+
     public async Task PrepareInsertAsync(TEntity entity)
     {
         await _dbContext.AddAsync(entity);
@@ -252,17 +269,20 @@ public class GenericRepository<TEntity> where TEntity : class
         await _dbContext.SaveChangesAsync();
     }
 
+    public void PrepareRemove(TEntity entity) => _dbSet.Remove(entity);
 
     public void PrepareRemove(object id)
     {
         var entityToDelete = _dbSet.Find(id);
         if (entityToDelete != null) PerformRemove(entityToDelete);
     }
+
     public async Task PrepareRemoveAsync(object id)
     {
         var entityToDelete = await _dbSet.FindAsync(id);
         if (entityToDelete != null) PerformRemove(entityToDelete);
     }
+
     private void PerformRemove(TEntity entityToDelete)
     {
         if (_dbContext.Entry(entityToDelete).State == EntityState.Detached)
@@ -278,6 +298,7 @@ public class GenericRepository<TEntity> where TEntity : class
         var tracker = _dbContext.Attach(entity);
         tracker.State = EntityState.Modified;
     }
+
     public async Task UpdateAsync(TEntity entityToUpdate, bool saveChanges = false)
     {
         _dbSet.Attach(entityToUpdate);
