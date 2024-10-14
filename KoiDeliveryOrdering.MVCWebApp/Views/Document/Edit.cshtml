@@ -1,4 +1,6 @@
-﻿@model KoiDeliveryOrdering.Data.Dtos.Documents.DocumentMutationDto
+﻿@using KoiDeliveryOrdering.Common
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model KoiDeliveryOrdering.Data.Dtos.Documents.DocumentMutationDto
 
 <div class="container mt-5">
     <h2 class="mb-4">Edit document</h2>
@@ -86,7 +88,7 @@
             </div>
         </div>
 
-        <h3 class="mt-4 mb-3">Document details</h3>
+        <label asp-for="DocumentDetails" class="control-label">Document details</label>
 
         <button id="addDocumentDetail" style="width: 100%;border: solid black 1px" type="button" class="btn btn-outline mb-3 w-full">
             Add document detail
@@ -98,7 +100,7 @@
                 <th>Item name</th>
                 <th>Item category</th>
                 <th>Quantity</th>
-                <th>Weight</th>
+                <th>Weight(kg)</th>
                 <th></th>
             </tr>
             </thead>
@@ -130,6 +132,12 @@
             </tbody>
         </table>
 
+        <div class="d-flex align-items-center gap-2">
+            <label class="control-label mt-1">Shipping fee:</label>
+            <div id="shipping-fee-value">0đ</div>
+            <button id="shipping-fee-button" class="btn btn-info btn-sm">Recalculated</button>
+        </div>
+
         <div class="row">
             <div class="col mt-2">
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -140,75 +148,87 @@
 
 @section Scripts {
     <script>
-    $(document).ready(function () {
-        var productIndex = @Model.DocumentDetails.Count;
 
-        // Add new product row
-        $('#addDocumentDetail').click(function () {
-            var newRow = `
+        function formatPrice(num) {
+            // Convert number to string and reverse it for easier grouping
+            const reversedNumStr = Math.round(num).toString().split("").reverse().join("")
+
+            // Add dots every three digits
+            const groupedStr = reversedNumStr.replace(/\d{3}(?=\d)/g, "$&.")
+
+            // Reverse the string back to its original order and return
+            return groupedStr.split("").reverse().join("")+"đ"
+        }
+        
+        $(document).ready(function () {
+            var productIndex = @Model.DocumentDetails.Count;
+
+            // Add new product row
+            $('#addDocumentDetail').click(function () {
+                var newRow = `
                                <tr>
                                 <td>
-                                    <input name="DocumentDetails[${productIndex}].ItemName" class="form-control" />
+                                    <input placeholder="Item name..." name="DocumentDetails[${productIndex}].ItemName" class="form-control" />
                                     <span asp-validation-for="DocumentDetails[${productIndex}].ItemName" class="text-danger"></span>
                                 </td>
                                 <td>
-                                    <input name="DocumentDetails[${productIndex}].ItemCategory" class="form-control" />
+                                    <input placeholder="Item category..." name="DocumentDetails[${productIndex}].ItemCategory" class="form-control" />
                                     <span asp-validation-for="DocumentDetails[${productIndex}].ItemCategory" class="text-danger"></span>
                                 </td>
                                 <td>
-                                    <input name="DocumentDetails[${productIndex}].ItemQuantity" class="form-control" />
+                                    <input placeholder="Quantity..." name="DocumentDetails[${productIndex}].ItemQuantity" class="form-control" />
                                     <span asp-validation-for="DocumentDetails[${productIndex}].ItemQuantity" class="text-danger"></span>
                                 </td>
                                 <td>
-                                    <input name="DocumentDetails[${productIndex}].ItemWeight" class="form-control" />
+                                    <input placeholder="Weight..." name="DocumentDetails[${productIndex}].ItemWeight" class="form-control" />
                                     <span asp-validation-for="DocumentDetails[${productIndex}].ItemWeight" class="text-danger"></span>
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-danger remove-product">Remove</button>
                                 </td>
                             </tr>`;
-            $('#productsTable tbody').append(newRow);
-            productIndex++;
-        });
+                $('#productsTable tbody').append(newRow);
+                productIndex++;
+            });
 
-        // Remove product row
-        $(document).on('click', '.remove-product', function () {
-            $(this).closest('tr').remove();
-
-            const rows = document.querySelectorAll("#productsTable tbody tr");
-            console.log(rows)
-            productIndex=rows.length;
-            console.log(productIndex)
-            const documentDetails = [];
-
-            rows.forEach(r => {
-                const inputs = r.querySelectorAll("input");
-                documentDetails.push({
-                    itemName:inputs[0].value || "",
-                    itemCategory:inputs[1].value || "",
-                    quantity:inputs[2].value || "",
-                    weight:inputs[3].value || "",
+            // Remove product row
+            $(document).on('click', '.remove-product', function () {
+                $(this).closest('tr').remove();
+                
+                const rows = document.querySelectorAll("#productsTable tbody tr");
+                console.log(rows)
+                productIndex=rows.length;
+                console.log(productIndex)
+                const documentDetails = [];
+                
+                rows.forEach(r => {
+                    const inputs = r.querySelectorAll("input.form-control");
+                    documentDetails.push({
+                        itemName:inputs[0].value || "",
+                        itemCategory:inputs[1].value || "",
+                        quantity:inputs[2].value || "",
+                        weight:inputs[3].value || "",
+                    })
                 })
-            })
 
-            console.log(documentDetails)
+                console.log(documentDetails)
 
-            const newRows = documentDetails.map((dd, i) =>
+                const newRows = documentDetails.map((dd, i) => 
                 `<tr>
                     <td>
-                        <input name="DocumentDetails[${i}].ItemName" value="${dd.itemName}" class="form-control" />
+                        <input placeholder="Item name..." name="DocumentDetails[${i}].ItemName" value="${dd.itemName}" class="form-control" />
                         <span asp-validation-for="DocumentDetails[${i}].ItemName" class="text-danger"></span>
                     </td>
                     <td>
-                        <input name="DocumentDetails[${i}].ItemCategory" value="${dd.itemCategory}" class="form-control" />
+                        <input placeholder="Item category..." name="DocumentDetails[${i}].ItemCategory" value="${dd.itemCategory}" class="form-control" />
                         <span asp-validation-for="DocumentDetails[${i}].ItemCategory" class="text-danger"></span>
                     </td>
                     <td>
-                        <input name="DocumentDetails[${i}].ItemQuantity" value="${dd.quantity}" class="form-control" />
+                        <input placeholder=Quantity..." name="DocumentDetails[${i}].ItemQuantity" value="${dd.quantity}" class="form-control" />
                         <span asp-validation-for="DocumentDetails[${i}].ItemQuantity" class="text-danger"></span>
                     </td>
                     <td>
-                        <input name="DocumentDetails[${i}].ItemWeight" value="${dd.weight}" class="form-control" />
+                        <input placeholder="Weight..." name="DocumentDetails[${i}].ItemWeight" value="${dd.weight}" class="form-control" />
                         <span asp-validation-for="DocumentDetails[${i}].ItemWeight" class="text-danger"></span>
                     </td>
                     <td>
@@ -216,49 +236,70 @@
                     </td>
                 </tr>`).join("");
 
-            console.log(newRows)
-            $('#productsTable tbody').empty().append(newRows);
-        });
-
-
-        const dispatchMethod = document.getElementById("dispatch-method");
-        const transportType = document.getElementById("transportation-type");
-
-        // Define transportation types for each dispatch method
-        const transportOptions = {
-            road: ["Truck", "Van", "Lorry", "Container Truck", "Pickup Truck"],
-            rail: ["Freight Train", "Cargo Wagon", "Container Train", "Flatbed Railcar", "Boxcar"],
-            sea: ["Container Ship", "Bulk Carrier", "Tanker", "Cargo Ship", "Roll-on/Roll-off Ship (Ro-Ro)"],
-            air: ["Cargo Plane", "Freighter Aircraft", "Wide-body Aircraft", "Airbus A330 Freighter", "Boeing 747 Freighter"]
-        };
-
-        // Function to populate transport type options based on selected dispatch method
-        function updateTransportTypes(init) {
-            const selectedMethod = dispatchMethod.value;
-            const types = transportOptions[selectedMethod];
-
-            // Clear current transport type options
-            transportType.innerHTML = "";
-
-            // Populate new transport type options
-            types.forEach(function(type) {
-                const option = document.createElement("option");
-                option.value = type.toLowerCase().replace(/\s+/g, "-");
-                option.textContent = type;
-                transportType.appendChild(option);
+                console.log(newRows)
+                $('#productsTable tbody').empty().append(newRows);
             });
-            
-            if (init)
-            {
-                transportType.value="@Model.TransportationType"
+
+
+            const dispatchMethod = document.getElementById("dispatch-method");
+            const transportType = document.getElementById("transportation-type");
+
+            // Define transportation types for each dispatch method
+            const transportOptions = {
+                road: ["Truck", "Van", "Lorry", "Container Truck", "Pickup Truck"],
+                rail: ["Freight Train", "Cargo Wagon", "Container Train", "Flatbed Railcar", "Boxcar"],
+                sea: ["Container Ship", "Bulk Carrier", "Tanker", "Cargo Ship", "Roll-on/Roll-off Ship (Ro-Ro)"],
+                air: ["Cargo Plane", "Freighter Aircraft", "Wide-body Aircraft", "Airbus A330 Freighter", "Boeing 747 Freighter"]
+            };
+
+            // Function to populate transport type options based on selected dispatch method
+            function updateTransportTypes() {
+                const selectedMethod = dispatchMethod.value;
+                const types = transportOptions[selectedMethod];
+
+                // Clear current transport type options
+                transportType.innerHTML = "";
+
+                // Populate new transport type options
+                types.forEach(function(type) {
+                    const option = document.createElement("option");
+                    option.value = type.toLowerCase().replace(/\s+/g, "-");
+                    option.textContent = type;
+                    transportType.appendChild(option);
+                });
             }
-        }
 
-        // Initial load of transport types based on default selected method
-        updateTransportTypes(true);
+            // Initial load of transport types based on default selected method
+            updateTransportTypes();
 
-        // Update transport types when dispatch method changes
-        dispatchMethod.addEventListener("change", ()=>updateTransportTypes(false));
-    });
-</script>
+            // Update transport types when dispatch method changes
+            dispatchMethod.addEventListener("change", updateTransportTypes);
+
+            function updateShippingFee(e)
+            {
+                e?.preventDefault()
+                e?.stopPropagation()
+                const rows = document.querySelectorAll("#productsTable tbody tr");
+                let shippingFee = 0;
+
+                rows.forEach(r => {
+                    const inputs = r.querySelectorAll("input.form-control");
+                    console.log(inputs[2])
+                    console.log(inputs[3])
+                    console.log(@Const.PRICE_PER_KILOGAM)
+                    shippingFee+= (Number(inputs[2].value)||0)*(Number(inputs[3].value)||0)*@Const.PRICE_PER_KILOGAM
+                })
+
+                console.log(rows)
+                console.log(shippingFee)
+
+                $("#shipping-fee-value").empty().append(formatPrice(shippingFee))
+            }
+
+            updateShippingFee()
+
+            $(document).on('click', '#shipping-fee-button',updateShippingFee)
+        });
+    
+    </script>
 }

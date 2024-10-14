@@ -22,6 +22,7 @@ public record DocumentMutationDto
 
     [Required]
     [DisplayName("Consignee phone")]
+    [RegularExpression(@"^(\+84|0)[1-9]\d{8}$", ErrorMessage = "Consignee phone is invalid")]
     public string? ConsigneePhone { get; set; }
 
     [Required]
@@ -34,6 +35,7 @@ public record DocumentMutationDto
 
     [Required]
     [DisplayName("Exporter phone")]
+    [RegularExpression(@"^(\+84|0)[1-9]\d{8}$", ErrorMessage = "Exporter phone is invalid")]
     public string? ExporterPhone { get; set; }
 
     [Required]

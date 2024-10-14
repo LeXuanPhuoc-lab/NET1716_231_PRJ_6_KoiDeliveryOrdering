@@ -1,4 +1,5 @@
-﻿using KoiDeliveryOrdering.Business.Base;
+﻿using System.Runtime.InteropServices.JavaScript;
+using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data.Dtos.Documents;
 using KoiDeliveryOrdering.Service.Interfaces;
@@ -67,6 +68,16 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DocumentMutationDto dto)
         {
+            if (dto.IssueDate < DateOnly.FromDateTime(DateTime.Now))
+            {
+                ModelState.AddModelError("IssueDate", "Issue date must be today or after");
+            }
+
+            if (dto.IssueDate > dto.ExpirationDate)
+            {
+                ModelState.AddModelError("ExpirationDate", "Expiration date must be after Issue date");
+            }
+
             if (ModelState.IsValid)
             {
                 using var httpClient = new HttpClient();
