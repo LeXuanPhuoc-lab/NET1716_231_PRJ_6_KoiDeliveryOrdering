@@ -79,6 +79,10 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             if (!dbContext.Animals.Any()) await SeedAnimalsAsync();
             // Delivery Order Details
             if (!dbContext.DeliveryOrderDetails.Any()) await SeedDeliveryOrderDetailsAsync();
+            // Care Task
+            if (!dbContext.CareTasks.Any()) await SeedCareTasksAsync();
+            // Staff
+            if (!dbContext.Staff.Any()) await SeedStaffAsync();
 
             // More seeding here...
             // Each table need to create private method to seeding data
@@ -100,7 +104,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             new User()
             {
                 Username = "admin",
-                Password = "@Admin123",
+                Password = "Admin123",
                 FullName = "Admin",
                 Phone = "0123456789",
                 Email = "admin@admin.com",
@@ -153,6 +157,188 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
         await dbContext.Users.AddRangeAsync(users);
         await dbContext.SaveChangesAsync();
     }
+
+    private async Task SeedStaffAsync()
+    {
+        List<Staff> staffList = new()
+    {
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Nguyen Van A",
+            Email = "nguyenvana@example.com",
+            DateOfBirth = new DateTime(1990, 1, 1),
+            Phone = "0987654321",
+            AvatarImage = "avatar_nguyenvana.jpg",
+            IdentityCard = "123456789",
+            CreateDate = DateTime.Now,
+            Address = "456 Another Street",
+            Longitude = 105.8342,
+            Latitude = 21.0285,
+            Username = "nguyenvana",
+            Password = "@Password123",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Tran Thi B",
+            Email = "tranthib@example.com",
+            DateOfBirth = new DateTime(1985, 5, 5),
+            Phone = "0987654322",
+            AvatarImage = "avatar_tranthib.jpg",
+            IdentityCard = "987654321",
+            CreateDate = DateTime.Now.AddMonths(-1),
+            Address = "789 Example Road",
+            Longitude = 105.8442,
+            Latitude = 21.0385,
+            Username = "tranthib",
+            Password = "@Password1234",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Le Van C",
+            Email = "levanc@example.com",
+            DateOfBirth = new DateTime(1992, 3, 3),
+            Phone = "0987654323",
+            AvatarImage = "avatar_levanc.jpg",
+            IdentityCard = "123123123",
+            CreateDate = DateTime.Now.AddMonths(-2),
+            Address = "123 Example Avenue",
+            Longitude = 105.8542,
+            Latitude = 21.0485,
+            Username = "levanc",
+            Password = "@Password1235",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Pham Thi D",
+            Email = "phamthid@example.com",
+            DateOfBirth = new DateTime(1988, 7, 7),
+            Phone = "0987654324",
+            AvatarImage = "avatar_phamthid.jpg",
+            IdentityCard = "321321321",
+            CreateDate = DateTime.Now.AddMonths(-3),
+            Address = "321 Another Road",
+            Longitude = 105.8642,
+            Latitude = 21.0585,
+            Username = "phamthid",
+            Password = "@Password1236",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Hoang Van E",
+            Email = "hoangvane@example.com",
+            DateOfBirth = new DateTime(1995, 8, 8),
+            Phone = "0987654325",
+            AvatarImage = "avatar_hoangvane.jpg",
+            IdentityCard = "456456456",
+            CreateDate = DateTime.Now.AddMonths(-4),
+            Address = "654 Example Street",
+            Longitude = 105.8742,
+            Latitude = 21.0685,
+            Username = "hoangvane",
+            Password = "@Password1237",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Nguyen Thi F",
+            Email = "nguyenthif@example.com",
+            DateOfBirth = new DateTime(1993, 6, 6),
+            Phone = "0987654326",
+            AvatarImage = "avatar_nguyenthif.jpg",
+            IdentityCard = "654654654",
+            CreateDate = DateTime.Now.AddMonths(-5),
+            Address = "987 Another Street",
+            Longitude = 105.8842,
+            Latitude = 21.0785,
+            Username = "nguyenthif",
+            Password = "@Password1238",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Vu Van G",
+            Email = "vuvang@example.com",
+            DateOfBirth = new DateTime(1980, 12, 12),
+            Phone = "0987654327",
+            AvatarImage = "avatar_vuvang.jpg",
+            IdentityCard = "987987987",
+            CreateDate = DateTime.Now.AddMonths(-6),
+            Address = "654 Another Avenue",
+            Longitude = 105.8942,
+            Latitude = 21.0885,
+            Username = "vuvang",
+            Password = "@Password1239",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Mai Thi H",
+            Email = "maithih@example.com",
+            DateOfBirth = new DateTime(1987, 9, 9),
+            Phone = "0987654328",
+            AvatarImage = "avatar_maithih.jpg",
+            IdentityCard = "321654987",
+            CreateDate = DateTime.Now.AddMonths(-7),
+            Address = "159 Example Place",
+            Longitude = 105.9042,
+            Latitude = 21.0985,
+            Username = "maithih",
+            Password = "@Password1240",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Tran Van I",
+            Email = "tranvani@example.com",
+            DateOfBirth = new DateTime(1994, 2, 2),
+            Phone = "0987654329",
+            AvatarImage = "avatar_tranvanI.jpg",
+            IdentityCard = "654123987",
+            CreateDate = DateTime.Now.AddMonths(-8),
+            Address = "753 Example Way",
+            Longitude = 105.9142,
+            Latitude = 21.1085,
+            Username = "tranvanI",
+            Password = "@Password1241",
+            IsActive = true,
+        },
+        new Staff()
+        {
+            StaffId = Guid.NewGuid(),
+            FullName = "Nguyen Van J",
+            Email = "nguyenvanj@example.com",
+            DateOfBirth = new DateTime(1996, 4, 4),
+            Phone = "0987654330",
+            AvatarImage = "avatar_nguyenvanj.jpg",
+            IdentityCard = "789321456",
+            CreateDate = DateTime.Now.AddMonths(-9),
+            Address = "852 Another Way",
+            Longitude = 105.9242,
+            Latitude = 21.1185,
+            Username = "nguyenvanj",
+            Password = "@Password1242",
+            IsActive = true,
+        },
+    };
+
+        await dbContext.Staff.AddRangeAsync(staffList);
+        await dbContext.SaveChangesAsync();
+    }
+
+
 
 
     //  Summary:
@@ -753,6 +939,53 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
         await dbContext.Animals.AddRangeAsync(animals);
         await dbContext.SaveChangesAsync();
     }
+
+    private async Task SeedCareTasksAsync()
+    {
+        List<CareTask> careTasks = new()
+    {
+        new CareTask
+        {
+            TaskName = "Feed Dog",
+            Description = "Provide daily meals for the dog.",
+            Unit = "kg",
+            Priority = "High",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(1),
+            AssignedTo = "John Doe",
+            IsRecurring = true,
+            Notes = "Feed the dog twice a day.",
+        },
+        new CareTask
+        {
+            TaskName = "Groom Cat",
+            Description = "Regular grooming for the Persian cat.",
+            Unit = null,
+            Priority = "Medium",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(7),
+            AssignedTo = "Jane Smith",
+            IsRecurring = true,
+            Notes = "Groom the cat once a week.",
+        },
+        new CareTask
+        {
+            TaskName = "Clean Bird Cage",
+            Description = "Ensure the parrot's cage is clean.",
+            Unit = null,
+            Priority = "Low",
+            CreatedAt = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(2),
+            AssignedTo = "Jim Brown",
+            IsRecurring = false,
+            Notes = "Use disinfectant to clean the cage.",
+        }
+    };
+
+        await dbContext.CareTasks.AddRangeAsync(careTasks);
+        await dbContext.SaveChangesAsync();
+    }
+
 
     private async Task SeedDeliveryOrderDetailsAsync()
     {

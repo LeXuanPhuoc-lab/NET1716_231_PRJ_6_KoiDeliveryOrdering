@@ -1,4 +1,4 @@
-﻿@model KoiDeliveryOrdering.Data.Entities.DailyCareSchedule
+﻿@model KoiDeliveryOrdering.MVCWebApp.Models.DailyCareScheduleModels
 
 @{
     ViewData["Title"] = "Edit";
@@ -20,12 +20,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="TaskFrequency" class="control-label"></label>
-                <input asp-for="TaskFrequency" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="TaskFrequency" class="form-control" type="number" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">day</span>
+                    </div>
+                </div>
                 <span asp-validation-for="TaskFrequency" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="RecommendedValue" class="control-label"></label>
-                <input asp-for="RecommendedValue" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="RecommendedValue" class="form-control" type="number" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">gam</span>
+                    </div>
+                </div>
                 <span asp-validation-for="RecommendedValue" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -40,7 +50,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="TaskDuration" class="control-label"></label>
-                <input asp-for="TaskDuration" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="TaskDuration" class="form-control" type="number" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">hours</span>
+                    </div>
+                </div>
                 <span asp-validation-for="TaskDuration" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -60,7 +75,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="CaregiverName" class="control-label"></label>
-                <input asp-for="CaregiverName" class="form-control" />
+                <select asp-for="CaregiverName" class="form-control" asp-items="ViewBag.CaregiverName"></select>
                 <span asp-validation-for="CaregiverName" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -70,15 +85,97 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Ngăn form submit mặc định
+
+                // Lấy giá trị từ form
+                var careTaskId = $('#CareTaskId').val();
+                var taskFrequency = parseFloat($('#TaskFrequency').val());
+                var recommendedValue = parseFloat($('#RecommendedValue').val());
+                var startDate = new Date($('#StartDate').val());
+                var endDate = new Date($('#EndDate').val());
+                var taskDuration = parseFloat($('#TaskDuration').val());
+                var notes = $('#Notes').val();
+                var deliverOrderDetailId = $('#DeliverOrderDetailId').val();
+                var caregiverName = $('#CaregiverName').val();
+                var lastPerformedDate = new Date($('#LastPerformedDate').val());
+
+                // Validate tất cả các trường required không được bỏ trống
+                if (!careTaskId || !taskFrequency || !recommendedValue || !startDate || !endDate || !taskDuration || !notes || !deliverOrderDetailId || !caregiverName || !lastPerformedDate) {
+                    alert('All fields are required.');
+                    return;
+                }
+
+                // Validate StartDate không được lớn hơn EndDate
+                if (startDate > endDate) {
+                    alert('Start Date cannot be greater than End Date.');
+                    return; // Ngăn không cho tiếp tục submit
+                }
+
+                // Validate LastPerformedDate phải lớn hơn EndDate
+                if (lastPerformedDate <= endDate) {
+                    alert('Last Performed Date must be greater than End Date.');
+                    return;
+                }
+
+                // Validate các giá trị số không được nhỏ hơn 0
+                if (taskFrequency < 0) {
+                    alert('Task Frequency cannot be less than 0.');
+                    return;
+                }
+
+                if (recommendedValue < 0) {
+                    alert('Recommended Value cannot be less than 0.');
+                    return;
+                }
+
+                if (taskDuration < 0) {
+                    alert('Task Duration cannot be less than 0.');
+                    return;
+                }
+
+                // Tạo đối tượng dailyCareSchedule
+                var dailyCareSchedule = {
+                    DailyCareScheduleId: $('#DailyCareScheduleId').val(),
+                    CareTaskId: $('#CareTaskId').val(),
+                    TaskFrequency: taskFrequency.toString(),
+                    RecommendedValue: recommendedValue.toString(),
+                    StartDate: startDate,
+                    EndDate: endDate,
+                    TaskDuration: taskDuration.toString(),
+                    Notes: $('#Notes').val(),
+                    IsCritical: $('#IsCritical').is(':checked'),
+                    DeliverOrderDetailId: $('#DeliverOrderDetailId').val(),
+                    CaregiverName: $('#CaregiverName').val(),
+                    LastPerformedDate: $('#LastPerformedDate').val()
+                };
+
+                // Gửi request AJAX
+                $.ajax({
+                    url: 'http://localhost:7000/api/daily-care-schedule/update',
+                    type: 'PUT', // PUT method cho việc cập nhật
+                    contentType: 'application/json',
+                    data: JSON.stringify(dailyCareSchedule),
+                    success: function (response) {
+                        alert('Update successful!');
+                        window.location.href = '@Url.Action("Index")'; // Redirect về trang Index sau khi thành công
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 }
+

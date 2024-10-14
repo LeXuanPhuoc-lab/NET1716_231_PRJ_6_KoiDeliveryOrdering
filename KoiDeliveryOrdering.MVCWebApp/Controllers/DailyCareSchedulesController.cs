@@ -2,6 +2,7 @@
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.MVCWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace KoiDeliveryOrdering.MVCWebApp.Controllers
@@ -33,33 +34,50 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             return View(new List<DailyCareScheduleModels>());
         }
 
-        /*        // GET: DailyCareSchedules/Details/5
-                public async Task<IActionResult> Details(int? id)
+        // GET: DailyCareSchedules/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            DailyCareScheduleModels dailyCareSchedule = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + $"daily-care-schedule/{id}"))
                 {
-                    if (id == null)
+                    if (response.IsSuccessStatusCode)
                     {
-                        return NotFound();
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context);
+
+                        if (result != null && result.Data != null)
+                        {
+                            dailyCareSchedule = JsonConvert.DeserializeObject<DailyCareScheduleModels>(result.Data.ToString());
+                        }
                     }
+                }
+            }
 
-                    var dailyCareSchedule = await _context.DailyCareSchedules
-                        .Include(d => d.CareTask)
-                        .Include(d => d.DeliverOrderDetail)
-                        .FirstOrDefaultAsync(m => m.DailyCareScheduleId == id);
-                    if (dailyCareSchedule == null)
-                    {
-                        return NotFound();
-                    }
+            if (dailyCareSchedule == null)
+            {
+                return NotFound();
+            }
 
-                    return View(dailyCareSchedule);
-                }*/
+            return View(dailyCareSchedule);
+        }
 
-        /*        // GET: DailyCareSchedules/Create
-                public IActionResult Create()
-                {
-                    ViewData["CareTaskId"] = new SelectList(_context.CareTasks, "CareTaskId", "TaskName");
-                    ViewData["DeliverOrderDetailId"] = new SelectList(_context.DeliveryOrderDetails, "Id", "Id");
-                    return View();
-                }*/
+
+        // GET: DailyCareSchedules/Create
+        public async Task<IActionResult> Create()
+        {
+            ViewData["CareTaskId"] = new SelectList(await this.GetAllCareTaskAsync(), "CareTaskId", "TaskName");
+            ViewData["DeliverOrderDetailId"] = new SelectList(await this.GetAllDeliveryOrderDetailAsync(), "Id", "Id");
+            ViewData["CaregiverName"] = new SelectList(await this.GetAllStaffAsync(), "FullName", "FullName");
+            return View();
+        }
 
         // POST: DailyCareSchedules/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -80,22 +98,43 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                 }*/
 
         // GET: DailyCareSchedules/Edit/5
-        /*        public async Task<IActionResult> Edit(int? id)
-                {
-                    if (id == null)
-                    {
-                        return NotFound();
-                    }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-                    var dailyCareSchedule = await _context.DailyCareSchedules.FindAsync(id);
-                    if (dailyCareSchedule == null)
+            DailyCareScheduleModels dailyCareSchedule = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + $"daily-care-schedule/{id}"))
+                {
+                    if (response.IsSuccessStatusCode)
                     {
-                        return NotFound();
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context);
+
+                        if (result != null && result.Data != null)
+                        {
+                            dailyCareSchedule = JsonConvert.DeserializeObject<DailyCareScheduleModels>(result.Data.ToString());
+                        }
                     }
-                    ViewData["CareTaskId"] = new SelectList(_context.CareTasks, "CareTaskId", "TaskName", dailyCareSchedule.CareTaskId);
-                    ViewData["DeliverOrderDetailId"] = new SelectList(_context.DeliveryOrderDetails, "Id", "Id", dailyCareSchedule.DeliverOrderDetailId);
-                    return View(dailyCareSchedule);
-                }*/
+                }
+            }
+
+            if (dailyCareSchedule == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["CareTaskId"] = new SelectList(await this.GetAllCareTaskAsync(), "CareTaskId", "TaskName");
+            ViewData["DeliverOrderDetailId"] = new SelectList(await this.GetAllDeliveryOrderDetailAsync(), "Id", "Id");
+            ViewData["CaregiverName"] = new SelectList(await this.GetAllStaffAsync(), "FullName", "FullName");
+
+            return View(dailyCareSchedule);
+        }
 
         // POST: DailyCareSchedules/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -135,24 +174,39 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                 }*/
 
         // GET: DailyCareSchedules/Delete/5
-        /*        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            DailyCareScheduleModels dailyCareSchedule = null;
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + $"daily-care-schedule/{id}"))
                 {
-                    if (id == null)
+                    if (response.IsSuccessStatusCode)
                     {
-                        return NotFound();
-                    }
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context);
 
-                    var dailyCareSchedule = await _context.DailyCareSchedules
-                        .Include(d => d.CareTask)
-                        .Include(d => d.DeliverOrderDetail)
-                        .FirstOrDefaultAsync(m => m.DailyCareScheduleId == id);
-                    if (dailyCareSchedule == null)
-                    {
-                        return NotFound();
+                        if (result != null && result.Data != null)
+                        {
+                            dailyCareSchedule = JsonConvert.DeserializeObject<DailyCareScheduleModels>(result.Data.ToString());
+                        }
                     }
+                }
+            }
 
-                    return View(dailyCareSchedule);
-                }*/
+            if (dailyCareSchedule == null)
+            {
+                return NotFound();
+            }
+
+            return View(dailyCareSchedule);
+        }
 
         // POST: DailyCareSchedules/Delete/5
         /*        [HttpPost, ActionName("Delete")]
@@ -173,5 +227,77 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                 {
                     return _context.DailyCareSchedules.Any(e => e.DailyCareScheduleId == id);
                 }*/
+
+        public async Task<List<CareTaskModel>> GetAllCareTaskAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "care-task"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var careTasks = JsonConvert.DeserializeObject<List<CareTaskModel>>(
+                                result.Data.ToString());
+
+                            return careTasks;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<List<DeliveryOrderDetailModel>> GetAllDeliveryOrderDetailAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "delivery-order-detail"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var deliveryOrderDetails = JsonConvert.DeserializeObject<List<DeliveryOrderDetailModel>>(
+                                result.Data.ToString());
+
+                            return deliveryOrderDetails;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<List<StaffModel>> GetAllStaffAsync()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "staff"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var staffs = JsonConvert.DeserializeObject<List<StaffModel>>(
+                                result.Data.ToString());
+
+                            return staffs;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

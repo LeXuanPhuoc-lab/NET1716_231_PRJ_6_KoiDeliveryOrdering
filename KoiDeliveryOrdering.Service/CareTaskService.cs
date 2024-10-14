@@ -1,8 +1,8 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
-using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Entities;
+using KoiDeliveryOrdering.Service.Interfaces;
 
 namespace KoiDeliveryOrdering.Business
 {

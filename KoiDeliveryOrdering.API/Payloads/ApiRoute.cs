@@ -68,6 +68,7 @@ public static class ApiRoute
         public const string Remove = Base + "/daily-care-schedule/{id}/remove";
         public const string GetAllCareTask = Base + "/care-task";
         public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
+        public const string GetAllStaff = Base + "/staff";
     }
 
     public static class CareTask

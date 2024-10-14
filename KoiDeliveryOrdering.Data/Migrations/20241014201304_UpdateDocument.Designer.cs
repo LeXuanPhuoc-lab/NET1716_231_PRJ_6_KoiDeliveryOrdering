@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     [DbContext(typeof(KoiDeliveryOrderingDbContext))]
-    [Migration("20241014123158_UpdateDocument")]
+    [Migration("20241014201304_UpdateDocument")]
     partial class UpdateDocument
     {
         /// <inheritdoc />
