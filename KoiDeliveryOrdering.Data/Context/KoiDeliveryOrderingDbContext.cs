@@ -1,6 +1,7 @@
 ﻿using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
 namespace KoiDeliveryOrdering.Data.Context;
 
 public partial class KoiDeliveryOrderingDbContext : DbContext
@@ -382,8 +383,8 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("document_type");
             entity.Property(e => e.ExpirationDate)
-                .HasColumnType("datetime")
                 .HasColumnName("expiration_date");
+            
             entity.Property(e => e.ExporterAddress)
                 .HasMaxLength(155)
                 .HasColumnName("exporter_address");
@@ -393,29 +394,31 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.ExporterPhone)
                 .HasMaxLength(15)
                 .HasColumnName("exporter_phone");
-            entity.Property(e => e.FinalDestination)
-                .HasMaxLength(155)
-                .HasColumnName("final_destination");
+            // entity.Property(e => e.FinalDestination)
+            //     .HasMaxLength(155)
+            //     .HasColumnName("final_destination");
             entity.Property(e => e.IssueDate)
-                .HasColumnType("datetime")
                 .HasColumnName("issue_date");
-            entity.Property(e => e.PortOfDischarge)
-                .HasMaxLength(100)
-                .HasColumnName("port_of_discharge");
-            entity.Property(e => e.PortOfLoading)
-                .HasMaxLength(100)
-                .HasColumnName("port_of_loading");
+            // entity.Property(e => e.PortOfDischarge)
+            //     .HasMaxLength(100)
+            //     .HasColumnName("port_of_discharge");
+            // entity.Property(e => e.PortOfLoading)
+            //     .HasMaxLength(100)
+            //     .HasColumnName("port_of_loading");
             entity.Property(e => e.ShippingFee)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("shipping_fee");
-            
+
+            entity.Property(e => e.DeliveryOrderId)
+                .HasColumnName("delivery_order_id");
+
             entity.HasOne(d => d.DeliveryOrder).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.DeliveryOrderId)
                 .HasConstraintName("FK_Document_DeliveryOrder");
 
-            entity.Property(e => e.TransportationNo)
-                .HasMaxLength(50)
-                .HasColumnName("transportation_no");
+            // entity.Property(e => e.TransportationNo)
+            //     .HasMaxLength(50)
+            //     .HasColumnName("transportation_no");
             entity.Property(e => e.TransportationType)
                 .HasMaxLength(100)
                 .HasColumnName("transportation_type");

@@ -2,5 +2,7 @@
 
 public enum EDocumentType
 {
-    
+    Import,
+    Export,
+    HealthCertificate
 }
