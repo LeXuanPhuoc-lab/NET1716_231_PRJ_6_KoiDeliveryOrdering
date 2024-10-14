@@ -19,7 +19,7 @@ public static class ApiRoute
         public const string GetById = Base + "/delivery-orders/{id}";
         public const string GetAll = Base + "/delivery-orders";
         public const string Insert = Base + "/delivery-orders";
-        public const string Update = Base + "/delivery-orders/update";
+        public const string Update = Base + "/delivery-orders";
         public const string Remove = Base + "/delivery-orders/{id}";
         public const string GetAllPayment = Base + "/payments";
         public const string GetAllShippingFee = Base + "/shipping-fees";
@@ -29,6 +29,7 @@ public static class ApiRoute
 
         public const string GetProvinceByCodeLocal = Base + "/delivery-orders/provinces/{code}";
         public const string GetDistrictByCodeLocal = Base + "/delivery-orders/districts/{code}";
+        public const string GetWardByCodeLocal = Base + "/delivery-orders/ward/{code}";
     }
 
     public static class VietnameProvincesOnline
@@ -37,6 +38,11 @@ public static class ApiRoute
         public const string GetListProvinces = VPOnlineBaseUrl + "/p";
         public const string GetProvinceByCode = VPOnlineBaseUrl + "/p/{code}";
         public const string GetDistrictByCode = VPOnlineBaseUrl + "/d/{code}";
+    }
+
+    public static class NominatimMap
+    {
+        public const string NominatimUrl = "https://nominatim.openstreetmap.org/";
     }
 
     public static class Animal

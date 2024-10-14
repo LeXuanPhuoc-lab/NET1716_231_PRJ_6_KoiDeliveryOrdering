@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     [DbContext(typeof(KoiDeliveryOrderingDbContext))]
-    [Migration("20241004035358_Initital Database")]
+    [Migration("20241014123759_Initital Database")]
     partial class InititalDatabase
     {
         /// <inheritdoc />
@@ -64,7 +64,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("description");
 
                     b.Property<decimal?>("EstimatedPrice")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("estimated_price");
 
                     b.Property<string>("HealthStatus")
@@ -88,7 +88,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("origin_country");
 
                     b.Property<decimal?>("Size")
-                        .HasColumnType("decimal(5, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("size");
 
                     b.HasKey("Id");
@@ -131,7 +131,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("ActualValue")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("actual_value");
 
                     b.Property<int>("DailyCareScheduleId")
@@ -210,6 +210,9 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnType("int")
                         .HasColumnName("care_task_id");
 
+                    b.Property<string>("CaregiverName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DeliverOrderDetailId")
                         .HasColumnType("int")
                         .HasColumnName("deliver_order_detail_id");
@@ -218,13 +221,25 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("end_date");
 
+                    b.Property<bool>("IsCritical")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastPerformedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal?>("RecommendedValue")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("recommended_value");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime")
                         .HasColumnName("start_date");
+
+                    b.Property<string>("TaskDuration")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TaskFrequency")
                         .HasMaxLength(50)
@@ -286,7 +301,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("order_status");
 
-                    b.Property<int>("PaymentId")
+                    b.Property<int?>("PaymentId")
                         .HasColumnType("int")
                         .HasColumnName("payment_id");
 
@@ -330,11 +345,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("shipping_fee_id");
 
                     b.Property<decimal?>("TaxFee")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("tax_fee");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("total_amount");
 
                     b.Property<int?>("VoucherPromotionId")
@@ -416,7 +431,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal?>("AssurranceFee")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("assurrance_fee");
 
                     b.Property<string>("ConsigneeAddress")
@@ -505,11 +520,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("port_of_loading");
 
                     b.Property<decimal?>("ShippingFee")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("shipping_fee");
 
                     b.Property<decimal?>("TaxFee")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("tax_fee");
 
                     b.Property<string>("TransportationNo")
@@ -560,7 +575,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("item_category");
 
                     b.Property<decimal>("ItemEstimatePrice")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("item_estimate_price");
 
                     b.Property<string>("ItemName")
@@ -574,7 +589,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .HasColumnName("item_quantity");
 
                     b.Property<decimal>("ItemWeight")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("item_weight");
 
                     b.HasKey("DocumentDetailId")
@@ -817,15 +832,15 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShippingFeeId"));
 
                     b.Property<decimal>("BaseFee")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("base_fee");
 
                     b.Property<decimal>("DistanceRangeFrom")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("distance_range_from");
 
                     b.Property<decimal>("DistanceRangeTo")
-                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnType("decimal")
                         .HasColumnName("distance_range_to");
 
                     b.Property<string>("EstimatedTime")
@@ -1182,7 +1197,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.Payment", "Payment")
                         .WithMany("DeliveryOrders")
                         .HasForeignKey("PaymentId")
-                        .IsRequired()
                         .HasConstraintName("FK_DeliveryOrder_Payment");
 
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.SenderInformation", "SenderInformation")
@@ -1218,12 +1232,14 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.Animal", "Animal")
                         .WithMany("DeliveryOrderDetails")
                         .HasForeignKey("AnimalId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Animal");
 
                     b.HasOne("KoiDeliveryOrdering.Data.Entities.DeliveryOrder", "DeliveryOrder")
                         .WithMany("DeliveryOrderDetails")
                         .HasForeignKey("DeliveryOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Order");
 

@@ -86,7 +86,7 @@ public class GenericRepository<TEntity> where TEntity : class
         //return await _dbSet.ToListAsync();
     }
 
-    public async Task<TEntity?> FindOneWithConditionAsync(
+    public virtual async Task<TEntity?> FindOneWithConditionAsync(
         Expression<Func<TEntity, bool>>? filter,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
         string? includeProperties = "")
@@ -116,7 +116,7 @@ public class GenericRepository<TEntity> where TEntity : class
 
         if (result == null) return null;
 
-        _dbSet.Entry(result).State = EntityState.Detached;
+        //_dbSet.Entry(result).State = EntityState.Detached;
         return result;
     }
 

@@ -199,8 +199,8 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 DistanceRangeFrom = 0m,
                 DistanceRangeTo = 5m,
                 ServiceCode = "STD",
-                WeightClass = 1,
-                BaseFee = 5.00m,
+                WeightClass = 3,
+                BaseFee = 22000m,
                 EstimatedTime = "1-2 days"
             },
             new ShippingFee
@@ -209,7 +209,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 DistanceRangeTo = 10m,
                 ServiceCode = "EXP",
                 WeightClass = 2,
-                BaseFee = 10.00m,
+                BaseFee = 36000m,
                 EstimatedTime = "Same day"
             },
             new ShippingFee
@@ -218,7 +218,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 DistanceRangeTo = 20m,
                 ServiceCode = "STD",
                 WeightClass = 3,
-                BaseFee = 15.00m,
+                BaseFee = 50000m,
                 EstimatedTime = "2-3 days"
             },
             new ShippingFee
@@ -227,7 +227,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 DistanceRangeTo = 50m,
                 ServiceCode = "PRM",
                 WeightClass = 1,
-                BaseFee = 20.00m,
+                BaseFee = 60000m,
                 EstimatedTime = "Next day"
             },
             new ShippingFee
@@ -236,7 +236,7 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 DistanceRangeTo = 100m,
                 ServiceCode = "EXP",
                 WeightClass = 2,
-                BaseFee = 30.00m,
+                BaseFee = 75000m,
                 EstimatedTime = "Same day"
             }
         };
