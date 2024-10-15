@@ -1,0 +1,296 @@
+﻿@using KoiDeliveryOrdering.Common
+@model KoiDeliveryOrdering.Data.Dtos.Documents.DocumentMutationDto
+
+<div class="container mt-5">
+    <h2 class="mb-4">Create document</h2>
+    <form asp-action="Create">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label asp-for="DocumentType" class="control-label">Document type</label>
+                <select asp-for="DocumentType" class="form-control">
+                    <option value="import">Import</option>
+                    <option value="export">Export</option>
+                    <option value="health">Health certificate</option>
+                </select>
+                <span asp-validation-for="DocumentType" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="IssueDate" class="control-label">Issue date</label>
+                <input asp-for="IssueDate" type="date" class="form-control"/>
+                <span asp-validation-for="IssueDate" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ExpirationDate" class="control-label">Expiration date</label>
+                <input asp-for="ExpirationDate" type="date" class="form-control"/>
+                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label asp-for="ConsigneeName" class="control-label">Consignee name</label>
+                <input asp-for="ConsigneeName" class="form-control"/>
+                <span asp-validation-for="ConsigneeName" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ConsigneePhone" class="control-label">Consignee phone</label>
+                <input asp-for="ConsigneePhone" class="form-control"/>
+                <span asp-validation-for="ConsigneePhone" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ConsigneeAddress" class="control-label">Consignee address</label>
+                <input asp-for="ConsigneeAddress" class="form-control"/>
+                <span asp-validation-for="ConsigneeAddress" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label asp-for="ExporterName" class="control-label">Exporter name</label>
+                <input asp-for="ExporterName" class="form-control"/>
+                <span asp-validation-for="ExporterName" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ExporterPhone" class="control-label">Exporter phone</label>
+                <input asp-for="ExporterPhone" class="form-control"/>
+                <span asp-validation-for="ExporterPhone" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ExporterAddress" class="control-label">Exporter address</label>
+                <input asp-for="ExporterAddress" class="form-control"/>
+                <span asp-validation-for="ExporterAddress" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label asp-for="DispatchMethod" class="control-label">Dispatch method</label>
+                <select asp-for="DispatchMethod" class="form-control" id="dispatch-method">
+                    <option value="road">Road</option>
+                    <option value="rail">Rail</option>
+                    <option value="sea">Sea</option>
+                    <option value="air">Air</option>
+                </select>
+                <span asp-validation-for="DispatchMethod" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="TransportationType" class="control-label">Transportation type</label>
+                <select asp-for="TransportationType" class="form-control" id="transportation-type">
+
+                </select>
+                <span asp-validation-for="TransportationType" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="DeliveryOrderId" class="control-label">Delivery order id</label>
+                <input asp-for="DeliveryOrderId" class="form-control"/>
+                <span asp-validation-for="DeliveryOrderId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <label asp-for="DocumentDetails" class="control-label">Document details</label>
+
+        <button id="addDocumentDetail" style="width: 100%;border: solid black 1px" type="button" class="btn btn-outline mb-3 w-full">
+            Add document detail
+        </button>
+
+        <table class="table" id="productsTable">
+            <thead>
+            <tr>
+                <th>Item name</th>
+                <th>Item category</th>
+                <th>Quantity</th>
+                <th>Weight(kg)</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (int i = 0; i < Model.DocumentDetails.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input asp-for="DocumentDetails[i].ItemName" class="form-control"/>
+                        <span asp-validation-for="DocumentDetails[i].ItemName" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="DocumentDetails[i].ItemCategory" class="form-control"/>
+                        <span asp-validation-for="DocumentDetails[i].ItemCategory" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="DocumentDetails[i].ItemQuantity" class="form-control"/>
+                        <span asp-validation-for="DocumentDetails[i].ItemQuantity" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="DocumentDetails[i].ItemWeight" class="form-control"/>
+                        <span asp-validation-for="DocumentDetails[i].ItemWeight" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-product">Remove</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <div class="d-flex align-items-center gap-2">
+            <label class="control-label mt-1">Shipping fee:</label>
+            <div id="shipping-fee-value">0đ</div>
+            <button id="shipping-fee-button" class="btn btn-info btn-sm">Recalculated</button>
+        </div>
+
+        <div class="row">
+            <div class="col mt-2">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+
+         function formatPrice(num) {
+            // Convert number to string and reverse it for easier grouping
+            const reversedNumStr = Math.round(num).toString().split("").reverse().join("")
+
+            // Add dots every three digits
+            const groupedStr = reversedNumStr.replace(/\d{3}(?=\d)/g, "$&.")
+
+            // Reverse the string back to its original order and return
+            return groupedStr.split("").reverse().join("")+"đ"
+        }
+        
+        $(document).ready(function () {
+            var productIndex = @Model.DocumentDetails.Count;
+
+            // Add new product row
+            $('#addDocumentDetail').click(function () {
+                var newRow = `
+                               <tr>
+                                <td>
+                                    <input placeholder="Item name..." name="DocumentDetails[${productIndex}].ItemName" class="form-control" />
+                                    <span asp-validation-for="DocumentDetails[${productIndex}].ItemName" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input placeholder="Item category..." name="DocumentDetails[${productIndex}].ItemCategory" class="form-control" />
+                                    <span asp-validation-for="DocumentDetails[${productIndex}].ItemCategory" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input placeholder="Quantity..." name="DocumentDetails[${productIndex}].ItemQuantity" class="form-control" />
+                                    <span asp-validation-for="DocumentDetails[${productIndex}].ItemQuantity" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input placeholder="Weight..." name="DocumentDetails[${productIndex}].ItemWeight" class="form-control" />
+                                    <span asp-validation-for="DocumentDetails[${productIndex}].ItemWeight" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger remove-product">Remove</button>
+                                </td>
+                            </tr>`;
+                $('#productsTable tbody').append(newRow);
+                productIndex++;
+            });
+
+            // Remove product row
+            $(document).on('click', '.remove-product', function () {
+                $(this).closest('tr').remove();
+                
+                const rows = document.querySelectorAll("#productsTable tbody tr");
+                console.log(rows)
+                productIndex=rows.length;
+                console.log(productIndex)
+                const documentDetails = [];
+                
+                rows.forEach(r => {
+                    const inputs = r.querySelectorAll("input");
+                    documentDetails.push({
+                        itemName:inputs[0].value || "",
+                        itemCategory:inputs[1].value || "",
+                        quantity:inputs[2].value || "",
+                        weight:inputs[3].value || "",
+                    })
+                })
+
+                console.log(documentDetails)
+
+                const newRows = documentDetails.map((dd, i) => 
+                `<tr>
+                    <td>
+                        <input placeholder="Item name..." name="DocumentDetails[${i}].ItemName" value="${dd.itemName}" class="form-control" />
+                        <span asp-validation-for="DocumentDetails[${i}].ItemName" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input placeholder="Item category..." name="DocumentDetails[${i}].ItemCategory" value="${dd.itemCategory}" class="form-control" />
+                        <span asp-validation-for="DocumentDetails[${i}].ItemCategory" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input placeholder=Quantity..." name="DocumentDetails[${i}].ItemQuantity" value="${dd.quantity}" class="form-control" />
+                        <span asp-validation-for="DocumentDetails[${i}].ItemQuantity" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input placeholder="Weight..." name="DocumentDetails[${i}].ItemWeight" value="${dd.weight}" class="form-control" />
+                        <span asp-validation-for="DocumentDetails[${i}].ItemWeight" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-product">Remove</button>
+                    </td>
+                </tr>`).join("");
+
+                console.log(newRows)
+                $('#productsTable tbody').empty().append(newRows);
+            });
+
+
+            const dispatchMethod = document.getElementById("dispatch-method");
+            const transportType = document.getElementById("transportation-type");
+
+            // Define transportation types for each dispatch method
+            const transportOptions = {
+                road: ["Truck", "Van", "Lorry", "Container Truck", "Pickup Truck"],
+                rail: ["Freight Train", "Cargo Wagon", "Container Train", "Flatbed Railcar", "Boxcar"],
+                sea: ["Container Ship", "Bulk Carrier", "Tanker", "Cargo Ship", "Roll-on/Roll-off Ship (Ro-Ro)"],
+                air: ["Cargo Plane", "Freighter Aircraft", "Wide-body Aircraft", "Airbus A330 Freighter", "Boeing 747 Freighter"]
+            };
+
+            // Function to populate transport type options based on selected dispatch method
+            function updateTransportTypes() {
+                const selectedMethod = dispatchMethod.value;
+                const types = transportOptions[selectedMethod];
+
+                // Clear current transport type options
+                transportType.innerHTML = "";
+
+                // Populate new transport type options
+                types.forEach(function(type) {
+                    const option = document.createElement("option");
+                    option.value = type.toLowerCase().replace(/\s+/g, "-");
+                    option.textContent = type;
+                    transportType.appendChild(option);
+                });
+            }
+
+            // Initial load of transport types based on default selected method
+            updateTransportTypes();
+
+            // Update transport types when dispatch method changes
+            dispatchMethod.addEventListener("change", updateTransportTypes);
+            
+            function updateShippingFee(e)
+            {
+                e.preventDefault()
+                e.stopPropagation()
+                const rows = document.querySelectorAll("#productsTable tbody tr");
+                let shippingFee = 0;
+
+                rows.forEach(r => {
+                    const inputs = r.querySelectorAll("input");
+                    shippingFee+= (Number(inputs[2].value)||0)*(Number(inputs[3].value)||0)*@Const.PRICE_PER_KILOGAM
+                })
+                
+                $("#shipping-fee-value").empty().append(formatPrice(shippingFee))
+            }
+
+            $(document).on('click', '#shipping-fee-button',updateShippingFee)
+        });
+    
+    </script>
+}

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿namespace KoiDeliveryOrdering.Data.Dtos.Documents;
 
-namespace KoiDeliveryOrdering.Data.Entities;
-
-public partial class Document
+public record DocumentDto
 {
     public int Id { get; set; }
 
@@ -38,7 +34,5 @@ public partial class Document
 
     public int DeliveryOrderId { get; set; }
 
-    public virtual DeliveryOrder DeliveryOrder { get; set; } = null!;
-
-    public virtual ICollection<DocumentDetail> DocumentDetails { get; set; } = new List<DocumentDetail>();
+    public virtual ICollection<DocumentDetailDto> DocumentDetails { get; set; } = new List<DocumentDetailDto>();
 }

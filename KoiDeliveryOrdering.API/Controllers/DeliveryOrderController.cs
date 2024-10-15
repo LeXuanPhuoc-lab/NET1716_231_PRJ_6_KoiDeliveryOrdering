@@ -2,11 +2,8 @@
 using KoiDeliveryOrdering.API.Payloads;
 using KoiDeliveryOrdering.API.Payloads.Requests;
 using KoiDeliveryOrdering.Business.Base;
-using KoiDeliveryOrdering.Business.Contants;
 using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Common;
-using KoiDeliveryOrdering.Data.Entities;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -47,15 +44,13 @@ namespace KoiDeliveryOrdering.API.Controllers
         [HttpPost(ApiRoute.DeliveryOrder.Insert)]
         public async Task<IServiceResult> InsertDeliveryOrderAsync([FromBody] CreateDeliveryOrderRequest req)
         {
-            // Map to DeliveryOrder entity
-            var deliveryOrderEntity = req.Adapt<DeliveryOrder>();
-            return await _deliveryOrderService.InsertAsync(deliveryOrderEntity);
+            return await _deliveryOrderService.InsertAsync(req.ToDeliveryOrder());
         }
 
         [HttpPut(ApiRoute.DeliveryOrder.Update)]
-        public async Task<IServiceResult> UpdateDeliveryOrderAsync([FromBody] DeliveryOrder req)
+        public async Task<IServiceResult> UpdateDeliveryOrderAsync([FromBody] UpdateDeliveryOrderRequest req)
         {
-            return await _deliveryOrderService.UpdateAsync(req);
+            return await _deliveryOrderService.UpdateAsync(req.ToDeliveryOrder());
         }
 
         [HttpDelete(ApiRoute.DeliveryOrder.Remove)]
@@ -69,7 +64,7 @@ namespace KoiDeliveryOrdering.API.Controllers
         {
             return await _paymentService.FindAllAsync();
         }
-        
+
         [HttpGet(ApiRoute.DeliveryOrder.GetAllShippingFee)]
         public async Task<IServiceResult> GetAllShippingFeeAsync()
         {
@@ -139,6 +134,30 @@ namespace KoiDeliveryOrdering.API.Controllers
                 }
             }
 
+            return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new DistrictModel());
+        }
+
+        [HttpGet(ApiRoute.DeliveryOrder.GetWardByCodeLocal)]
+        public async Task<IServiceResult> GetWardByCodeAsync([FromRoute] int code)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                    ApiRoute.VietnameProvincesOnline.VPOnlineBaseUrl + $"/w/{code}"))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+
+                        var result = JsonConvert.DeserializeObject<DistrictModel>(context.ToString());
+                        if (result != null)
+                        {
+                            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, result);
+                        }
+                    }
+                }
+            }
+            
             return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new DistrictModel());
         }
     }

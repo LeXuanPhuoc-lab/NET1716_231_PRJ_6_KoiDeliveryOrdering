@@ -31,7 +31,7 @@ public partial class DeliveryOrder
 
     public decimal? TaxFee { get; set; }
 
-    public int PaymentId { get; set; }
+    public int? PaymentId { get; set; }
 
     public bool? IsPurchased { get; set; }
 
@@ -47,19 +47,17 @@ public partial class DeliveryOrder
 
     public int SenderInformationId { get; set; }
 
-    public int? DocumentId { get; set; }
-
     public virtual SenderInformation SenderInformation { get; set; } = null!;
 
     //public virtual User Customer { get; set; } = null!;
 
     public virtual ICollection<DeliveryOrderDetail> DeliveryOrderDetails { get; set; } = new List<DeliveryOrderDetail>();
 
-    public virtual Document? Document { get; set; }
+    public virtual ICollection<Document> Documents { get; set; } = new List<Document>();
 
     public virtual ICollection<OrderAssignment> OrderAssignments { get; set; } = new List<OrderAssignment>();
 
-    public virtual Payment Payment { get; set; } = null!;
+    public virtual Payment? Payment { get; set; } = null!;
 
     public virtual ShippingFee ShippingFee { get; set; } = null!;
 

@@ -20,17 +20,17 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public string? RecipientAppointmentTime { get; set; }
 
-        public DateTime? CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
 
         public DateTime? DeliveryDate { get; set; }
 
         public string OrderStatus { get; set; } = null!;
 
-        public decimal? TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public decimal? TaxFee { get; set; }
 
-        public int PaymentId { get; set; }
+        public int? PaymentId { get; set; }
 
         public bool? IsPurchased { get; set; }
 
@@ -54,10 +54,10 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         //public virtual ICollection<OrderAssignment> OrderAssignments { get; set; } = new List<OrderAssignment>();
 
-        public virtual PaymentModel Payment { get; set; } = null!;
+        public virtual PaymentModel? Payment { get; set; } = null!;
 
         public virtual ShippingFeeModel ShippingFee { get; set; } = null!;
 
-        //public virtual VoucherPromotion? VoucherPromotion { get; set; }
+        public virtual VoucherPromotionModel? VoucherPromotion { get; set; }
     }
 }

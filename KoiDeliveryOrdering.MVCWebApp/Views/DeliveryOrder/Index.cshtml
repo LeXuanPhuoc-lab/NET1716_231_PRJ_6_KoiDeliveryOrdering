@@ -1,113 +1,338 @@
-﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.DeliveryOrderModel>
+﻿@model KoiDeliveryOrdering.MVCWebApp.Utils.PaginatedList<DeliveryOrderModel>
 
 @{
     ViewData["Title"] = "Index";
 }
-<div class="container w-100">
-    <h1>Index</h1>
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
+<div class="w-100">
+    <div class="table-responsive">
+        <div class="row">
+            <div class="col-md-10">
+                <h1>Deliver Orders</h1>
+            </div>
+            <div class="col-md-2 d-flex justify-content-end">
+                <a asp-action="Create" class="btn btn-success mt-5">Create New</a>
+            </div>
+        </div>
+        <div class="row mb-4 mt-5">
+            <div class="col-md-2 mb-2 position-relative d-flex">
+                <input type="text" id="default-search" name="search"
+                       class="form-control h-auto rounded border border-2 bg-light py-2 p-5 shadow-sm"
+                       placeholder="Search by name, address, amount, status..." style="width: 330px" />
+                <img src="https://img.icons8.com/?size=100&id=83218&format=png&color=000000" width="20" height="20"
+                     class="position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%);" />
+                <button class="btn btn-primary mx-3" role="button" onclick="handleSearch()" >Search</button>
+            </div>
+        </div>
+        <table class="table table-hover table-bordered">
+            <thead class="thead-dark">
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.RecipientAddress)
+                <th class="text-start">
+                    Recipient Name
+                    <img width="13" height="13"
+                        class="sorting-icon"
+                         src="https://img.icons8.com/ios-glyphs/30/sort.png" alt="sort"
+                         value="+recipientName" role="button" />
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreateDate)
+                <th class="text-start">
+                    Recipient Address
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DeliveryDate)
+                <th class="text-start">
+                    Sender Name
+                    <img width="13" height="13"
+                        class="pe-auto sorting-icon"
+                        src="https://img.icons8.com/ios-glyphs/30/sort.png" alt="sort"
+                        value="+senderName" role="button" />
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.OrderStatus)
+                <th class="text-start">Sender Address</th>
+                <th class="text-start">Tax Fee</th>
+                <th class="text-start">
+                    Payment Method
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalAmount)
+                <th class="text-start">Promotion</th>
+                <th class="text-start">Shipping Fee</th>
+                <th class="text-start" style="width: 100px">
+                    Total Amount
+                    <img width="13" height="13"
+                        class="sorting-icon"
+                        src="https://img.icons8.com/ios-glyphs/30/sort.png" alt="sort"
+                        value="+totalAmount" role="button" />
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TaxFee)
+                <th class="text-start">
+                    Order Status
+                    <img width="13" height="13"
+                        class="sorting-icon"
+                        src="https://img.icons8.com/ios-glyphs/30/sort.png" alt="sort"
+                        value="+orderStatus" role="button" />
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsPurchased)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsSenderPurchase)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsInternational)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SenderInformation.SenderName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Document.DocumentType)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Payment.PaymentMethod)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ShippingFee.BaseFee)
-                </th>
-                <th>
-                     @* @Html.DisplayNameFor(model => model.VoucherPromotion) *@
-                </th>
-                <th></th>
+                <th class="text-start">Sender Pay</th>
+                <th class="text-start">Is International</th>
+                <th class="text-start">Action</th>
             </tr>
         </thead>
         <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RecipientAddress)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreateDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DeliveryDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderStatus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalAmount)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TaxFee)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsPurchased)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsSenderPurchase)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsInternational)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SenderInformation.SenderName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Document.DocumentType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Payment.PaymentMethod)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ShippingFee.BaseFee)
-                </td>
-                <td>
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-    }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="width: 100px">@item.RecipientName</td>
+                    <td style="width: 100px">@item.RecipientAddress</td>
+                    <td style="width: 100px">@item.SenderInformation.SenderName</td>
+                    <td style="width: 100px">
+                        @item.SenderInformation.Street, @item.SenderInformation.Ward,
+                        @item.SenderInformation.District, @item.SenderInformation.CityProvince
+                    </td>
+                    <td style="width: 20px">@item.TaxFee%</td>
+                    <td style="width: 50px">
+                        @if (string.IsNullOrEmpty(item.Payment?.PaymentMethod))
+                        {
+                            <p><a class="link-opacity-100 fs-5" href="#">Click here to payment</a></p>
+                        }
+                        else
+                        {
+                            <span>@item.Payment?.PaymentMethod</span>
+                        }
+                    </td>
+                    <td style="width: 20px">@item.VoucherPromotion?.PromotionRate%</td>
+                    <td style="width: 100px" class="text-primary fw-bold">@(string.Format("{0:N0}", item.ShippingFee.BaseFee) + "đ")</td>
+                    <td style="width: 100px" class="text-success fw-bold">@(string.Format("{0:N0}", item.TotalAmount) + "đ")</td>
+                    <td style="width: 100px" class="fw-bold">@item.OrderStatus</td>
+                    <td style="width: 50px">
+                        @if (item.IsSenderPurchase)
+                        {
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=VFaz7MkjAiu0&format=png&color=000000" alt="no-image" />
+                        }
+                        else
+                        {
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=4vD3CGn0ukPX&format=png&color=000000" alt="no-image" />
+                        }
+                    </td>
+                    <td style="width: 50px">
+                        @if (item.IsInternational)
+                        {
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=VFaz7MkjAiu0&format=png&color=000000" alt="no-image" />
+                        }
+                        else
+                        {
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=4vD3CGn0ukPX&format=png&color=000000" alt="no-image" />
+                        }
+                    </td>
+                    <td style="width: 100px">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <a class="btn btn-primary btn-sm mx-1" asp-action="Edit" asp-route-id="@item.Id">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="btn btn-warning btn-sm mx-1" asp-action="Details" asp-route-id="@item.Id">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                            <a class="btn btn-danger btn-sm mx-1" asp-action="Delete" asp-route-id="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
+    <partial name="_Pagination" />
     </div>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var pageIndex = @ViewData["PageIndex"];
+            var totalPage = @ViewData["TotalPage"];
+
+            // Process paging
+            $('#back-page').on('click', function () {
+
+                pageIndex = --pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+
+                var reqData = { "SearchValue": "", "OrderBy": null, "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+            $('#next-page').on('click', function () {
+
+                pageIndex = ++pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+
+                var reqData = { "SearchValue": "", "OrderBy": null, "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log(response);
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+        
+            // Add event listeners
+            updatePagingStatus(pageIndex, totalPage);
+            handleSortingClick();
+        });
+
+        // Update data response
+        function updateData(response) {
+            let tableBody = document.querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            var deliverOrders = response.deliveryOrders;
+
+            deliverOrders.forEach(d => {
+                tableBody.innerHTML += 
+                `
+                            <tr>
+                            <td>${d.recipientName}</td>
+                            <td>${d.recipientAddress}</td>
+                            <td>${d.senderInformation.senderName}</td>
+                            <td>${d.senderInformation.street}, ${d.senderInformation.ward}, 
+                                ${d.senderInformation.district}, ${d.senderInformation.cityProvince}
+                            </td>
+                            <td>${d.taxFee}%</td>
+                            <td>
+                                ${d.payment === null 
+                                    ? '<p><a class="link-opacity-100 fs-5" href="#">Click here to payment</a></p>'
+                                    : `<span>${d.payment.paymentMethod}</span>`
+                                }
+                            </td>
+                            <td>
+                                ${d.voucherPromotion === null
+                                    ? '<span>0%</span>'
+                                    : `<span>${d.voucherPromotion.promotionRate}%</span>`}
+                            </td>
+                            <td class="text-primary fw-bold">${d.shippingFee.baseFee}đ</td>
+                            <td class="text-success fw-bold">${d.totalAmount}đ</td>
+                            <td class="fw-bold">${d.orderStatus}</td>
+                            <td>
+                                ${d.isSenderPurchase === true
+                                ? '<img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=VFaz7MkjAiu0&format=png&color=000000" alt="no-image" />'
+                                : '<img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=4vD3CGn0ukPX&format=png&color=000000" alt="no-image" />'}
+                            </td>
+                            <td>
+                                ${d.isInternational === false
+                                ? '<img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=VFaz7MkjAiu0&format=png&color=000000" alt="no-image" />'
+                                : '<img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=4vD3CGn0ukPX&format=png&color=000000" alt="no-image" />'}
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <a class="btn btn-primary btn-sm mx-1" asp-action="Edit" asp-route-id="${d.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-warning btn-sm mx-1" asp-action="Details" asp-route-id="${d.id}">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+                                    <a class="btn btn-danger btn-sm mx-1" asp-action="Delete" asp-route-id="${d.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        `;
+            });
+        }
+
+        // Update Paging Status
+        function updatePagingStatus(pageIndexParam, totalPageParam) {
+            if (pageIndexParam !== undefined && totalPageParam !== undefined) {
+                pageIndex = pageIndexParam;
+                totalPage = totalPageParam;
+            }
+
+            $('#current-index').text(`${pageIndex}`);
+            $('#total-page').text(`${totalPage}`);
+
+
+            // Paging default
+            $('#next-page').removeAttr("disabled");
+            $('#next-page').css("opacity", "1");
+            $('#back-page').removeAttr("disabled");
+            $('#back-page').css("opacity", "1");
+
+            if (pageIndex <= 1) {
+                $('#back-page').attr("disabled", "disabled");
+                $('#back-page').css("opacity", "0.5");
+
+                $('#next-page').removeAttr("disabled");
+                $('#next-page').css("opacity", "1");
+            }
+            if (pageIndex >= totalPage) {
+                $('#next-page').attr("disabled", "disabled");
+                $('#next-page').css("opacity", "0.5");
+            }
+        }
+    
+        // Handle sorting click
+        function handleSortingClick() {
+            $('.sorting-icon').each(function () {
+                $(this).on('click', function () {
+                    var sortAttr = String($(this).attr('value'));
+                    var isDescending = sortAttr.startsWith('-');
+
+                    console.log(sortAttr);
+
+                    // Toggle the sort order
+                    if (isDescending) {
+                        $(this).attr('value', '+' + sortAttr.substring(1));
+                    } else {
+                        $(this).attr('value', '-' + sortAttr.substring(1));
+                    }
+
+                    var reqData = {
+                        "SearchValue": "",
+                        "OrderBy": sortAttr,
+                        "PageIndex": pageIndex
+                    };
+                    var queryString = $.param(reqData);
+
+                    $.ajax({
+                        url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                        type: 'GET',
+                        success: function (response) {
+                            updateData(response);
+                            updatePagingStatus(response.pageIndex, response.totalPage);
+                        }
+                    });
+                });
+            });
+        }
+
+        // Handle search
+        function handleSearch() {
+            var searchTerm = $('#default-search').val();
+
+            var reqData = {
+                "SearchValue": searchTerm,
+                "OrderBy": "",
+                "PageIndex": pageIndex
+            };
+            var queryString = $.param(reqData);
+
+            $.ajax({
+                url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                type: 'GET',
+                success: function (response) {
+                    updateData(response);
+                    updatePagingStatus(response.pageIndex, response.totalPage);
+                }
+            });
+        }
+
+    </script>
+}

@@ -15,6 +15,7 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
     private DeliveryOrderDetailRepository _deliveryOrderDetailRepository = null!;
     private CareTaskRepository _careTaskRepository = null!;
     private TruckRepository _truckRepository = null!;
+    private StaffRepository _staffRepository = null!;
 
     public UserRepository UserRepository
         // New instance is require, as an application not define abstractions for 
@@ -25,13 +26,13 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
         => _deliveryOrderRepository ??= new(unitOfWorkContext);
 
     public PaymentRepository PaymentRepository
-        => _paymentRepository ??= new (unitOfWorkContext);
-    
-    public ShippingFeeRepository ShippingFeeRepository
-        => _shippingFeeRepository ??= new (unitOfWorkContext);
+        => _paymentRepository ??= new(unitOfWorkContext);
 
-	public DocumentRepository DocumentRepository
-		=> _documentRepository ??= new(unitOfWorkContext);
+    public ShippingFeeRepository ShippingFeeRepository
+        => _shippingFeeRepository ??= new(unitOfWorkContext);
+
+    public DocumentRepository DocumentRepository
+        => _documentRepository ??= new(unitOfWorkContext);
 
     public AnimalRepository AnimalRepository
         => _animalRepository ??= new(unitOfWorkContext);
@@ -47,6 +48,11 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
 
     public TruckRepository TruckRepository
         => _truckRepository ??= new(unitOfWorkContext);
+    
+    public Task SaveAsync() => unitOfWorkContext.SaveChangesAsync();
+
+    public StaffRepository StaffRepository
+    => _staffRepository ??= new(unitOfWorkContext);
 
     #region Diposable 
     private bool _disposed = false;

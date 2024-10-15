@@ -1,7 +1,7 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Data.Entities;
 
-namespace KoiDeliveryOrdering.Business.Interfaces
+namespace KoiDeliveryOrdering.Service.Interfaces
 {
     public interface ICareTaskService
     {

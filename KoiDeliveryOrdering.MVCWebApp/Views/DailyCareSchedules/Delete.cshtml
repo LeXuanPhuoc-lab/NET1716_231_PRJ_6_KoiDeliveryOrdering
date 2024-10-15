@@ -1,12 +1,10 @@
-﻿@model KoiDeliveryOrdering.Data.Entities.DailyCareSchedule
+﻿@model KoiDeliveryOrdering.MVCWebApp.Models.DailyCareScheduleModels;
 
 @{
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
+<h2>Are you sure you want to delete this?</h2>
 <div>
     <h4>DailyCareSchedule</h4>
     <hr />
@@ -82,6 +80,32 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="DailyCareScheduleId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Ngăn form submit mặc định
+
+                var dailyCareScheduleId = $('#DailyCareScheduleId').val(); // Lấy ID từ input ẩn
+
+                $.ajax({
+                    url: 'http://localhost:7000/api/daily-care-schedule/' + dailyCareScheduleId + '/remove',
+                    type: 'DELETE', // DELETE method cho việc xóa
+                    success: function (response) {
+                        alert('Delete successful!');
+                        window.location.href = '@Url.Action("Index")'; // Redirect về trang Index sau khi thành công
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
