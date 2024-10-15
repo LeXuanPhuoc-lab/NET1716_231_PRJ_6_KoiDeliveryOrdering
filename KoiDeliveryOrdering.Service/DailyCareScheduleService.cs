@@ -19,7 +19,7 @@ namespace KoiDeliveryOrdering.Business
         {
             try
             {
-                var deliveryOrderEntities = await unitOfWork.DailyCareScheduleRepository.FindAllWithConditionAsync();
+                var deliveryOrderEntities = await unitOfWork.DailyCareScheduleRepository.FindAllWithConditionAsync(orderBy: query => query.OrderByDescending(e => e.DailyCareScheduleId));
 
                 if (!deliveryOrderEntities.Any())
                 {
