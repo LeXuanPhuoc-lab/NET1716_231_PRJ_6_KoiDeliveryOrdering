@@ -1,4 +1,4 @@
-﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.DailyCareScheduleModels>
+﻿@model KoiDeliveryOrdering.MVCWebApp.Utils.PaginatedList<DailyCareScheduleModels>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,21 +6,33 @@
 
 <h1 class="my-4 text-center">Daily Care Schedules</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+    <div class="row">
+        <div class="col-md-2 mb-2 position-relative d-flex" style="width: 100%;">
+            <input type="text" id="default-search" name="search"
+                   class="form-control bg-light py-2 p-5 h-auto rounded border border-2 shadow-sm"
+                   placeholder="Search by Task Frequency, Task Duration, CaregiverName, Recommended Value" style="width: 550px;" />
+            <img src="https://img.icons8.com/?size=100&id=83218&format=png&color=000000" width="20" height="20"
+                 class="position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%);" />
+            <button class="btn btn-primary mx-3" role="button" onclick="handleSearch()">Search</button>
+        </div>
+    </div>
+    <a asp-action="Create" class="btn btn-success ml-auto">Create New</a>
+</div>
+
+
 
 <table class="table-bordered table-hover table">
     <thead class="thead-dark">
         <tr>
-            <th>@Html.DisplayNameFor(model => model.DailyCareScheduleId)</th>
-            <th>@Html.DisplayNameFor(model => model.CareTask.CareTaskId)</th>
-            <th>@Html.DisplayNameFor(model => model.DeliverOrderDetail.DeliveryOrderDetailId)</th>
-            <th>@Html.DisplayNameFor(model => model.TaskFrequency)</th>
-            <th>@Html.DisplayNameFor(model => model.RecommendedValue)</th>
-            <th>@Html.DisplayNameFor(model => model.IsCritical)</th>
-            <th>@Html.DisplayNameFor(model => model.CaregiverName)</th>
-            <th>@Html.DisplayNameFor(model => model.LastPerformedDate)</th>
+            <th>DailyCareScheduleId</th>
+            <th>CareTaskId</th>
+            <th>DeliveryOrderDetailId</th>
+            <th>TaskFrequency</th>
+            <th>TaskDuration</th>
+            <th>RecommendedValue</th>
+            <th>IsCritical</th>
+            <th>CaregiverName</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -32,6 +44,7 @@
                 <td>@Html.DisplayFor(modelItem => item.CareTaskId)</td>
                 <td>@Html.DisplayFor(modelItem => item.DeliverOrderDetailId)</td>
                 <td>@Html.DisplayFor(modelItem => item.TaskFrequency)</td>
+                <td>@Html.DisplayFor(modelItem => item.TaskDuration)</td>
                 <td>@Html.DisplayFor(modelItem => item.RecommendedValue)</td>
                 <td>
                     @if (item.IsCritical)
@@ -44,7 +57,6 @@
                     }
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.CaregiverName)</td>
-                <td>@Html.DisplayFor(modelItem => item.LastPerformedDate)</td>
                 <td>
                     <div class="d-flex justify-content-around">
                         <a asp-action="Edit" asp-route-id="@item.DailyCareScheduleId" class="btn btn-sm btn-warning mx-1">Edit</a>
@@ -56,3 +68,146 @@
         }
     </tbody>
 </table>
+<partial name="_Pagination" />
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var pageIndex = @ViewData["PageIndex"];
+            var totalPage = @ViewData["TotalPage"];
+
+            // Process paging
+            $('#back-page').on('click', function () {
+
+                pageIndex = --pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+
+                var reqData = { "SearchValue": "", "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/DailyCareSchedules/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log("back-page: ", response);
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+            $('#next-page').on('click', function () {
+
+                pageIndex = ++pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+
+                var reqData = { "SearchValue": "", "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/DailyCareSchedules/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log("next-page: ", response);
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+
+            // Add event listeners
+            updatePagingStatus(pageIndex, totalPage);
+        });
+
+        // Update data response
+        function updateData(response) {
+            let tableBody = document.querySelector('tbody');
+            tableBody.innerHTML = '';  // Xóa sạch nội dung hiện tại của bảng
+
+            var dailyCareSchedules = response.dailyCareSchedules;  // Giả sử API trả về danh sách các schedule
+
+            dailyCareSchedules.forEach(d => {
+                tableBody.innerHTML +=
+                    `
+                    <tr>
+                        <td>${d.dailyCareScheduleId}</td>
+                        <td>${d.careTaskId}</td>
+                        <td>${d.deliverOrderDetailId}</td>
+                        <td>${d.taskFrequency}</td>
+                        <td>${d.taskDuration}</td>
+                        <td>${d.recommendedValue}</td>
+                        <td>
+                            ${d.isCritical
+                        ? '<span class="badge badge-danger">Critical</span>'
+                        : '<span class="badge badge-secondary">Normal</span>'}
+                        </td>
+                        <td>${d.caregiverName}</td>
+                        <td>
+                            <div class="d-flex justify-content-around">
+                                        <a href="/DailyCareSchedules/Edit/${d.dailyCareScheduleId}" class="btn btn-sm btn-warning mx-1">Edit</a>
+                                        <a href="/DailyCareSchedules/Details/${d.dailyCareScheduleId}" class="btn btn-sm btn-info mx-1">Details</a>
+                                        <a href="/DailyCareSchedules/Delete/${d.dailyCareScheduleId}" class="btn btn-sm btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+            });
+        }
+
+
+
+        // Update Paging Status
+        function updatePagingStatus(pageIndexParam, totalPageParam) {
+            if (pageIndexParam !== undefined && totalPageParam !== undefined) {
+                pageIndex = pageIndexParam;
+                totalPage = totalPageParam;
+            }
+
+            $('#current-index').text(`${pageIndex}`);
+            $('#total-page').text(`${totalPage}`);
+
+
+            // Paging default
+            $('#next-page').removeAttr("disabled");
+            $('#next-page').css("opacity", "1");
+            $('#back-page').removeAttr("disabled");
+            $('#back-page').css("opacity", "1");
+
+            if (pageIndex <= 1) {
+                $('#back-page').attr("disabled", "disabled");
+                $('#back-page').css("opacity", "0.5");
+
+                $('#next-page').removeAttr("disabled");
+                $('#next-page').css("opacity", "1");
+            }
+            if (pageIndex >= totalPage) {
+                $('#next-page').attr("disabled", "disabled");
+                $('#next-page').css("opacity", "0.5");
+            }
+        }
+
+
+        // Handle search
+        function handleSearch() {
+            var searchTerm = $('#default-search').val();
+
+            var reqData = {
+                "SearchValue": searchTerm,
+                "PageIndex": pageIndex
+            };
+            var queryString = $.param(reqData);
+
+            $.ajax({
+                url: `/DailyCareSchedules/IndexWithAjax?${queryString}`,
+                type: 'GET',
+                success: function (response) {
+                    updateData(response);
+                    updatePagingStatus(response.pageIndex, response.totalPage);
+                }
+            });
+        }
+
+    </script>
+}
