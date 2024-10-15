@@ -3,8 +3,10 @@ using KoiDeliveryOrdering.Data.Entities;
 
 namespace KoiDeliveryOrdering.API.Payloads.Requests
 {
-    public class CreateDeliveryOrderRequest
+    public class UpdateDeliveryOrderRequest
     {
+        public int Id { get; set; }
+        public Guid DeliveryOrderId { get; set; }
         public string RecipientAddress { get; set; } = null!;
 
         public string RecipientName { get; set; } = null!;
@@ -21,7 +23,7 @@ namespace KoiDeliveryOrdering.API.Payloads.Requests
 
         public DateTime? DeliveryDate { get; set; }
 
-        public string? OrderStatus { get; set; } 
+        public string? OrderStatus { get; set; }
 
         public decimal? TotalAmount { get; set; }
 
@@ -47,13 +49,19 @@ namespace KoiDeliveryOrdering.API.Payloads.Requests
         public string? ProvinceName { get; set; }
         public string? DistrictName { get; set; }
         public string? WardName { get; set; }
-        public List<CreateAnimalRequest> Animals { get; set; } = new();
+
+        public string? ToUpdateProvinceName { get; set; }
+        public string? ToUpdateDistrictName { get; set; }
+        public string? ToUpdateWardName { get; set; }
+
+        //public List<UpdateAnimalRequest> Animals { get; set; } = new();
+        public List<UpdateDeliveryOrderDetailRequest> DeliveryOrderDetails { get; set; } = new();
     }
 
-    public static class CreateDeliveryOrderRequestExtension
+    public static class UpdateDeliveryOrderRequestExtension
     {
         public static DeliveryOrder ToDeliveryOrder(
-            this CreateDeliveryOrderRequest req)
+            this UpdateDeliveryOrderRequest req)
         {
             var createAtDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
                     TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
@@ -62,14 +70,15 @@ namespace KoiDeliveryOrdering.API.Payloads.Requests
             {
                 // Add default properties
                 CreateDate = createAtDate,
-                //DeliveryDate = AssumpDeliveryDate(
-                //    req.ShippingFeeId, shippingFees, createAtDate),
-                TaxFee = (decimal?) 10,
+                TaxFee = (decimal?)10,
                 IsPurchased = false,
                 OrderStatus = OrderStatusConstants.Pending,
 
                 // Add user order properties
+                Id = req.Id,
+                DeliveryOrderId = req.DeliveryOrderId,
                 TotalAmount = req.TotalAmount ?? 0,
+                DeliveryDate = req.DeliveryDate,
                 RecipientName = req.RecipientName,
                 RecipientPhone = req.RecipientPhone,
                 RecipientAddress = req.RecipientAddress,
@@ -82,7 +91,7 @@ namespace KoiDeliveryOrdering.API.Payloads.Requests
                 VoucherPromotionId = req.VoucherPromotionId,
                 ShippingFeeId = req.ShippingFeeId,
                 SenderInformationId = req.SenderInformationId,
-                DeliveryOrderDetails = req.Animals.ToListDeliveryOrderDetail(),
+                DeliveryOrderDetails = req.DeliveryOrderDetails.ToListDeliveryOrderDetail(),
             };
         }
     }

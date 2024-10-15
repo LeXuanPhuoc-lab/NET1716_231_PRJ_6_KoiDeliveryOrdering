@@ -1,128 +1,212 @@
 ﻿@model KoiDeliveryOrdering.MVCWebApp.Models.DeliveryOrderModel
 
 @{
-    ViewData["Title"] = "Details";
+    // ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
 
-<div>
-    <h4>DeliveryOrder</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryOrderId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryOrderId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecipientAddress)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecipientAddress)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecipientLongitude)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecipientLongitude)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecipientLatitude)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecipientLatitude)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecipientAppointmentTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecipientAppointmentTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreateDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreateDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderStatus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TaxFee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TaxFee)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsPurchased)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsPurchased)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsSenderPurchase)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsSenderPurchase)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsInternational)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsInternational)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SenderInformation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SenderInformation.User.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Document)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Document.ConsigneeAddress)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Payment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Payment.PaymentMethod)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ShippingFee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShippingFee.ShippingFeeId)
-        </dd>
-        @*
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VoucherPromotion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VoucherPromotion.VoucherPromotionId)
-        </dd>
-        *@
-    </dl>
+<div class="container mt-5 mb-5">
+    <h1>Order Detail</h1>
+    <div class="row">
+        <!-- Sender Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/user-forward.svg" class="me-2">
+                    <span class="fw-bold fs-4">SENDER</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Phone Number:</strong> @Model.SenderInformation.SenderPhone</p>
+                    <p><strong>Full Name:</strong> @Model.SenderInformation.SenderName</p>
+                    <p>
+                        <strong>Address:</strong>
+                        @Model.SenderInformation.Street,  
+                        @Model.SenderInformation.Ward
+                        @Model.SenderInformation.District, 
+                        @Model.SenderInformation.CityProvince
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receiver Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/user-check.svg" class="me-2">
+                    <span class="fw-bold fs-4">RECIEVER</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Phone Number:</strong> @Model.RecipientPhone</p>
+                    <p><strong>Full Name:</strong> @Model.RecipientName</p>
+                    <p><strong>Address:</strong> @Model.RecipientAddress</p>
+                    <p><strong>Delivery Appointment:</strong> @Model.RecipientAppointmentTime</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Items Information -->
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/package.svg" class="me-2">
+                    <span class="fw-bold fs-4">ITEMS INFORMATION</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.DeliveryOrderDetails != null)
+                    {
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Breed</th>
+                                    <th class="text-center">Size</th>
+                                    <th class="text-center">Estimate Price</th>
+                                    <th class="text-center">Age</th>
+                                    <th class="text-center">Color</th>
+                                    <th class="text-center">Health Status</th>
+                                    <th class="text-center">Origin Country</th>
+                                    <th class="text-center">Description</th>
+                                    <th class="text-center">Image</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var dOrderDetail in Model.DeliveryOrderDetails)
+                                {
+                                    <tr>
+                                        <td>@dOrderDetail.Animal.Breed</td>
+                                        <td class="text-success fw-bold">@dOrderDetail.Animal.Size (kg)</td>
+                                        <td class="text-primary fw-bold">@(string.Format("{0:N0}", dOrderDetail.Animal.EstimatedPrice) + "đ")</td>
+                                        <td>@dOrderDetail.Animal.Age</td>
+                                        <td class="d-flex align-items-center">
+                                            <div class="d-inline-block rounded"
+                                                 style="width: 20px; height: 20px; background-color: @dOrderDetail.Animal.ColorPattern;"></div>
+                                            <span class="ms-2">@dOrderDetail.Animal.ColorPattern</span>
+                                        </td>
+                                        <td class ="text-warning fw-bold">@dOrderDetail.Animal.HealthStatus</td>
+                                        <td>@dOrderDetail.Animal.OriginCountry</td>
+                                        <td>@dOrderDetail.Animal.Description</td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(dOrderDetail.Animal.ImageUrl)){
+                                                <img src="@dOrderDetail.Animal.ImageUrl" alt="Animal Image" class="img-thumbnail" style="max-width: 150px;" />
+                                            }else{
+                                                <img width="20" height="20" src="https://img.icons8.com/ios-filled/50/no-image.png" alt="no-image" />
+                                                <span class="mt-2">No image</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No animals added for delivery.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/truck.svg" class="me-2">
+                    <span class="fw-bold fs-4">SERVICE & PROMOTION</span>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Promotion:</strong>
+                        @if(Model.VoucherPromotion != null)
+                        {
+                            <span>@Model.VoucherPromotion.PromotionRate%</span>
+                        }
+                        else
+                        {
+                            <span>0%</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="border bg-dark bg-opacity-10 p-3 flex-row align-content-center rounded-top">
+                    <img src="https://viettelpost.vn/assets/images/truck.svg" class="me-2">
+                    <span class="fw-bold fs-4">OTHER INFORMATION</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Payer:</strong> @(Model.IsSenderPurchase ? "Sender" : "Receiver")</p>
+                    <p class="d-flex align-items-center"><strong>Send to Other Country:</strong> 
+                        @if (Model.IsInternational){
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=VFaz7MkjAiu0&format=png&color=000000" alt="no-image" />
+                        }
+                        else
+                        {
+                            <img class="mx-3" width="16" height="16" src="https://img.icons8.com/?size=100&id=4vD3CGn0ukPX&format=png&color=000000" alt="no-image" />
+                        }
+                    </p>
+                    <p class="mt-3">
+                        <strong>Create Date: </strong>
+                        @(Model.CreateDate.ToString("dd/MM/yyyy"))
+                    </p>
+                    <p class="mt-3">
+                        <strong>Estimated Delivery Date: </strong>
+                        @(Model.DeliveryDate?.ToString("dd/MM/yyyy"))
+                    </p>
+                    <hr />
+                    <p><strong>Shipping Fee:</strong> @(string.Format("{0:N0}", @Model.ShippingFee.BaseFee) + "đ")</p>
+                    <p><strong>Weight Class:</strong> @Model.ShippingFee.WeightClass (kg)</p>
+                    <p>
+                        <strong>Range:</strong> 
+                        <span>@Model.ShippingFee.DistanceRangeFrom -</span>
+                        <span>@Model.ShippingFee.DistanceRangeTo (km)</span>
+                    </p>
+
+                    <hr />
+                    <p class="mt-3">
+                        <strong>Payment method: </strong>
+                        @if(Model.Payment != null)
+                        {
+                            <span class="text-info fw-bold">@Model.Payment?.PaymentMethod</span>
+                        }
+                        else
+                        {
+                            <span class="">No payment yet!</span>
+                        }
+                    </p>
+                    <p class="mt-3">
+                        <strong>Order Status: </strong>
+                        <span class="text-info fw-bold">@Model.OrderStatus</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Cost -->
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="text-right fs-4">
+                <p>
+                    <strong>VAT:</strong>
+                    <span class="text-secondary fw-bold">@Model.TaxFee%</span>
+                </p>
+                <p>
+                    <strong>Total Cost:</strong> 
+                    <span class="text-danger fw-bold">@(string.Format("{0:N0}", Model.TotalAmount) + "đ")</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-primary mx-3" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <a class="btn btn-success" asp-action="Index">Back to List</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+

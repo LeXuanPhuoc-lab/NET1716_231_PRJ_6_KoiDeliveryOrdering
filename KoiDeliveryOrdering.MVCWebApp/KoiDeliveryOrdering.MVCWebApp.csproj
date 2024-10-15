@@ -20,4 +20,8 @@
       <ProjectReference Include="..\KoiDeliveryOrdering.Data\KoiDeliveryOrdering.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Payloads\Requests\" />
+    </ItemGroup>
+
 </Project>
