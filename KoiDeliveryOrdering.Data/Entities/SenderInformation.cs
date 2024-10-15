@@ -29,7 +29,7 @@ public partial class SenderInformation
 
     public string? SenderAppointmentTime { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual UserDTO User { get; set; } = null!;
 
     [JsonIgnore]
     public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();

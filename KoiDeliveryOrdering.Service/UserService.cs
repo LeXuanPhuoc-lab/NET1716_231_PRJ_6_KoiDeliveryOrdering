@@ -18,7 +18,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
         try
         {
             // Prepare insert 
-            await unitOfWork.UserRepository.PrepareInsertAsync(mapper.Map<User>(test));
+            await unitOfWork.UserRepository.PrepareInsertAsync(mapper.Map<UserDTO>(test));
             
             // Perform insert query to db
             var isInserted = await unitOfWork.UserRepository.SaveChangeWithTransactionAsync() > 0;
@@ -118,7 +118,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntities);
             }
             
-            return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<User>());
+            return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<UserDTO>());
         }
         catch (Exception ex)
         {
@@ -126,17 +126,17 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
         }
     }
 
-    public Task<IServiceResult> FindOneWithConditionAsync(Expression<Func<User, User>>? filter, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
+    public Task<IServiceResult> FindOneWithConditionAsync(Expression<Func<UserDTO, UserDTO>>? filter, Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null, string? includeProperties = "")
     {
         throw new NotImplementedException();
     }
 
-    public Task<IServiceResult> FindAllWithConditionAsync(Expression<Func<User, User>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, string? includeProperties = "")
+    public Task<IServiceResult> FindAllWithConditionAsync(Expression<Func<UserDTO, UserDTO>>? filter = null, Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null, string? includeProperties = "")
     {
         throw new NotImplementedException();
     }
 
-    public Task<IServiceResult> FindAllWithConditionAndThenIncludeAsync(Expression<Func<User, bool>>? filter = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null, List<Func<IQueryable<User>, IIncludableQueryable<User, object>>>? includes = null)
+    public Task<IServiceResult> FindAllWithConditionAndThenIncludeAsync(Expression<Func<UserDTO, bool>>? filter = null, Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null, List<Func<IQueryable<UserDTO>, IIncludableQueryable<UserDTO, object>>>? includes = null)
     {
         throw new NotImplementedException();
     }
@@ -173,7 +173,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
                 // Get successfully
                 ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntity)
                 // Get fail
-                : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new User());
+                : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new UserDTO());
         }
         catch (Exception ex)
         {

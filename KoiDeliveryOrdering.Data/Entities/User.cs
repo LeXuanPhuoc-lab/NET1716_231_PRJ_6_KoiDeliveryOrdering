@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KoiDeliveryOrdering.Data.Entities;
 
-public partial class User
+public partial class UserDTO
 {
     public int Id { get; set; }
 

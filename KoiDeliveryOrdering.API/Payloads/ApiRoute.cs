@@ -9,6 +9,9 @@ public static class ApiRoute
         public const string GetById = Base + "/users/{id:Guid}";
         public const string GetAll = Base + "/users";
         public const string GetByUsername = Base + "/users/{username}";
+        public const string Remove = Base + "/users/{id}/remove";
+        public const string Insert = Base + "/users/insert";
+        public const string Update = Base + "/users/update";
 
         // This only use before implementing (Sign in/Sign up)
         public const string GetAllSenderInformationAsync = Base + "/users/sender-informations";
