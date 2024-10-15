@@ -1,3 +1,4 @@
+using KoiDeliveryOrdering.API.Payloads.Requests;
 using System.Reflection;
 using KoiDeliveryOrdering.Business;
 using KoiDeliveryOrdering.Business.Interfaces;
@@ -5,8 +6,11 @@ using KoiDeliveryOrdering.Business.Models;
 using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Context;
 using KoiDeliveryOrdering.Data.Entities;
+using KoiDeliveryOrdering.Service.Interfaces;
+using KoiDeliveryOrdering.Service.Utils;
 using Mapster;
 using MapsterMapper;
+using KoiDeliveryOrdering.Service;
 
 namespace KoiDeliveryOrdering.API.Extensions;
 
@@ -27,6 +31,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IDailyCareScheduleService, DailyCareScheduleService>();
         services.AddScoped<IDeliveryOrderDetailService, DeliveryOrderDetailService>();
         services.AddScoped<ICareTaskService, CareTaskService>();
+        services.AddScoped<IStaffService, StaffService>();
 
         return services;
     }

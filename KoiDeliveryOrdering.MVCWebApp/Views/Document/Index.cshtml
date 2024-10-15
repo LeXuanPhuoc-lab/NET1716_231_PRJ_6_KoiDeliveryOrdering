@@ -1,105 +1,153 @@
-﻿<div class="row">
-    <div class="col-md-10">
-        <h3 class="display-8">Bank List</h3>
+﻿@model IEnumerable<KoiDeliveryOrdering.Data.Dtos.Documents.DocumentDto>
+
+@{
+    var index = 0;
+}
+
+<div class="container w-100">
+    <h1>Document list</h1>
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+
+    <div style="display: grid;width: 100%">
+        <div style="overflow-x: auto">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-nowrap">Id</th>
+                    <th class="text-nowrap">Delivery order id</th>
+                    <th class="text-nowrap">Document number</th>
+                    <th class="text-nowrap">Document type</th>
+                    <th class="text-nowrap">Issue date</th>
+                    <th class="text-nowrap">Expiration date</th>
+                    <th class="text-nowrap">Consignee name</th>
+                    <th class="text-nowrap">Consignee phone</th>
+                    <th class="text-nowrap">Consignee address</th>
+                    <th class="text-nowrap">Exporter name</th>
+                    <th class="text-nowrap">Exporter phone</th>
+                    <th class="text-nowrap">Exporter address</th>
+                    <th class="text-nowrap">Dispatch method</th>
+                    <th class="text-nowrap">Transportation type</th>
+                    <th class="text-nowrap">Shipping fee</th>
+                    <th class="text-nowrap">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-nowrap">
+                            <button style="width: 30px;height: 30px" id="show-button-@index" onclick="showDocumentDetails(@index)" class="btn btn-sm btn-primary fw-bold fs-5">+</button>
+                        </td>
+                        <td class="text-nowrap">
+                            @item.Id
+                        </td>
+                        <td class="text-nowrap">
+                            @item.DeliveryOrderId
+                        </td>
+                        <td class="text-nowrap">
+                            @item.DocumentNumber
+                        </td>
+                        <td class="text-nowrap">
+                            @item.DocumentType
+                        </td>
+                        <td class="text-nowrap">
+                            @item.IssueDate
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ExpirationDate
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ConsigneeName
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ConsigneePhone
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ConsigneeAddress
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ExporterName
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ExporterPhone
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ExporterAddress
+                        </td>
+                        <td class="text-nowrap">
+                            @item.DispatchMethod
+                        </td>
+                        <td class="text-nowrap">
+                            @item.TransportationType
+                        </td>
+                        <td class="text-nowrap">
+                            @item.ShippingFee
+                        </td>
+                        <td class="text-nowrap">
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+
+                    <tr class="dd-item-@index d-none">
+                        <th></th>
+                        <th class="text-nowrap">Item name</th>
+                        <th class="text-nowrap">Item category</th>
+                        <th class="text-nowrap">Quantity</th>
+                        <th class="text-nowrap">Weight(kg)</th>
+                    </tr>
+
+                    @foreach (var documentDetail in item.DocumentDetails)
+                    {
+                        <tr class="dd-item-@index d-none">
+                            <td></td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemName
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemCategory
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemQuantity
+                            </td>
+                            <td class="text-nowrap">
+                                @documentDetail.ItemWeight
+                            </td>
+                        </tr>
+                    }
+                    
+                    index++;
+                }
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="col-md-2 text-end">
-        <button type="button" class="btn btn-primary" onclick="add();">
-            Add
-        </button>
-    </div>
-</div>
-<div class="row container">
-	<div class="col-md-12">
-		<table class="table table-striped table-hover table-bordered">
-			<thead>
-				<tr class="card-header">
-					<th class="card-title text-center">DocumentNumber</th>
-					<th class="card-title text-center">DocumentType</th>
-					<th class="card-title text-center">IssueDate</th>
-					<th class="card-title text-center">ExpirationDate</th>
-					<th class="card-title text-center">ConsigneeName</th>
-					<th class="card-title text-center">ExporterName</th>
-					<th class="card-title text-center">DispatchMethod</th>
-					<th class="card-title text-center">FinalDestination</th>
-					<th class="card-title text-center">TransportationType</th>
-					<th class="card-title text-center">TaxFee</th>
-					<th class="card-title text-center">ShippingFee</th>
-					<th class="card-title text-center">AssurranceFee</th>
-				</tr>
-			</thead>
-			<tbody class="tblDocuments">
-			</tbody>
-		</table>
-	</div>
 </div>
 
-<div class="modal fade" id="deliveryOrderModal" tabindex="-1" aria-labelledby="deliveryOrderModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			@using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
-			{
-				@Html.AntiForgeryToken()
-				<div class="modal-header">
-					<h5 class="modal-title" id="deliveryOrderModalLabel">Bank</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-				</div>
-				<div class="modal-footer">
-					<button id="btSave" type="button" class="btn btn-primary">Save</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			}
-		</div>
-	</div>
-</div>
 
-@section scripts {
-	<script type="text/javascript">
-		$(document).ready(function () {
-			loadData();
-		});
-
-		function loadData() {
-			// alert("Load data progressing ...");
-
-			$.ajax({
-				url: 'http://localhost:7000/api/documents',
-				type: "GET",
-				contentType: "application/json;charset=utf-8",
-				dataType: "json",
-				success: function (result) {
-					alert('Server response: ' + result.message);
-					console.log(result);
-					var html = '';
-					$.each(result.data, function (key, item) {
-						html += '<tr>';
-						html += '<td>' + item.documentNumber + '</td>';
-						html += '<td>' + item.documentType + '</td>';
-						html += '<td>' + item.issueDate + '</td>';
-						html += '<td>' + item.expirationDate + '</td>';
-						html += '<td>' + item.dispatchMethod + '</td>';
-						html += '<td>' + item.finalDestination + '</td>';
-						html += '<td>' + item.transportationType + '</td>';
-						html += '<td>' + item.taxFee + '</td>';
-						html += '<td>' + item.shippingFee + '</td>';
-						html += '<td>' + item.assurranceFee + '</td>';
-						html += '<td></td>';
-						html += '</tr>';
-					});
-						$('.tblDocuments').html(html);
-				},
-				error: function (xhr, error) {
-					alert(xhr.statusText);
-				}
-			});
-
-		}
-		function add() {
-			$("#deliveryOrderModalContent").html("");
-			$("#deliveryOrderModalLabel").html("Add New");
-
-			$('#deliveryOrderModal').modal('show');
-		}
-	</script>
+@section Scripts {
+    <script>
+            const isShowDocumentDetails = Array(@Model.Count()).fill(false);
+            
+            function showDocumentDetails(index){
+                console.log(index)
+                isShowDocumentDetails[index]=!isShowDocumentDetails[index];
+                document.getElementById(`show-button-${index}`).innerHTML=isShowDocumentDetails[index]?"-":"+"
+                
+                if (isShowDocumentDetails[index])
+                {
+                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
+                        item.classList.remove("d-none");
+                    })
+                }else{
+                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
+                        item.classList.add("d-none");
+                    })
+                }
+            }
+    </script>
 }

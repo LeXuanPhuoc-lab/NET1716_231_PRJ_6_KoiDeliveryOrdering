@@ -19,7 +19,7 @@ public class DeliveryOrderService(UnitOfWork unitOfWork,
             var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(
                 filter: d => d.DeliveryOrderId == deliveryOrderId,
                 orderBy: null,
-                includeProperties: "SenderInformation,Document,Payment,ShippingFee,VoucherPromotion");
+                includeProperties: "SenderInformation,Documents,Payment,ShippingFee,VoucherPromotion");
 
             if (deliveryOrderEntity == null)
             {
@@ -41,7 +41,7 @@ public class DeliveryOrderService(UnitOfWork unitOfWork,
             var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(
                 filter: d => d.Id == id,
                 orderBy: null,
-                includeProperties: "SenderInformation,Document,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
+                includeProperties: "SenderInformation,Documents,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
 
             if (deliveryOrderEntity == null)
             {
@@ -112,7 +112,7 @@ public class DeliveryOrderService(UnitOfWork unitOfWork,
             var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(
                 filter: d => d.Id == deliveryOrder.Id,
                 orderBy: null,
-                includeProperties: "SenderInformation,Document,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
+                includeProperties: "SenderInformation,Documents,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
 
                 if (deliveryOrderEntity != null)
                 {
@@ -250,7 +250,7 @@ public class DeliveryOrderService(UnitOfWork unitOfWork,
             var deliveryOrderEntity = await unitOfWork.DeliveryOrderRepository.FindOneWithConditionAsync(
                 filter: d => d.Id == id,
                 orderBy: null,
-                includeProperties: "SenderInformation,Document,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
+                includeProperties: "SenderInformation,Documents,Payment,ShippingFee,VoucherPromotion,DeliveryOrderDetails");
 
             // Check exist delivery order
             if (deliveryOrderEntity == null)

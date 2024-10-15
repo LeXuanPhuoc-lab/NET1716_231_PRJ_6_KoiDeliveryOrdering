@@ -12,7 +12,7 @@ public static class ApiRoute
 
         // This only use before implementing (Sign in/Sign up)
         public const string GetAllSenderInformationAsync = Base + "/users/sender-informations";
-	}
+    }
 
     public static class DeliveryOrder
     {
@@ -54,6 +54,10 @@ public static class ApiRoute
     public static class Document
     {
         public const string GetAll = Base + "/documents";
+        public const string GetById = Base + "/documents/{id}";
+        public const string CreateDocument = Base + "/documents";
+        public const string UpdateDocument = Base + "/documents/{id}";
+        public const string DeleteDocument = Base + "/documents/{id}";
     }
 
     public static class Image
@@ -70,5 +74,15 @@ public static class ApiRoute
         public const string Remove = Base + "/daily-care-schedule/{id}/remove";
         public const string GetAllCareTask = Base + "/care-task";
         public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
+        public const string GetAllStaff = Base + "/staff";
+    }
+
+    public static class CareTask
+    {
+        public const string GetById = Base + "/care-task/{id}";
+        public const string GetAll = Base + "/care-task";
+        public const string Insert = Base + "/care-task/insert";
+        public const string Update = Base + "/care-task/update";
+        public const string Remove = Base + "/care-task/{id}/remove";
     }
 }

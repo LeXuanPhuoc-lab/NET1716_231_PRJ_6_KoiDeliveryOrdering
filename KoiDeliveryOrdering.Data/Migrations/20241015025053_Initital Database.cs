@@ -32,43 +32,19 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     task_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    unit = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    priority = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    due_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    assigned_to = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    completed_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    is_recurring = table.Column<bool>(type: "bit", nullable: false),
+                    notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CareTask", x => x.care_task_id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Document",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    document_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newsequentialid())"),
-                    document_number = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    document_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    issue_date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    expiration_date = table.Column<DateTime>(type: "datetime", nullable: true),
-                    consignee_name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    consignee_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    consignee_address = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    exporter_name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    exporter_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    exporter_address = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    dispatch_method = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    final_destination = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: false),
-                    transportation_no = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    transportation_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    port_of_loading = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    port_of_discharge = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    tax_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
-                    shipping_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
-                    assurrance_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Document", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,30 +182,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Document_Detail",
-                columns: table => new
-                {
-                    document_detail_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    document_detail_description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    item_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    item_weight = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    item_category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    item_estimate_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    item_quantity = table.Column<int>(type: "int", nullable: true),
-                    document_id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DocumentDetail", x => x.document_detail_id);
-                    table.ForeignKey(
-                        name: "FK_DocumentDetail_Document",
-                        column: x => x.document_id,
-                        principalTable: "Document",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Truck",
                 columns: table => new
                 {
@@ -358,17 +310,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     is_international = table.Column<bool>(type: "bit", nullable: false),
                     voucher_promotion_id = table.Column<int>(type: "int", nullable: true),
                     shipping_fee_id = table.Column<int>(type: "int", nullable: false),
-                    sender_information_id = table.Column<int>(type: "int", nullable: false),
-                    document_id = table.Column<int>(type: "int", nullable: true)
+                    sender_information_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeliveryOrder", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_DeliveryOrder_Document",
-                        column: x => x.document_id,
-                        principalTable: "Document",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_DeliveryOrder_Payment",
                         column: x => x.payment_id,
@@ -414,6 +360,39 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderDetail_Order",
+                        column: x => x.delivery_order_id,
+                        principalTable: "Delivery_Order",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Document",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    document_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newsequentialid())"),
+                    document_number = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    document_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    issue_date = table.Column<DateOnly>(type: "date", nullable: false),
+                    expiration_date = table.Column<DateOnly>(type: "date", nullable: true),
+                    consignee_name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    consignee_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    consignee_address = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    exporter_name = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    exporter_phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    exporter_address = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
+                    dispatch_method = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    transportation_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    shipping_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
+                    delivery_order_id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Document", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Document_DeliveryOrder",
                         column: x => x.delivery_order_id,
                         principalTable: "Delivery_Order",
                         principalColumn: "id",
@@ -492,6 +471,31 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Document_Detail",
+                columns: table => new
+                {
+                    document_detail_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    document_detail_description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    item_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    item_weight = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    item_category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    item_estimate_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    item_quantity = table.Column<int>(type: "int", nullable: true),
+                    document_id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocumentDetail", x => x.document_detail_id);
+                    table.ForeignKey(
+                        name: "FK_DocumentDetail_Document",
+                        column: x => x.document_id,
+                        principalTable: "Document",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Care_Log",
                 columns: table => new
                 {
@@ -551,11 +555,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 column: "deliver_order_detail_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Delivery_Order_document_id",
-                table: "Delivery_Order",
-                column: "document_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Delivery_Order_payment_id",
                 table: "Delivery_Order",
                 column: "payment_id");
@@ -598,11 +597,15 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Document_delivery_order_id",
+                table: "Document",
+                column: "delivery_order_id");
+
+            migrationBuilder.CreateIndex(
                 name: "UQ__Document__C8FE0D8C5D2DDE9F",
                 table: "Document",
                 column: "document_number",
-                unique: true,
-                filter: "[document_number] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UQ_Document",
@@ -701,6 +704,9 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 name: "Daily_Care_Schedule");
 
             migrationBuilder.DropTable(
+                name: "Document");
+
+            migrationBuilder.DropTable(
                 name: "Staff");
 
             migrationBuilder.DropTable(
@@ -726,9 +732,6 @@ namespace KoiDeliveryOrdering.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Animal_Type");
-
-            migrationBuilder.DropTable(
-                name: "Document");
 
             migrationBuilder.DropTable(
                 name: "Payment");

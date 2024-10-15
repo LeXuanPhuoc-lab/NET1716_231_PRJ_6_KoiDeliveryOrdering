@@ -1,0 +1,58 @@
+﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.DailyCareScheduleModels>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="my-4 text-center">Daily Care Schedules</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<table class="table-bordered table-hover table">
+    <thead class="thead-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.DailyCareScheduleId)</th>
+            <th>@Html.DisplayNameFor(model => model.CareTask.CareTaskId)</th>
+            <th>@Html.DisplayNameFor(model => model.DeliverOrderDetail.DeliveryOrderDetailId)</th>
+            <th>@Html.DisplayNameFor(model => model.TaskFrequency)</th>
+            <th>@Html.DisplayNameFor(model => model.RecommendedValue)</th>
+            <th>@Html.DisplayNameFor(model => model.IsCritical)</th>
+            <th>@Html.DisplayNameFor(model => model.CaregiverName)</th>
+            <th>@Html.DisplayNameFor(model => model.LastPerformedDate)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.DailyCareScheduleId)</td>
+                <td>@Html.DisplayFor(modelItem => item.CareTaskId)</td>
+                <td>@Html.DisplayFor(modelItem => item.DeliverOrderDetailId)</td>
+                <td>@Html.DisplayFor(modelItem => item.TaskFrequency)</td>
+                <td>@Html.DisplayFor(modelItem => item.RecommendedValue)</td>
+                <td>
+                    @if (item.IsCritical)
+                    {
+                        <span class="badge badge-danger">Critical</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">Normal</span>
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.CaregiverName)</td>
+                <td>@Html.DisplayFor(modelItem => item.LastPerformedDate)</td>
+                <td>
+                    <div class="d-flex justify-content-around">
+                        <a asp-action="Edit" asp-route-id="@item.DailyCareScheduleId" class="btn btn-sm btn-warning mx-1">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.DailyCareScheduleId" class="btn btn-sm btn-info mx-1">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.DailyCareScheduleId" class="btn btn-sm btn-danger mx-1">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

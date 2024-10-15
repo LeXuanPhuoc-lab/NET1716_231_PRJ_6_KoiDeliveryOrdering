@@ -40,7 +40,6 @@ public class DeliveryOrderRepository : GenericRepository<DeliveryOrder>
             .Include(x => x.SenderInformation)
             .Include(x => x.Payment)
             .Include(x => x.ShippingFee)
-            .Include(x => x.Document)
             .Include(x => x.VoucherPromotion)
             .ToListAsync();
     }

@@ -1,24 +1,31 @@
 ﻿using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.API.Payloads.Requests;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Data.Entities;
+using KoiDeliveryOrdering.Service.Interfaces;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiDeliveryOrdering.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class DailyScheduleController : ControllerBase
     {
         private readonly IDailyCareScheduleService dailyCareScheduleService;
         private readonly IDeliveryOrderDetailService deliveryOrderDetailService;
         private readonly ICareTaskService careTaskService;
+        private readonly IStaffService staffService;
 
-        public DailyScheduleController(IDailyCareScheduleService dailyCareScheduleService, IDeliveryOrderDetailService deliveryOrderDetailService, ICareTaskService careTaskService)
+        public DailyScheduleController(IDailyCareScheduleService dailyCareScheduleService,
+            IDeliveryOrderDetailService deliveryOrderDetailService,
+            ICareTaskService careTaskService,
+            IStaffService staffService)
         {
             this.dailyCareScheduleService = dailyCareScheduleService;
             this.deliveryOrderDetailService = deliveryOrderDetailService;
             this.careTaskService = careTaskService;
+            this.staffService = staffService;
         }
 
         [HttpGet(ApiRoute.DailyCareSchedule.GetAll)]
@@ -34,15 +41,19 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpPost(ApiRoute.DailyCareSchedule.Insert)]
-        public async Task<IServiceResult> InsertDailyCareScheduleAsync([FromBody] DailyCareSchedule req)
+        public async Task<IServiceResult> InsertDailyCareScheduleAsync([FromBody] DailyCareScheduleRequest req)
         {
-            return await dailyCareScheduleService.InsertAsync(req);
+            // Map to DailyCareSchedule entity
+            var dailyCareScheduleEntity = req.Adapt<DailyCareSchedule>();
+            return await dailyCareScheduleService.InsertAsync(dailyCareScheduleEntity);
         }
 
         [HttpPut(ApiRoute.DailyCareSchedule.Update)]
-        public async Task<IServiceResult> UpdateDailyCareScheduleAsync([FromBody] DailyCareSchedule req)
+        public async Task<IServiceResult> UpdateDailyCareScheduleAsync([FromBody] DailyCareScheduleRequest req)
         {
-            return await dailyCareScheduleService.UpdateAsync(req);
+            // Map to DailyCareSchedule entity
+            var dailyCareScheduleEntity = req.Adapt<DailyCareSchedule>();
+            return await dailyCareScheduleService.UpdateAsync(dailyCareScheduleEntity);
         }
 
         [HttpDelete(ApiRoute.DailyCareSchedule.Remove)]
@@ -61,6 +72,12 @@ namespace KoiDeliveryOrdering.API.Controllers
         public async Task<IServiceResult> GetAllDeliveryOrderDetailAsync()
         {
             return await deliveryOrderDetailService.FindAllAsync();
+        }
+
+        [HttpGet(ApiRoute.DailyCareSchedule.GetAllStaff)]
+        public async Task<IServiceResult> GetAllStaff()
+        {
+            return await staffService.FindAllAsync();
         }
 
     }
