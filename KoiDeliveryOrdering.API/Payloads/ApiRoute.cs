@@ -65,4 +65,18 @@ public static class ApiRoute
         public const string GetAllCareTask = Base + "/care-task";
         public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
     }
+
+    public static class HereMap
+    {
+        public const string BaseUrl = "https://geocode.search.hereapi.com/v1/geocode?q={address}&apiKey={apiKey}";
+    }
+
+    public static class Garage
+    {
+        public const string GetById = Base + "/garages/{id}";
+        public const string GetAll = Base + "/garages";
+        public const string Insert = Base + "/garages";
+        public const string Update = Base + "/garages/update";
+        public const string Remove = Base + "/garages/{id}";
+    }
 }

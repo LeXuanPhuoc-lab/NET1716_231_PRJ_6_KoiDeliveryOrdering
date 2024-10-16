@@ -9,6 +9,8 @@ using KoiDeliveryOrdering.Data.Entities;
 using Mapster;
 using MapsterMapper;
 using System.Reflection;
+using KoiDeliveryOrdering.Service.Interfaces;
+using KoiDeliveryOrdering.Service;
 
 namespace KoiDeliveryOrdering.API.Extensions;
 
@@ -29,6 +31,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IDailyCareScheduleService, DailyCareScheduleService>();
         services.AddScoped<IDeliveryOrderDetailService, DeliveryOrderDetailService>();
         services.AddScoped<ICareTaskService, CareTaskService>();
+        services.AddScoped<IGarageService, GarageService>();
 
         return services;
     }
