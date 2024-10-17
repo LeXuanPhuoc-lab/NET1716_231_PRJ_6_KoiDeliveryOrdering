@@ -99,4 +99,13 @@ public static class ApiRoute
         public const string Update = Base + "/garages";
         public const string Remove = Base + "/garages/{id}";
     }
+
+    public static class Truck
+    {
+        public const string GetById = Base + "/truck/{id}";
+        public const string GetAll = Base + "/truck";
+        public const string Insert = Base + "/truck";
+        public const string Update = Base + "/truck/update";
+        public const string Remove = Base + "/truck/{id}";
+    }
 }
