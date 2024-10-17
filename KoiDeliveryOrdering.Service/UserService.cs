@@ -47,7 +47,7 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
             if(userEntity == null) return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
         
             // Prepare remove 
-            await unitOfWork.UserRepository.PrepareRemoveAsync(userEntity);
+            await unitOfWork.UserRepository.PrepareRemoveAsync(userEntity.Id);
         
             // Save to db
             var isRemoved = await unitOfWork.UserRepository.SaveChangeWithTransactionAsync() > 0;
@@ -95,10 +95,26 @@ public class UserService(UnitOfWork unitOfWork, IMapper mapper) : IUserService
         }
     }
 
-    public Task<IServiceResult> FindAsync(Guid userId)
+    public async Task<IServiceResult> FindAsync(Guid userId)
     {
-        throw new NotImplementedException();
-	}
+        try
+        {
+            var userEntity = await unitOfWork.UserRepository.FindOneWithConditionAsync(
+                 x => x.UserId == userId
+            );
+
+            if (userEntity == null)
+            {
+                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new DailyCareSchedule());
+            }
+
+            return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntity);
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+        }
+    }
 
     public async Task<IServiceResult> FindAllAsync()
     {

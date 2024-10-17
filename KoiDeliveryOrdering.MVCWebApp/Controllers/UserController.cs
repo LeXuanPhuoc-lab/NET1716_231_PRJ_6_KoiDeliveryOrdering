@@ -47,38 +47,45 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             return View(new List<UserModel>());
         }
 
-       
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            UserModel userModel = null;
-            using (var httpClient = new HttpClient())
+            public async Task<IActionResult> Delete(Guid? id)
             {
-                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "users/" + id))
+                if (id == null)
                 {
-                    if (response.IsSuccessStatusCode)
+                    return NotFound();
+                }
+
+                UserModel user = null;
+
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(Const.APIEndpoint + $"users/{id}"))
                     {
-                        var context = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
-                        if (result != null && result.Data != null)
+                        if (response.IsSuccessStatusCode)
                         {
-                            userModel = JsonConvert.DeserializeObject<UserModel>(result.Data.ToString());
+                            var content = await response.Content.ReadAsStringAsync();
+                            var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+
+                            if (result != null && result.Data != null)
+                            {
+                                user = JsonConvert.DeserializeObject<UserModel>(result.Data.ToString());
+                            }
                         }
                     }
                 }
 
-                return userModel != null ? View(userModel) : NotFound();
-            }
-        }
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return View(user); // Pass the user data to the view
+            }   
 
         //// POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int UserId)
+        public async Task<IActionResult> DeleteConfirmed(Guid UserId)
         {
             bool delelteStatus = false;
             if (ModelState.IsValid)
@@ -86,7 +93,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     using (var response =
-                           await httpClient.DeleteAsync(Const.APIEndpoint + "Users/" + UserId + "/remove"))
+                           await httpClient.DeleteAsync(Const.APIEndpoint + "users/" + UserId + "/remove"))
                     {
                         if (response.IsSuccessStatusCode)
                         {

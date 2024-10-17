@@ -52,5 +52,24 @@ public static class CreateAnimalRequestExtension
                 AnimalTypeId = ar.AnimalTypeId
             }
         }).ToList();
-    }    
+    }
+    public static Animal ToAnimal(this CreateAnimalRequest request) 
+    {
+        var animal = new Animal()
+        {
+            HealthStatus = request.HealthStatus,
+            Age= request.Age,
+            AnimalId = Guid.NewGuid(),
+            AnimalTypeId= request.AnimalTypeId,
+            Breed = request.Breed,
+            ColorPattern= request.ColorPattern,
+            Size = request.Size,
+            Description = request.Description,
+            EstimatedPrice= request.EstimatedPrice,
+            ImageUrl= request.ImageUrl,
+            IsAvailable= true,
+            OriginCountry= request.OriginCountry,  
+        };
+        return animal;
+    }
 }

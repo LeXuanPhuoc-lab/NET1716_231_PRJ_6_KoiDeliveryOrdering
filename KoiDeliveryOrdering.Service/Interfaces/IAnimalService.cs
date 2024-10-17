@@ -9,5 +9,8 @@ namespace KoiDeliveryOrdering.Business.Interfaces
         Task<IServiceResult> FindAllHealthStatusAsync();
         Task<IServiceResult> UpdateAsync(Animal animal);
         Task<IServiceResult> RemoveAsync(int id);
+        Task<IServiceResult> GetAllAnimal();
+        Task<IServiceResult> FindAnimalById(int id);
+        Task<IServiceResult> InsertAsync(Animal animal);
     }
 }
