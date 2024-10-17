@@ -1,6 +1,7 @@
 ﻿using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+
 namespace KoiDeliveryOrdering.Data.Context;
 
 public partial class KoiDeliveryOrderingDbContext : DbContext
@@ -53,19 +54,19 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
     public virtual DbSet<VoucherPromotion> VoucherPromotions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString(), o 
+        => optionsBuilder.UseSqlServer(GetConnectionString(), o
             => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-    
+
     private string GetConnectionString()
     {
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .Build();
-        
+
         return configuration.GetConnectionString("DefaultConnectionString")!;
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Animal>(entity =>
@@ -90,7 +91,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("description");
             entity.Property(e => e.EstimatedPrice)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("estimated_price");
             entity.Property(e => e.HealthStatus)
                 .HasMaxLength(50)
@@ -104,7 +105,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("origin_country");
             entity.Property(e => e.Size)
-                .HasColumnType("decimal(5, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("size");
 
             entity.HasOne(d => d.AnimalType).WithMany(p => p.Animals)
@@ -133,7 +134,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActualValue)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("actual_value");
             entity.Property(e => e.DailyCareScheduleId).HasColumnName("daily_care_schedule_id");
             entity.Property(e => e.LogDate)
@@ -174,6 +175,36 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.Unit)
                 .HasMaxLength(50)
                 .HasColumnName("unit");
+            entity.Property(e => e.Priority)
+                .HasMaxLength(20)
+                .HasColumnName("priority");
+
+            entity.Property(e => e.UpdateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+
+            entity.Property(e => e.DueDate)
+                .HasColumnType("datetime")
+                .HasColumnName("due_date");
+
+            entity.Property(e => e.AssignedTo)
+                .HasMaxLength(100)
+                .HasColumnName("assigned_to");
+
+            entity.Property(e => e.CompletedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("completed_at");
+
+            entity.Property(e => e.IsRecurring)
+                .HasColumnName("is_recurring");
+
+            entity.Property(e => e.Notes)
+                .HasMaxLength(500)
+                .HasColumnName("notes");
         });
 
         modelBuilder.Entity<DailyCareSchedule>(entity =>
@@ -189,7 +220,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("end_date");
             entity.Property(e => e.RecommendedValue)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("recommended_value");
             entity.Property(e => e.StartDate)
                 .HasColumnType("datetime")
@@ -229,14 +260,14 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.DeliveryOrderId)
                 .HasDefaultValueSql("(newsequentialid())")
                 .HasColumnName("delivery_order_id");
-            entity.Property(e => e.DocumentId).HasColumnName("document_id");
             entity.Property(e => e.IsInternational).HasColumnName("is_international");
             entity.Property(e => e.IsPurchased).HasColumnName("is_purchased");
             entity.Property(e => e.IsSenderPurchase).HasColumnName("is_sender_purchase");
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(50)
                 .HasColumnName("order_status");
-            entity.Property(e => e.PaymentId).HasColumnName("payment_id");
+            entity.Property(e => e.PaymentId)
+                .HasColumnName("payment_id");
             entity.Property(e => e.RecipientName)
                 .HasMaxLength(255)
                 .HasColumnName("recipient_name");
@@ -258,10 +289,10 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             //entity.Property(e => e.SenderLongitude).HasColumnName("sender_longitude");
             entity.Property(e => e.ShippingFeeId).HasColumnName("shipping_fee_id");
             entity.Property(e => e.TaxFee)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("tax_fee");
             entity.Property(e => e.TotalAmount)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("total_amount");
             entity.Property(e => e.VoucherPromotionId).HasColumnName("voucher_promotion_id");
 
@@ -274,13 +305,8 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             //    .OnDelete(DeleteBehavior.ClientSetNull)
             //    .HasConstraintName("FK_DeliveryOrder_User");
 
-            entity.HasOne(d => d.Document).WithMany(p => p.DeliveryOrders)
-                .HasForeignKey(d => d.DocumentId)
-                .HasConstraintName("FK_DeliveryOrder_Document");
-
             entity.HasOne(d => d.Payment).WithMany(p => p.DeliveryOrders)
                 .HasForeignKey(d => d.PaymentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DeliveryOrder_Payment");
 
             entity.HasOne(d => d.ShippingFee).WithMany(p => p.DeliveryOrders)
@@ -316,12 +342,14 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
 
             entity.HasOne(d => d.Animal).WithMany(p => p.DeliveryOrderDetails)
                 .HasForeignKey(d => d.AnimalId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                //.OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderDetail_Animal");
 
             entity.HasOne(d => d.DeliveryOrder).WithMany(p => p.DeliveryOrderDetails)
                 .HasForeignKey(d => d.DeliveryOrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                //.OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderDetail_Order");
         });
 
@@ -334,9 +362,6 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.HasIndex(e => e.DocumentNumber, "UQ__Document__C8FE0D8C5D2DDE9F").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AssurranceFee)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("assurrance_fee");
             entity.Property(e => e.ConsigneeAddress)
                 .HasMaxLength(155)
                 .HasColumnName("consignee_address");
@@ -359,8 +384,8 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("document_type");
             entity.Property(e => e.ExpirationDate)
-                .HasColumnType("datetime")
                 .HasColumnName("expiration_date");
+            
             entity.Property(e => e.ExporterAddress)
                 .HasMaxLength(155)
                 .HasColumnName("exporter_address");
@@ -370,27 +395,31 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
             entity.Property(e => e.ExporterPhone)
                 .HasMaxLength(15)
                 .HasColumnName("exporter_phone");
-            entity.Property(e => e.FinalDestination)
-                .HasMaxLength(155)
-                .HasColumnName("final_destination");
+            // entity.Property(e => e.FinalDestination)
+            //     .HasMaxLength(155)
+            //     .HasColumnName("final_destination");
             entity.Property(e => e.IssueDate)
-                .HasColumnType("datetime")
                 .HasColumnName("issue_date");
-            entity.Property(e => e.PortOfDischarge)
-                .HasMaxLength(100)
-                .HasColumnName("port_of_discharge");
-            entity.Property(e => e.PortOfLoading)
-                .HasMaxLength(100)
-                .HasColumnName("port_of_loading");
+            // entity.Property(e => e.PortOfDischarge)
+            //     .HasMaxLength(100)
+            //     .HasColumnName("port_of_discharge");
+            // entity.Property(e => e.PortOfLoading)
+            //     .HasMaxLength(100)
+            //     .HasColumnName("port_of_loading");
             entity.Property(e => e.ShippingFee)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("shipping_fee");
-            entity.Property(e => e.TaxFee)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("tax_fee");
-            entity.Property(e => e.TransportationNo)
-                .HasMaxLength(50)
-                .HasColumnName("transportation_no");
+
+            entity.Property(e => e.DeliveryOrderId)
+                .HasColumnName("delivery_order_id");
+
+            entity.HasOne(d => d.DeliveryOrder).WithMany(p => p.Documents)
+                .HasForeignKey(d => d.DeliveryOrderId)
+                .HasConstraintName("FK_Document_DeliveryOrder");
+
+            // entity.Property(e => e.TransportationNo)
+            //     .HasMaxLength(50)
+            //     .HasColumnName("transportation_no");
             entity.Property(e => e.TransportationType)
                 .HasMaxLength(100)
                 .HasColumnName("transportation_type");
@@ -411,19 +440,19 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("item_category");
             entity.Property(e => e.ItemEstimatePrice)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("item_estimate_price");
             entity.Property(e => e.ItemName)
                 .HasMaxLength(255)
                 .HasColumnName("item_name");
             entity.Property(e => e.ItemQuantity).HasColumnName("item_quantity");
             entity.Property(e => e.ItemWeight)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("item_weight");
 
             entity.HasOne(d => d.Document).WithMany(p => p.DocumentDetails)
                 .HasForeignKey(d => d.DocumentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_DocumentDetail_Document");
         });
 
@@ -565,13 +594,13 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
 
             entity.Property(e => e.ShippingFeeId).HasColumnName("shipping_fee_id");
             entity.Property(e => e.BaseFee)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("base_fee");
             entity.Property(e => e.DistanceRangeFrom)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("distance_range_from");
             entity.Property(e => e.DistanceRangeTo)
-                .HasColumnType("decimal(10, 2)")
+                .HasColumnType("decimal")
                 .HasColumnName("distance_range_to");
             entity.Property(e => e.EstimatedTime)
                 .HasMaxLength(50)

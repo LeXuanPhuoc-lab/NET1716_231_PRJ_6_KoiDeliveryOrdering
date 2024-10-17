@@ -3,6 +3,11 @@ namespace KoiDeliveryOrdering.Common;
 public static class Const
 {
     public static string APIEndpoint = "http://localhost:7000/api/";
+    
+    #region Business Logic
+
+    public static decimal PRICE_PER_KILOGAM = 7000;
+    #endregion
 
     #region Error Codes
 

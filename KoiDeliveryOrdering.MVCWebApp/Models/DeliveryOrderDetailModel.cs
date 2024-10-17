@@ -16,7 +16,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public string? PostDeliveryHealthStatus { get; set; }
 
-        //public virtual Animal Animal { get; set; } = null!;
+        public virtual AnimalModel Animal { get; set; } = null!;
 
         //public virtual ICollection<DailyCareSchedule> DailyCareSchedules { get; set; } = new List<DailyCareSchedule>();
 
