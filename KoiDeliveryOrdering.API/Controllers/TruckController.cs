@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 namespace KoiDeliveryOrdering.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     public class TruckController : ControllerBase
     {
         private readonly ITruckService _truckService;
@@ -41,13 +40,14 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpPut(ApiRoute.Truck.Update)]
-        public async Task<IServiceResult> UpdateAsync([FromBody] Truck truck)
+        public async Task<IServiceResult> UpdateAsync([FromBody] UpdateTruckRequest truck)
         {
-            return await _truckService.UpdateAsync(truck);
+            var truckEntity = truck.Adapt<Truck>();
+            return await _truckService.UpdateAsync(truckEntity);
         }
 
         [HttpDelete(ApiRoute.Truck.Remove)]
-        public async Task<IServiceResult> DeleteAsync(int id)
+        public async Task<IServiceResult> RemoveAsync(int id)
         {
             return await _truckService.RemoveAsync(id);
         }
