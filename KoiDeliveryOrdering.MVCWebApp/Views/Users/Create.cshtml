@@ -1,0 +1,136 @@
+﻿@model KoiDeliveryOrdering.Data.Dtos.UserDto
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2>Create User</h2>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .container {
+        flex: 1; /* Cho phép nội dung chiếm không gian còn lại */
+    }
+
+    .footer {
+        margin-top: auto; /* Đẩy footer xuống dưới cùng */
+        text-align: center; /* Căn giữa nội dung footer */
+        padding: 10px; /* Thêm padding cho footer */
+        background-color: #f8f9fa; /* Màu nền cho footer */
+        border-top: 1px solid #e9ecef; /* Đường viền trên footer */
+    }
+</style>
+<form id="createUserForm" asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="FullName"></label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateOfBirth"></label>
+        <input asp-for="DateOfBirth" class="form-control" />
+        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input type="password" asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <!-- Avatar Upload Section -->
+    <div class="form-group">
+        <label>Avatar</label>
+        <input type="file" id="imageInput" class="form-control-file" name="file" accept="image/*" />
+        <button type="button" id="uploadButton" class="btn btn-primary mt-2">Upload Avatar</button>
+        <img id="uploadedImage" src=""  width="150" height="150" alt="Avatar Preview" class="mt-2" />
+        <span id="avatarUploadError" class="text-danger"></span>
+    </div>
+
+    
+    <input type="hidden" id="avatarUrl" asp-for="AvatarImage" name="AvatarImage" value="" />
+
+    
+    <div class="form-group">
+        <label>Longitude</label>
+        <input type="text" id="longitude" name="Longitude" class="form-control" readonly />
+    </div>
+    <div class="form-group">
+        <label>Latitude</label>
+        <input type="text" id="latitude" name="Latitude" class="form-control" readonly />
+    </div>
+    <button type="button" id="getLocationBtn" class="btn btn-secondary">Get Current Location</button>
+
+    <!-- Submit Form Button -->
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-success" />
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        // Get the user's current location
+        $('#getLocationBtn').click(function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    $('#longitude').val(position.coords.longitude);
+                    $('#latitude').val(position.coords.latitude);
+                }, function (error) {
+                    alert('Error occurred. Error code: ' + error.code);
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        });
+
+        // Upload the avatar image
+        $("#uploadButton").click(function (e) {
+            e.preventDefault();
+            var formData = new FormData();
+            var image = $("#imageInput")[0].files[0];  // Lấy file ảnh
+            formData.append("file", image);
+            console.log(image);
+            $.ajax({
+                url: 'https://localhost:7001/api/Images/Upload',
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                        console.log(response.link)
+                        $("#uploadedImage").attr("src", response.link);
+                        $("#avatarUrl").attr("value", response.link);
+                },
+                error: function (xhr, status, error) {
+                    alert("Có lỗi xảy ra: " + error);
+                }
+            });
+        });
+
+
+    </script>
+}

@@ -16,17 +16,17 @@ public interface IUserService
     Task<IServiceResult> FindAsync(Guid userId);
     Task<IServiceResult> FindAllAsync();
     Task<IServiceResult> FindOneWithConditionAsync(
-        Expression<Func<User, User>>? filter,
-        Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
+        Expression<Func<UserDTO, UserDTO>>? filter,
+        Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null,
         string? includeProperties = "");
     Task<IServiceResult> FindAllWithConditionAsync(
-        Expression<Func<User, User>>? filter = null,
-        Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
+        Expression<Func<UserDTO, UserDTO>>? filter = null,
+        Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null,
         string? includeProperties = "");
     Task<IServiceResult> FindAllWithConditionAndThenIncludeAsync(
-        Expression<Func<User, bool>>? filter = null,
-        Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null,
-        List<Func<IQueryable<User>, IIncludableQueryable<User, object>>>? includes = null);
+        Expression<Func<UserDTO, bool>>? filter = null,
+        Func<IQueryable<UserDTO>, IOrderedQueryable<UserDTO>>? orderBy = null,
+        List<Func<IQueryable<UserDTO>, IIncludableQueryable<UserDTO, object>>>? includes = null);
 
     // Additional
 

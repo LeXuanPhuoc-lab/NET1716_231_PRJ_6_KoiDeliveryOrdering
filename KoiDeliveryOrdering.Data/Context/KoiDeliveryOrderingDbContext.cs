@@ -49,7 +49,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
 
     public virtual DbSet<Truck> Trucks { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<UserDTO> Users { get; set; }
 
     public virtual DbSet<VoucherPromotion> VoucherPromotions { get; set; }
 
@@ -686,7 +686,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasConstraintName("FK_Truck_Garage");
         });
 
-        modelBuilder.Entity<User>(entity =>
+        modelBuilder.Entity<UserDTO>(entity =>
         {
             entity.ToTable("User");
 
@@ -740,7 +740,7 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                         .HasForeignKey("VoucherPromotionId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_UserVoucherPromotion_VoucherPromotion"),
-                    l => l.HasOne<User>().WithMany()
+                    l => l.HasOne<UserDTO>().WithMany()
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_UserVoucherPromotion_User"),
