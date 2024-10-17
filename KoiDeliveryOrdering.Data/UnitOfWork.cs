@@ -15,6 +15,7 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
     private DeliveryOrderDetailRepository _deliveryOrderDetailRepository = null!;
     private CareTaskRepository _careTaskRepository = null!;
     private TruckRepository _truckRepository = null!;
+    private GarageRepository _garageRepository = null!;
     private StaffRepository _staffRepository = null!;
 
     public UserRepository UserRepository
@@ -53,6 +54,9 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
 
     public StaffRepository StaffRepository
     => _staffRepository ??= new(unitOfWorkContext);
+
+    public GarageRepository GarageRepository
+        => _garageRepository ??= new(unitOfWorkContext);
 
     #region Diposable 
     private bool _disposed = false;
