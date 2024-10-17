@@ -17,6 +17,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\KoiDeliveryOrdering.API\KoiDeliveryOrdering.API.csproj" />
+      <ProjectReference Include="..\KoiDeliveryOrdering.Data\KoiDeliveryOrdering.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Payloads\Requests\" />
     </ItemGroup>
 
 </Project>

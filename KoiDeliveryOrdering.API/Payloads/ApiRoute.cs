@@ -12,14 +12,14 @@ public static class ApiRoute
 
         // This only use before implementing (Sign in/Sign up)
         public const string GetAllSenderInformationAsync = Base + "/users/sender-informations";
-	}
+    }
 
     public static class DeliveryOrder
     {
         public const string GetById = Base + "/delivery-orders/{id}";
         public const string GetAll = Base + "/delivery-orders";
         public const string Insert = Base + "/delivery-orders";
-        public const string Update = Base + "/delivery-orders/update";
+        public const string Update = Base + "/delivery-orders";
         public const string Remove = Base + "/delivery-orders/{id}";
         public const string GetAllPayment = Base + "/payments";
         public const string GetAllShippingFee = Base + "/shipping-fees";
@@ -29,6 +29,7 @@ public static class ApiRoute
 
         public const string GetProvinceByCodeLocal = Base + "/delivery-orders/provinces/{code}";
         public const string GetDistrictByCodeLocal = Base + "/delivery-orders/districts/{code}";
+        public const string GetWardByCodeLocal = Base + "/delivery-orders/ward/{code}";
     }
 
     public static class VietnameProvincesOnline
@@ -37,6 +38,11 @@ public static class ApiRoute
         public const string GetListProvinces = VPOnlineBaseUrl + "/p";
         public const string GetProvinceByCode = VPOnlineBaseUrl + "/p/{code}";
         public const string GetDistrictByCode = VPOnlineBaseUrl + "/d/{code}";
+    }
+
+    public static class NominatimMap
+    {
+        public const string NominatimUrl = "https://nominatim.openstreetmap.org/";
     }
 
     public static class Animal
@@ -48,6 +54,10 @@ public static class ApiRoute
     public static class Document
     {
         public const string GetAll = Base + "/documents";
+        public const string GetById = Base + "/documents/{id}";
+        public const string CreateDocument = Base + "/documents";
+        public const string UpdateDocument = Base + "/documents/{id}";
+        public const string DeleteDocument = Base + "/documents/{id}";
     }
 
     public static class Image
@@ -64,6 +74,16 @@ public static class ApiRoute
         public const string Remove = Base + "/daily-care-schedule/{id}/remove";
         public const string GetAllCareTask = Base + "/care-task";
         public const string GetAllDeliveryOrderDetail = Base + "/delivery-order-detail";
+        public const string GetAllStaff = Base + "/staff";
+    }
+
+    public static class CareTask
+    {
+        public const string GetById = Base + "/care-task/{id}";
+        public const string GetAll = Base + "/care-task";
+        public const string Insert = Base + "/care-task/insert";
+        public const string Update = Base + "/care-task/update";
+        public const string Remove = Base + "/care-task/{id}/remove";
     }
 
     public static class HereMap

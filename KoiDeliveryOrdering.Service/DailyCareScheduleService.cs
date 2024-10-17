@@ -3,6 +3,7 @@ using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
 using KoiDeliveryOrdering.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace KoiDeliveryOrdering.Business
 {
@@ -18,7 +19,7 @@ namespace KoiDeliveryOrdering.Business
         {
             try
             {
-                var deliveryOrderEntities = await unitOfWork.DailyCareScheduleRepository.FindAllWithConditionAsync();
+                var deliveryOrderEntities = await unitOfWork.DailyCareScheduleRepository.FindAllWithConditionAsync(orderBy: query => query.OrderByDescending(e => e.DailyCareScheduleId));
 
                 if (!deliveryOrderEntities.Any())
                 {
@@ -37,8 +38,14 @@ namespace KoiDeliveryOrdering.Business
         {
             try
             {
-                var dailyCareScheduleEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAsync(
-                    d => d.DailyCareScheduleId == id);
+                var dailyCareScheduleEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAndThenIncludeAsync(
+                    filter: x => x.DailyCareScheduleId == id,
+                    includes: new()
+                    {
+                    query => query.Include(u => u.CareTask)
+                                  .Include(u => u.DeliverOrderDetail)
+                    }
+                );
 
                 if (dailyCareScheduleEntity == null)
                 {
