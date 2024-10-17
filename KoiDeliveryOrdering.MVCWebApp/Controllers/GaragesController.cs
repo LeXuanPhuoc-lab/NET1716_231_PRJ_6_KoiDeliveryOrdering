@@ -47,22 +47,36 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
         }
 
         // GET: Garages/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var garage = await _context.Garages
-        //        .FirstOrDefaultAsync(m => m.GarageId == id);
-        //    if (garage == null)
-        //    {
-        //        return NotFound();
-        //    }
+            GarageModel? garage = null!;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "garages/" + id))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            garage = JsonConvert.DeserializeObject<GarageModel>(
+                                result.Data.ToString()!);
+                        }
+                    }
+                }
+            }
 
-        //    return View(garage);
-        //}
+            return garage != null
+                 ? View(garage)
+                 : NotFound();
+        }
 
         // GET: Garages/Create
         public IActionResult Create()
@@ -115,88 +129,153 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
         }
 
         // GET: Garages/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var garage = await _context.Garages.FindAsync(id);
-        //    if (garage == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(garage);
-        //}
+            UpdateGarageRequest? garage = null!;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "garages/" + id))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            garage = JsonConvert.DeserializeObject<UpdateGarageRequest>(
+                                result.Data.ToString()!);
+                        }
+                    }
+                }
+            }
+
+            return garage != null 
+                 ? View(garage)
+                 : NotFound();
+        }
 
         // POST: Garages/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("GarageId,GarageName,Phone,ManagerName,CityProvince,Street,District,Ward,Longitude,Latitude")] Garage garage)
-        //{
-        //    if (id != garage.GarageId)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("GarageId,GarageName,Phone,ManagerName,CityProvince,Street,District,Ward")] UpdateGarageRequest garage)
+        {
+            if (id != garage.GarageId)
+            {
+                return NotFound();
+            }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(garage);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!GarageExists(garage.GarageId))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(garage);
-        //}
+            if (!ModelState.IsValid)
+            {
+                return View(garage);
+            }
+
+            var position = await GetCoordinatesFromHereAsync(garage.CityProvince, garage.Street, garage.District, garage.Ward);
+            garage.Latitude = position.Latitude;
+            garage.Longitude = position.Longitude;
+
+            bool insertStatus = false;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.PutAsJsonAsync(
+                           Const.APIEndpoint + "garages", garage))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context);
+
+                        if (result != null && result.Status == Const.SUCCESS_INSERT_CODE)
+                        {
+                            insertStatus = true;
+                        }
+                        else
+                        {
+                            insertStatus = false;
+                        }
+                    }
+                }
+            }
+
+            if (insertStatus)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else return View();
+        }
 
         // GET: Garages/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var garage = await _context.Garages
-        //        .FirstOrDefaultAsync(m => m.GarageId == id);
-        //    if (garage == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(garage);
-        //}
+            GarageModel? garage = null!;
+            using (var httpClient = new HttpClient())
+            {
+                using (var resp = await httpClient.GetAsync(
+                           Const.APIEndpoint + "garages/" + id))
+                {
+                    if (resp.IsSuccessStatusCode)
+                    {
+                        var context = await resp.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            garage = JsonConvert.DeserializeObject<GarageModel>(
+                                result.Data.ToString()!);
+                        }
+                    }
+                }
+            }
+
+            return garage != null
+                ? View(garage)
+                : NotFound();
+        }
 
         // POST: Garages/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var garage = await _context.Garages.FindAsync(id);
-        //    if (garage != null)
-        //    {
-        //        _context.Garages.Remove(garage);
-        //    }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            bool deleteStatus = false;
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.DeleteAsync(
+                    Const.APIEndpoint + "garages/" + id))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(content);
+                        if (result != null && result.Status == Const.SUCCESS_REMOVE_CODE)
+                        {
+                            deleteStatus = true;
+                        }
+                    }
+                }
+            }
+
+            return deleteStatus
+                ? RedirectToAction(nameof(Index))
+                : RedirectToAction(nameof(Delete));
+        }
 
         //private bool GarageExists(int id)
         //{
