@@ -76,7 +76,7 @@ public static class ApiRoute
         public const string GetById = Base + "/garages/{id}";
         public const string GetAll = Base + "/garages";
         public const string Insert = Base + "/garages";
-        public const string Update = Base + "/garages/update";
+        public const string Update = Base + "/garages";
         public const string Remove = Base + "/garages/{id}";
     }
 }

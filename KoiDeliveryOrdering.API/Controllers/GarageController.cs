@@ -39,9 +39,10 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpPut(ApiRoute.Garage.Update)]
-        public async Task<IServiceResult> UpdateGarageAsync([FromBody] Garage garage)
+        public async Task<IServiceResult> UpdateGarageAsync([FromBody] UpdateGarageRequest garage)
         {
-            return await _garageService.UpdateAsync(garage);
+            var garageEntity = garage.Adapt<Garage>();
+            return await _garageService.UpdateAsync(garageEntity);
         }
 
         [HttpDelete(ApiRoute.Garage.Remove)]
