@@ -1,6 +1,7 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.MVCWebApp.Models;
+using KoiDeliveryOrdering.MVCWebApp.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -26,12 +27,79 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                             var dailyCareSchedule = JsonConvert.DeserializeObject<List<DailyCareScheduleModels>>(
                                 result.Data.ToString());
 
-                            return View(dailyCareSchedule);
+                            // Progress paging 
+                            var pagination =
+                                PaginatedList<DailyCareScheduleModels>.Paging(dailyCareSchedule ?? new(), 1,
+                                    5); // Default 5 record each page
+
+                            // Set ViewData
+                            ViewData["PageIndex"] = pagination.PageIndex;
+                            ViewData["TotalPage"] = pagination.TotalPage;
+
+                            return View(pagination);
                         }
                     }
                 }
             }
-            return View(new List<DailyCareScheduleModels>());
+            return View(new PaginatedList<DailyCareScheduleModels>(new(), 1, 5));
+        }
+
+        // GET: DailyCareSchedules (With condition)
+        public async Task<IActionResult> IndexWithAjax(string searchValue, int pageIndex = 1)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "daily-care-schedule"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var dailyCareSchedules = JsonConvert.DeserializeObject<List<DailyCareScheduleModels>>(
+                                result.Data.ToString());
+
+                            if (dailyCareSchedules != null && dailyCareSchedules.Any())
+                            {
+                                // Searching (if any)
+                                if (!string.IsNullOrEmpty(searchValue))
+                                {
+                                    searchValue = searchValue.Trim();
+
+                                    // Try to parse number 
+                                    decimal parsedAmount;
+                                    bool isNumericSearch = decimal.TryParse(searchValue, out parsedAmount);
+
+                                    // Perform the search using LINQ
+                                    dailyCareSchedules = dailyCareSchedules
+                                        .Where(dailySchedule =>
+                                            dailySchedule.CaregiverName.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                            dailySchedule.TaskFrequency.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                            dailySchedule.TaskDuration.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                            (isNumericSearch && dailySchedule.RecommendedValue == parsedAmount))
+                                        .ToList();
+                                }
+
+                                // Progress paging 
+                                var pagination =
+                                    PaginatedList<DailyCareScheduleModels>.Paging(dailyCareSchedules ?? new(), pageIndex,
+                                        5); // Default 5 record each page
+
+                                // Set ViewData
+                                ViewData["PageIndex"] = pagination.PageIndex;
+                                ViewData["TotalPage"] = pagination.TotalPage;
+
+                                return new JsonResult(new
+                                { PageIndex = pagination.PageIndex, TotalPage = pagination.TotalPage, DailyCareSchedules = pagination });
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new JsonResult(new
+            { PageIndex = 1, TotalPage = 1, DailyCareSchedules = new List<DailyCareScheduleModels>() });
         }
 
         // GET: DailyCareSchedules/Details/5

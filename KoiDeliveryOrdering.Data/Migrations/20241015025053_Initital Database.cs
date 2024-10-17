@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace KoiDeliveryOrdering.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDocument : Migration
+    public partial class InititalDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,11 +100,11 @@ namespace KoiDeliveryOrdering.Data.Migrations
                 {
                     shipping_fee_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    distance_range_from = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    distance_range_to = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    distance_range_from = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    distance_range_to = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     service_code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     weight_class = table.Column<int>(type: "int", nullable: false),
-                    base_fee = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    base_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     estimated_time = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
@@ -161,9 +161,9 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     animal_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "(newsequentialid())"),
                     breed = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     color_pattern = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    size = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    size = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     age = table.Column<int>(type: "int", nullable: true),
-                    estimated_price = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    estimated_price = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     health_status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     is_available = table.Column<bool>(type: "bit", nullable: true),
                     origin_country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -302,9 +302,9 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     create_date = table.Column<DateTime>(type: "datetime", nullable: false),
                     delivery_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     order_status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    total_amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    tax_fee = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    payment_id = table.Column<int>(type: "int", nullable: false),
+                    total_amount = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    tax_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
+                    payment_id = table.Column<int>(type: "int", nullable: true),
                     is_purchased = table.Column<bool>(type: "bit", nullable: true),
                     is_sender_purchase = table.Column<bool>(type: "bit", nullable: false),
                     is_international = table.Column<bool>(type: "bit", nullable: false),
@@ -356,12 +356,14 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         name: "FK_OrderDetail_Animal",
                         column: x => x.animal_id,
                         principalTable: "Animal",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderDetail_Order",
                         column: x => x.delivery_order_id,
                         principalTable: "Delivery_Order",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -383,7 +385,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                     exporter_address = table.Column<string>(type: "nvarchar(155)", maxLength: 155, nullable: true),
                     dispatch_method = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     transportation_type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    shipping_fee = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    shipping_fee = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     delivery_order_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -443,7 +445,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     care_task_id = table.Column<int>(type: "int", nullable: false),
                     task_frequency = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    recommended_value = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    recommended_value = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     start_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     end_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     TaskDuration = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -476,9 +478,9 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     document_detail_description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     item_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    item_weight = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    item_weight = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     item_category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    item_estimate_price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    item_estimate_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     item_quantity = table.Column<int>(type: "int", nullable: true),
                     document_id = table.Column<int>(type: "int", nullable: false)
                 },
@@ -501,7 +503,7 @@ namespace KoiDeliveryOrdering.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     daily_care_schedule_id = table.Column<int>(type: "int", nullable: false),
                     log_date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    actual_value = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    actual_value = table.Column<decimal>(type: "decimal(18,0)", nullable: true),
                     status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     staff_comments = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     staff_id = table.Column<int>(type: "int", nullable: false)

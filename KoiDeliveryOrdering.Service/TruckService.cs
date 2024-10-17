@@ -18,7 +18,7 @@ namespace KoiDeliveryOrdering.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IServiceResult> GetAllTrucksAsync()
+        public async Task<IServiceResult> FindAllAsync()
         {
             try
             {
@@ -33,7 +33,7 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> GetTruckByIdAsync(int id)
+        public async Task<IServiceResult> FindAsync(int id)
         {
             try
             {
@@ -48,16 +48,17 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> CreateTruckAsync(Truck truck)
+        public async Task<IServiceResult> InsertAsync(Truck truck)
         {
             try
             {
                 await _unitOfWork.TruckRepository.PrepareInsertAsync(truck);
-                var isInserted = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
-
-                return isInserted
-                    ? new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG)
-                    : new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG);
+                var isCreated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                if (!isCreated)
+                {
+                    return new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG, false);
+                }
+                return new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG, true);
             }
             catch (Exception ex)
             {
@@ -65,23 +66,19 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> UpdateTruckAsync(Truck truck)
+        public async Task<IServiceResult> UpdateAsync(Truck truck)
         {
             try
             {
-                var existingTruck = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(t => t.TruckId == truck.TruckId);
-                if (existingTruck == null)
-                {
-                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
-                }
-
-                existingTruck.Model = truck.Model; // Update properties as needed
-                await _unitOfWork.TruckRepository.UpdateAsync(existingTruck, saveChanges: false);
+                _unitOfWork.TruckRepository.PrepareUpdate(truck);
                 var isUpdated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                
+                if (!isUpdated)
+                {
+                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, false);
+                }
 
-                return isUpdated
-                    ? new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG)
-                    : new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
+                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, true);
             }
             catch (Exception ex)
             {
@@ -89,22 +86,27 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> DeleteTruckAsync(int id)
+        public async Task<IServiceResult> RemoveAsync(int id)
         {
             try
             {
-                var truck = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(t => t.TruckId == id);
-                if (truck == null)
+                var truckEntity = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(d =>
+                    d.TruckId.Equals(id));
+
+                if (truckEntity == null)
                 {
-                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
                 }
 
-                await _unitOfWork.TruckRepository.PrepareRemoveAsync(truck);
+                await _unitOfWork.TruckRepository.PrepareRemoveAsync(truckEntity.TruckId);
                 var isRemoved = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
 
-                return isRemoved
-                    ? new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG)
-                    : new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+                if (!isRemoved)
+                {
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+                }
+
+                return new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG, true);
             }
             catch (Exception ex)
             {

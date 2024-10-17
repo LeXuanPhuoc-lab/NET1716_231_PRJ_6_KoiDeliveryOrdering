@@ -1,0 +1,155 @@
+﻿@model KoiDeliveryOrdering.API.Payloads.Requests.UpdateAnimalRequest
+
+@{
+    ViewData["Title"] = "Edit Animal";
+}
+
+<h1>Edit Animal</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="editAnimalForm" asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="AnimalId" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Breed Field -->
+            <div class="form-group">
+                <label asp-for="Breed" class="control-label"></label>
+                <input asp-for="Breed" class="form-control" />
+                <span asp-validation-for="Breed" class="text-danger"></span>
+            </div>
+
+            <!-- ColorPattern Field -->
+            <div class="form-group">
+                <label asp-for="ColorPattern" class="control-label"></label>
+                <input asp-for="ColorPattern" class="form-control" />
+                <span asp-validation-for="ColorPattern" class="text-danger"></span>
+            </div>
+
+            <!-- Size Field -->
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+
+            <!-- Age Field -->
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+
+            <!-- EstimatedPrice Field -->
+            <div class="form-group">
+                <label asp-for="EstimatedPrice" class="control-label"></label>
+                <input asp-for="EstimatedPrice" class="form-control" />
+                <span asp-validation-for="EstimatedPrice" class="text-danger"></span>
+            </div>
+
+            <!-- HealthStatus Dropdown -->
+            <div class="form-group">
+                <label asp-for="HealthStatus" class="control-label"></label>
+                @Html.DropDownListFor(model => model.HealthStatus, new List<SelectListItem>
+                {
+                new SelectListItem { Text = "Good", Value = "Good" },
+                new SelectListItem { Text = "Sick", Value = "Sick" }
+                }, "Select Health Status", new { @class = "form-control" })
+                <span asp-validation-for="HealthStatus" class="text-danger"></span>
+            </div>
+
+            <!-- OriginCountry Field -->
+            <div class="form-group">
+                <label asp-for="OriginCountry" class="control-label"></label>
+                <input asp-for="OriginCountry" class="form-control" />
+                <span asp-validation-for="OriginCountry" class="text-danger"></span>
+            </div>
+
+            <!-- Description Field -->
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <!-- Avatar Upload Section -->
+            <div class="form-group">
+                <label>Animal Image</label>
+                <input type="file" id="imageInput" class="form-control-file" name="file" accept="image/*" />
+                <button type="button" id="uploadButton" class="btn btn-primary mt-2">Upload Image</button>
+                <img id="uploadedImage" src="@Model.ImageUrl" width="150" height="150" alt="Image Preview" class="mt-2" />
+                <span id="imageUploadError" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" id="imageUrl" asp-for="ImageUrl" name="ImageUrl" value="@Model.ImageUrl" />
+
+            <!-- Animal Type Dropdown -->
+            <div class="form-group">
+                <label asp-for="AnimalTypeId" class="control-label"></label>
+                <select asp-for="AnimalTypeId" class="form-control" asp-items="ViewBag.AnimalTypeList"></select>
+                <span asp-validation-for="AnimalTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <input type="hidden" name="IsAvailable" value="false" />
+                <input type="checkbox" class="form-check-input" id="isAvailableCheckBox" name="IsAvailable" />
+                <label class="form-check-label" for="isAvailableCheckBox">Is Available</label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        // Upload the animal image
+        $(document).ready(function () {
+            var isAvailableValue = @Html.Raw(Json.Serialize(Model.IsAvailable));
+
+            console.log(isAvailableValue); // This should log true, false, or null
+
+            $('#isAvailableCheckBox').prop('checked', isAvailableValue === true); // Check if it's true
+
+            $('form').submit(function () {
+                if ($('#isAvailableCheckBox').is(':checked')) {
+                    $('#isAvailableCheckBox').val('true');
+                } else {
+                    $('#isAvailableCheckBox').val('false');
+                }
+            });
+        });
+        $("#uploadButton").click(function (e) {
+            e.preventDefault();
+            var formData = new FormData();
+            var image = $("#imageInput")[0].files[0];
+            formData.append("file", image);
+            console.log(image);
+            $.ajax({
+                url: 'https://localhost:7001/api/Images/Upload',
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response.link);
+                    $("#uploadedImage").attr("src", response.link);
+                    $("#imageUrl").val(response.link);
+                },
+                error: function (xhr, status, error) {
+                    alert("Error occurred: " + error);
+                }
+            });
+        });
+    </script>
+}

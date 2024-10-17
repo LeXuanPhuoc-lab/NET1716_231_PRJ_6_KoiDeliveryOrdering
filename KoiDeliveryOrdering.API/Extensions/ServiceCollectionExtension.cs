@@ -1,4 +1,5 @@
 using KoiDeliveryOrdering.API.Payloads.Requests;
+using System.Reflection;
 using KoiDeliveryOrdering.Business;
 using KoiDeliveryOrdering.Business.Interfaces;
 using KoiDeliveryOrdering.Business.Models;
@@ -10,8 +11,8 @@ using KoiDeliveryOrdering.Service.Utils;
 using Mapster;
 using MapsterMapper;
 using System.Reflection;
-using KoiDeliveryOrdering.Service;
 using KoiDeliveryOrdering.Service.Interfaces;
+using KoiDeliveryOrdering.Service;
 
 namespace KoiDeliveryOrdering.API.Extensions;
 
@@ -32,7 +33,9 @@ public static class ServiceCollectionExtension
         services.AddScoped<IDailyCareScheduleService, DailyCareScheduleService>();
         services.AddScoped<IDeliveryOrderDetailService, DeliveryOrderDetailService>();
         services.AddScoped<ICareTaskService, CareTaskService>();
+        services.AddScoped<IGarageService, GarageService>();
         services.AddScoped<IStaffService, StaffService>();
+        services.AddScoped<ITruckService, TruckService>();
 
         return services;
     }
@@ -63,8 +66,7 @@ public static class ServiceCollectionExtension
         var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
         // Scans the assembly and gets the IRegister, adding the registration to the TypeAdapterConfig
         typeAdapterConfig.Scan(Assembly.GetExecutingAssembly());
-        typeAdapterConfig.NewConfig<CreateDeliveryOrderRequest, DeliveryOrder>();
-
+        
         // Register the mapper as Singleton service for my application
         var mapperConfig = new Mapper(typeAdapterConfig);
         services.AddSingleton<IMapper>(mapperConfig);

@@ -2,6 +2,9 @@ using KoiDeliveryOrdering.API.Payloads;
 using KoiDeliveryOrdering.Business;
 using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Business.Interfaces;
+using KoiDeliveryOrdering.Common;
+using KoiDeliveryOrdering.Data.Dtos;
+using KoiDeliveryOrdering.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KoiDeliveryOrdering.API.Controllers;
@@ -39,5 +42,23 @@ public class UserController : ControllerBase
     public async Task<IServiceResult> GetByUsernameAsync([FromRoute] string username)
     {
         return await _userService.FindByUsernameAsync(username);
+    }
+
+    [HttpDelete(ApiRoute.User.Remove)]
+    public async Task<IServiceResult> RemoveUserAsync([FromRoute] Guid id)
+    {
+        return await _userService.RemoveAsync(id);
+    }
+    [HttpPost(ApiRoute.User.Insert)]
+    public async Task<IServiceResult> InsertUserAsync([FromBody] UserDto userModel)
+    {
+            return await _userService.InsertAsync(userModel);  
+    }
+
+    [HttpPut(ApiRoute.User.Update)]
+    public async Task<IServiceResult> UpdateUserAsync([FromBody] UserDto req)
+    {
+        if (req == null) throw new BadHttpRequestException("Request is wrong");
+        return await _userService.UpdateAsync(req);
     }
 }

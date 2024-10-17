@@ -31,7 +31,7 @@ public partial class DeliveryOrder
 
     public decimal? TaxFee { get; set; }
 
-    public int PaymentId { get; set; }
+    public int? PaymentId { get; set; }
 
     public bool? IsPurchased { get; set; }
 
@@ -57,7 +57,7 @@ public partial class DeliveryOrder
 
     public virtual ICollection<OrderAssignment> OrderAssignments { get; set; } = new List<OrderAssignment>();
 
-    public virtual Payment Payment { get; set; } = null!;
+    public virtual Payment? Payment { get; set; } = null!;
 
     public virtual ShippingFee ShippingFee { get; set; } = null!;
 
