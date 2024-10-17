@@ -35,93 +35,8 @@
                     <th class="text-nowrap">Actions</th>
                 </tr>
                 </thead>
-                <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td class="text-nowrap">
-                            <button style="width: 30px;height: 30px" id="show-button-@index" onclick="showDocumentDetails(@index)" class="btn btn-sm btn-primary fw-bold fs-5">+</button>
-                        </td>
-                        <td class="text-nowrap">
-                            @item.Id
-                        </td>
-                        <td class="text-nowrap">
-                            @item.DeliveryOrderId
-                        </td>
-                        <td class="text-nowrap">
-                            @item.DocumentNumber
-                        </td>
-                        <td class="text-nowrap">
-                            @item.DocumentType
-                        </td>
-                        <td class="text-nowrap">
-                            @item.IssueDate
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ExpirationDate
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ConsigneeName
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ConsigneePhone
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ConsigneeAddress
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ExporterName
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ExporterPhone
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ExporterAddress
-                        </td>
-                        <td class="text-nowrap">
-                            @item.DispatchMethod
-                        </td>
-                        <td class="text-nowrap">
-                            @item.TransportationType
-                        </td>
-                        <td class="text-nowrap">
-                            @item.ShippingFee
-                        </td>
-                        <td class="text-nowrap">
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
-
-                    <tr class="dd-item-@index d-none">
-                        <th></th>
-                        <th class="text-nowrap">Item name</th>
-                        <th class="text-nowrap">Item category</th>
-                        <th class="text-nowrap">Quantity</th>
-                        <th class="text-nowrap">Weight(kg)</th>
-                    </tr>
-
-                    @foreach (var documentDetail in item.DocumentDetails)
-                    {
-                        <tr class="dd-item-@index d-none">
-                            <td></td>
-                            <td class="text-nowrap">
-                                @documentDetail.ItemName
-                            </td>
-                            <td class="text-nowrap">
-                                @documentDetail.ItemCategory
-                            </td>
-                            <td class="text-nowrap">
-                                @documentDetail.ItemQuantity
-                            </td>
-                            <td class="text-nowrap">
-                                @documentDetail.ItemWeight
-                            </td>
-                        </tr>
-                    }
-                    
-                    index++;
-                }
+                <tbody id="document-table-body">
+                
                 </tbody>
             </table>
         </div>
@@ -131,23 +46,100 @@
 
 @section Scripts {
     <script>
-            const isShowDocumentDetails = Array(@Model.Count()).fill(false);
-            
-            function showDocumentDetails(index){
-                console.log(index)
-                isShowDocumentDetails[index]=!isShowDocumentDetails[index];
-                document.getElementById(`show-button-${index}`).innerHTML=isShowDocumentDetails[index]?"-":"+"
-                
-                if (isShowDocumentDetails[index])
-                {
-                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
-                        item.classList.remove("d-none");
-                    })
-                }else{
-                    document.querySelectorAll(`.dd-item-${index}`).forEach(item=>{
-                        item.classList.add("d-none");
-                    })
+        // Sample Model Data, replace this with your real data
+        const model = [];
+        
+        function callApiUsingJQuery() {
+            $.ajax({
+                url: 'http://localhost:7000/api/documents',
+                type: 'GET',
+                success: function(response) {
+                    model.push(...response.data)
+                    generateTable()
+                },
+                error: function(error) {
+                    console.error('Error:', error);
                 }
-            }
+            });
+        }
+        
+        function generateTable() {
+            const table = document.getElementById("document-table-body");
+            let index = 0;
+
+            model.forEach(item => {
+                // Create the main document row
+                const documentRow = `
+        <tr>
+          <td class="text-nowrap">
+            <button style="width: 30px;height: 30px" id="show-button-${index}" onclick="showDocumentDetails(${index})" class="btn btn-sm btn-primary fw-bold fs-5">+</button>
+          </td>
+          <td class="text-nowrap">${item.id}</td>
+          <td class="text-nowrap">${item.deliveryOrderId}</td>
+          <td class="text-nowrap">${item.documentNumber}</td>
+          <td class="text-nowrap">${item.documentType}</td>
+          <td class="text-nowrap">${item.issueDate}</td>
+          <td class="text-nowrap">${item.expirationDate}</td>
+          <td class="text-nowrap">${item.consigneeName}</td>
+          <td class="text-nowrap">${item.consigneePhone}</td>
+          <td class="text-nowrap">${item.consigneeAddress}</td>
+          <td class="text-nowrap">${item.exporterName}</td>
+          <td class="text-nowrap">${item.exporterPhone}</td>
+          <td class="text-nowrap">${item.exporterAddress}</td>
+          <td class="text-nowrap">${item.dispatchMethod}</td>
+          <td class="text-nowrap">${item.transportationType}</td>
+          <td class="text-nowrap">${item.shippingFee}</td>
+          <td class="text-nowrap">
+            <a href="/Document/Edit/${item.id}">Edit</a> |
+            <a href="/Document/Delete/${item.id}">Delete</a>
+          </td>
+        </tr>
+      `;
+                table.insertAdjacentHTML('beforeend', documentRow);
+
+                // Create the document details header row
+                const detailsHeaderRow = `
+        <tr class="dd-item-${index} d-none">
+          <th></th>
+          <th></th>
+          <th class="text-nowrap">Item name</th>
+          <th class="text-nowrap">Item category</th>
+          <th class="text-nowrap">Quantity</th>
+          <th class="text-nowrap">Weight(kg)</th>
+        </tr>
+      `;
+                table.insertAdjacentHTML('beforeend', detailsHeaderRow);
+
+                // Create the document details rows
+                item.documentDetails.forEach(detail => {
+                    const detailRow = `
+          <tr class="dd-item-${index} d-none">
+            <td></td>
+            <td></td>
+            <td class="text-nowrap">${detail.itemName}</td>
+            <td class="text-nowrap">${detail.itemCategory}</td>
+            <td class="text-nowrap">${detail.itemQuantity}</td>
+            <td class="text-nowrap">${detail.itemWeight}</td>
+          </tr>
+        `;
+                    table.insertAdjacentHTML('beforeend', detailRow);
+                });
+
+                index++;
+            });
+        }
+
+        function showDocumentDetails(index) {
+            // Toggle visibility of document details
+            const detailRows = document.querySelectorAll(`.dd-item-${index}`);
+            detailRows.forEach(row => {
+                row.classList.toggle('d-none');
+            });
+        }
+
+        // Call the function to generate the table
+        callApiUsingJQuery()
+    
+    
     </script>
 }
