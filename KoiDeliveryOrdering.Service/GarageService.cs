@@ -13,7 +13,7 @@ namespace KoiDeliveryOrdering.Service
             try
             {
                 var garageEntity = await unitOfWork.GarageRepository.FindOneWithConditionAsync(
-                    d => d.GarageId == id);
+                    d => d.GarageId.Equals(id));
 
                 if (garageEntity == null)
                 {
@@ -67,14 +67,52 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public Task<IServiceResult> RemoveAsync(int id)
+        public async Task<IServiceResult> RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var garageEntity = await unitOfWork.GarageRepository.FindOneWithConditionAsync(d =>
+                    d.GarageId.Equals(id));
+
+                if (garageEntity == null)
+                {
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+                }
+
+                await unitOfWork.GarageRepository.PrepareRemoveAsync(garageEntity.GarageId);
+                var isRemoved = await unitOfWork.GarageRepository.SaveChangeWithTransactionAsync() > 0;
+
+                if (!isRemoved)
+                {
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+                }
+
+                return new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG, true);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            }
         }
 
-        public Task<IServiceResult> UpdateAsync(Garage garage)
+        public async Task<IServiceResult> UpdateAsync(Garage garage)
         {
-            throw new NotImplementedException();
+            try
+            {
+                unitOfWork.GarageRepository.PrepareUpdate(garage);
+                var isUpdated = await unitOfWork.GarageRepository.SaveChangeWithTransactionAsync() > 0;
+
+                if (!isUpdated)
+                {
+                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, false);
+                }
+
+                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, true);
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
+            }
         }
     }
 }

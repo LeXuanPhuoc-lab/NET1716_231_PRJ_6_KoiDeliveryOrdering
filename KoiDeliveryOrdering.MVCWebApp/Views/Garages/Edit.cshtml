@@ -1,5 +1,4 @@
-﻿@model KoiDeliveryOrdering.Data.Entities.Garage
-
+﻿@model KoiDeliveryOrdering.API.Payloads.Requests.UpdateGarageRequest
 @{
     ViewData["Title"] = "Edit";
 }
@@ -47,16 +46,6 @@
                 <label asp-for="Ward" class="control-label"></label>
                 <input asp-for="Ward" class="form-control" />
                 <span asp-validation-for="Ward" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Longitude" class="control-label"></label>
-                <input asp-for="Longitude" class="form-control" />
-                <span asp-validation-for="Longitude" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Latitude" class="control-label"></label>
-                <input asp-for="Latitude" class="form-control" />
-                <span asp-validation-for="Latitude" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
