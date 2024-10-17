@@ -35,6 +35,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICareTaskService, CareTaskService>();
         services.AddScoped<IGarageService, GarageService>();
         services.AddScoped<IStaffService, StaffService>();
+        services.AddScoped<ITruckService, TruckService>();
 
         return services;
     }

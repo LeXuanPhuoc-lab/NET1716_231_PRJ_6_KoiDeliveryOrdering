@@ -1,8 +1,12 @@
-﻿using KoiDeliveryOrdering.Business.Base;
+﻿using KoiDeliveryOrdering.API.Payloads;
+using KoiDeliveryOrdering.API.Payloads.Requests;
+using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Data.Entities;
 using KoiDeliveryOrdering.Service.Interfaces;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+
 
 namespace KoiDeliveryOrdering.API.Controllers
 {
@@ -17,34 +21,35 @@ namespace KoiDeliveryOrdering.API.Controllers
             _truckService = truckService;
         }
 
-        [HttpGet("{id}", Name = nameof(GetTruckByIdAsync))]
-        public async Task<IServiceResult> GetTruckByIdAsync(int id)
+        [HttpGet(ApiRoute.Truck.GetById)]
+        public async Task<IServiceResult> FindAsync(int id)
         {
-            return await _truckService.GetTruckByIdAsync(id);
+            return await _truckService.FindAsync(id);
         }
 
-        [HttpGet(Name = nameof(GetAllTrucksAsync))]
-        public async Task<IServiceResult> GetAllTrucksAsync()
+        [HttpGet(ApiRoute.Truck.GetAll)]
+        public async Task<IServiceResult> FindAllAsync()
         {
-            return await _truckService.GetAllTrucksAsync();
+            return await _truckService.FindAllAsync();
         }
 
-        [HttpPost(Name = nameof(CreateTruckAsync))]
-        public async Task<IServiceResult> CreateTruckAsync([FromBody] Truck truck)
+        [HttpPost(ApiRoute.Truck.Insert)]
+        public async Task<IServiceResult> CreateAsync([FromBody] CreateTruckRequest truck)
         {
-            return await _truckService.CreateTruckAsync(truck);
+            var truckEntity = truck.Adapt<Truck>();
+            return await _truckService.InsertAsync(truckEntity);
         }
 
-        [HttpPut(Name = nameof(UpdateTruckAsync))]
-        public async Task<IServiceResult> UpdateTruckAsync([FromBody] Truck truck)
+        [HttpPut(ApiRoute.Truck.Update)]
+        public async Task<IServiceResult> UpdateAsync([FromBody] Truck truck)
         {
-            return await _truckService.UpdateTruckAsync(truck);
+            return await _truckService.UpdateAsync(truck);
         }
 
-        [HttpDelete("{id}", Name = nameof(DeleteTruckAsync))]
-        public async Task<IServiceResult> DeleteTruckAsync(int id)
+        [HttpDelete(ApiRoute.Truck.Remove)]
+        public async Task<IServiceResult> DeleteAsync(int id)
         {
-            return await _truckService.DeleteTruckAsync(id);
+            return await _truckService.RemoveAsync(id);
         }
     }
 }

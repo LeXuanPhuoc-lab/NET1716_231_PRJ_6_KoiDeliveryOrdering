@@ -7,10 +7,10 @@ namespace KoiDeliveryOrdering.Service.Interfaces
 {
     public interface ITruckService
     {
-        Task<IServiceResult> GetAllTrucksAsync();
-        Task<IServiceResult> GetTruckByIdAsync(int id);
-        Task<IServiceResult> CreateTruckAsync(Truck truck);
-        Task<IServiceResult> UpdateTruckAsync(Truck truck);
-        Task<IServiceResult> DeleteTruckAsync(int id);
+        Task<IServiceResult> FindAllAsync();
+        Task<IServiceResult> FindAsync(int id);
+        Task<IServiceResult> InsertAsync(Truck truck);
+        Task<IServiceResult> UpdateAsync(Truck truck);
+        Task<IServiceResult> RemoveAsync(int id);
     }
 }

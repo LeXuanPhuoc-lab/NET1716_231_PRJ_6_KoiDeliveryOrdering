@@ -18,7 +18,7 @@ namespace KoiDeliveryOrdering.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IServiceResult> GetAllTrucksAsync()
+        public async Task<IServiceResult> FindAllAsync()
         {
             try
             {
@@ -33,7 +33,7 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> GetTruckByIdAsync(int id)
+        public async Task<IServiceResult> FindAsync(int id)
         {
             try
             {
@@ -48,16 +48,17 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> CreateTruckAsync(Truck truck)
+        public async Task<IServiceResult> InsertAsync(Truck truck)
         {
             try
             {
                 await _unitOfWork.TruckRepository.PrepareInsertAsync(truck);
-                var isInserted = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
-
-                return isInserted
-                    ? new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG)
-                    : new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG);
+                var isCreated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                if (!isCreated)
+                {
+                    return new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG, false);
+                }
+                return new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG, true);
             }
             catch (Exception ex)
             {
@@ -65,7 +66,7 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> UpdateTruckAsync(Truck truck)
+        public async Task<IServiceResult> UpdateAsync(Truck truck)
         {
             try
             {
@@ -89,7 +90,7 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> DeleteTruckAsync(int id)
+        public async Task<IServiceResult> RemoveAsync(int id)
         {
             try
             {
