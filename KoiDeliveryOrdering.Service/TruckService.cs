@@ -70,19 +70,15 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var existingTruck = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(t => t.TruckId == truck.TruckId);
-                if (existingTruck == null)
+                _unitOfWork.TruckRepository.PrepareUpdate(truck);
+                var isUpdated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                
+                if (!isUpdated)
                 {
-                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
+                    return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, false);
                 }
 
-                existingTruck.Model = truck.Model; // Update properties as needed
-                await _unitOfWork.TruckRepository.UpdateAsync(existingTruck, saveChanges: false);
-                var isUpdated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
-
-                return isUpdated
-                    ? new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG)
-                    : new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG);
+                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, true);
             }
             catch (Exception ex)
             {
@@ -94,18 +90,23 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var truck = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(t => t.TruckId == id);
-                if (truck == null)
+                var truckEntity = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(d =>
+                    d.TruckId.Equals(id));
+
+                if (truckEntity == null)
                 {
-                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
                 }
 
-                await _unitOfWork.TruckRepository.PrepareRemoveAsync(truck);
+                await _unitOfWork.TruckRepository.PrepareRemoveAsync(truckEntity.TruckId);
                 var isRemoved = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
 
-                return isRemoved
-                    ? new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG)
-                    : new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG);
+                if (!isRemoved)
+                {
+                    return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
+                }
+
+                return new ServiceResult(Const.SUCCESS_REMOVE_CODE, Const.SUCCESS_REMOVE_MSG, true);
             }
             catch (Exception ex)
             {
