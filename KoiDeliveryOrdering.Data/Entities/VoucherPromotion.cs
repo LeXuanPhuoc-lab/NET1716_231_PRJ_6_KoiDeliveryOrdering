@@ -13,7 +13,7 @@ public partial class VoucherPromotion
     public decimal PromotionRate { get; set; }
 
     [JsonIgnore]
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual ICollection<UserDTO> Users { get; set; } = new List<UserDTO>();
 
     [JsonIgnore]
     public virtual ICollection<DeliveryOrder> DeliveryOrders { get; set; } = new List<DeliveryOrder>();
