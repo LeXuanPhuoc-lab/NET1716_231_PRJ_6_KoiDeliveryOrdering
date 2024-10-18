@@ -17,6 +17,7 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
     private TruckRepository _truckRepository = null!;
     private GarageRepository _garageRepository = null!;
     private StaffRepository _staffRepository = null!;
+    private OrderAssignmentRepository _orderAssignmentRepository = null!;
 
     public UserRepository UserRepository
         // New instance is require, as an application not define abstractions for 
@@ -57,6 +58,9 @@ public class UnitOfWork(KoiDeliveryOrderingDbContext unitOfWorkContext) : IDispo
 
     public GarageRepository GarageRepository
         => _garageRepository ??= new(unitOfWorkContext);
+
+    public OrderAssignmentRepository OrderAssignmentRepository
+        => _orderAssignmentRepository ??= new(unitOfWorkContext);
 
     #region Diposable 
     private bool _disposed = false;
