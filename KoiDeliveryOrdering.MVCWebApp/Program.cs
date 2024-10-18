@@ -1,4 +1,6 @@
+using KoiDeliveryOrdering.Business.Models;
 using KoiDeliveryOrdering.MVCWebApp.Middleware;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,10 @@ builder.Services.AddControllersWithViews()
     {
         opt.RootDirectory = "/Authentication";
     });
+
+// Configure App settings
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
 
 // Add Session
 builder.Services.AddSession();

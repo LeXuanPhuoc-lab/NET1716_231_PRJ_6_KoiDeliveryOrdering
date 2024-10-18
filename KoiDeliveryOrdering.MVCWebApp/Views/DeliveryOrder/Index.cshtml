@@ -15,13 +15,81 @@
             </div>
         </div>
         <div class="row mb-4 mt-5">
-            <div class="col-md-2 mb-2 position-relative d-flex">
-                <input type="text" id="default-search" name="search"
-                       class="form-control h-auto rounded border border-2 bg-light py-2 p-5 shadow-sm"
-                       placeholder="Search by name, address, amount, status..." style="width: 330px" />
-                <img src="https://img.icons8.com/?size=100&id=83218&format=png&color=000000" width="20" height="20"
-                     class="position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%);" />
-                <button class="btn btn-primary mx-3" role="button" onclick="handleSearch()" >Search</button>
+            <div class="d-flex flex-column text-sm align-items-end">
+                <div class="search-box rounded border border-2 bg-white p-3 w-25 me-3">
+                    <div class="position-relative mb-2 w-100 d-flex align-items-center justify-content-between rounded">
+                        <svg class="position-absolute" style="left: 8px; height: 20px; width: 20px; color: gray;" 
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" class=""></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" class=""></line>
+                        </svg>
+                        <input  type="text" id="default-search" name="search"
+                                class="form-control ps-5 pe-5"
+                                placeholder="Search by name, address, amount, etc" />
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <img src="https://img.icons8.com/?size=100&id=26139&format=png&color=000000"
+                                style="height: 20px; width: 20px; color: gray; cursor: pointer;"
+                                id="toggleFilter"
+                                width="24" height="24"
+                                isUp="false" />
+                    </div>
+
+                    <div class="d-flex flex-column">
+                        <div class="filterPanel row d-none">
+                            <div class="col-md-4 mb-3">
+                                <label for="senderAddressSearch" class="form-label text-muted">Sender Address</label>
+                                <div class="d-flex flex-column">
+                                    <input name="senderAddressSearch" type="text" id="senderAddressSearch" placeholder="Go Vap, HCM" class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="recipientAddressSearch" class="form-label text-muted">Recipient Address</label>
+                                <div class="d-flex flex-column">
+                                    <input name="recipientAddressSearch" type="text" id="recipientAddressSearch" placeholder="Hai Ba Trung, HN" class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="shippingFeeSearch" class="form-label text-muted">Shipping Fee</label>
+                                <div class="d-flex flex-column">
+                                    <input name="shippingFeeSearch" type="number" id="shippingFeeSearch" placeholder="20.000đ" class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="orderStatusSearch" class="form-label text-muted">Order Status</label>
+                                <div class="d-flex flex-column">
+                                    <input name="orderStatusSearch" type="text" id="orderStatusSearch" placeholder="Pending..." class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="paymentMethodSearch" class="form-label text-muted">Payment Method</label>
+                                <div class="d-flex flex-column">
+                                    <input name="paymentMethodSearch" type="text" id="paymentMethodSearch" placeholder="VNPay, Momo,..." class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="totalAmountSearch" class="form-label text-muted">Total Amount</label>
+                                <div class="d-flex flex-column">
+                                    <input name="totalAmountSearch" type="number" id="totalAmountSearch" placeholder="100.000đ" class="form-control" value="" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <button id="btn-filter-reset" class="btn btn-light me-2" type="button">Reset</button>
+                            <button class="btn btn-primary mx-3" role="button" onclick="handleSearch()">Search</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <table class="table table-hover table-bordered">
@@ -81,7 +149,16 @@
                         @item.SenderInformation.Street, @item.SenderInformation.Ward,
                         @item.SenderInformation.District, @item.SenderInformation.CityProvince
                     </td>
-                    <td style="width: 20px">@item.TaxFee%</td>
+                    <td style="width: 20px">
+                        @if (string.IsNullOrEmpty(item.TaxFee.ToString()))
+                        {
+                            <span>0%</span>
+                        }
+                        else
+                        {
+                            <span>@item.TaxFee%</span>
+                        }
+                    </td>
                     <td style="width: 50px">
                         @if (string.IsNullOrEmpty(item.Payment?.PaymentMethod))
                         {
@@ -146,16 +223,29 @@
 
             // Process paging
             $('#back-page').on('click', function () {
-
                 pageIndex = --pageIndex;
                 $(this).removeAttr("disabled");
                 $(this).css("opacity", "1");
 
-                var reqData = { "SearchValue": "", "OrderBy": null, "PageIndex": pageIndex }
+                var searchTerm = $('#default-search').val();
+                var reqData = {
+                    "SenderAddressSearch": null,
+                    "RecipientAddressSearch": null,
+                    "CreateDateSearch": null,
+                    "PaymentMethodSearch": null,
+                    "ShippingFeeSearch": null,
+                    "TotalAmountSearch": null,
+                    "OrderStatusSearch": null,
+                    "SearchValue": searchTerm,
+                    "OrderBy": null,
+                    "IsManySearch": false,
+                    "PageIndex": pageIndex
+                };
+
                 var queryString = $.param(reqData);
 
                 $.ajax({
-                    url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                    url: `/DeliveryOrder/Search?${queryString}`,
                     type: 'GET',
                     success: function (response) {
                         updateData(response);
@@ -169,11 +259,25 @@
                 $(this).removeAttr("disabled");
                 $(this).css("opacity", "1");
 
-                var reqData = { "SearchValue": "", "OrderBy": null, "PageIndex": pageIndex }
+                var searchTerm = $('#default-search').val();
+                var reqData = {
+                    "SenderAddressSearch": null,
+                    "RecipientAddressSearch": null,
+                    "CreateDateSearch": null,
+                    "PaymentMethodSearch": null,
+                    "ShippingFeeSearch": null,
+                    "TotalAmountSearch": null,
+                    "OrderStatusSearch": null,
+                    "SearchValue": searchTerm,
+                    "OrderBy": null,
+                    "IsManySearch": false,
+                    "PageIndex": pageIndex
+                };
+
                 var queryString = $.param(reqData);
 
                 $.ajax({
-                    url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                    url: `/DeliveryOrder/Search?${queryString}`,
                     type: 'GET',
                     success: function (response) {
                         console.log(response);
@@ -186,6 +290,8 @@
             // Add event listeners
             updatePagingStatus(pageIndex, totalPage);
             handleSortingClick();
+            handleToggleFilterClick();
+            handleReset();
         });
 
         // Update data response
@@ -232,13 +338,13 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center align-items-center">
-                                    <a class="btn btn-primary btn-sm mx-1" asp-action="Edit" asp-route-id="${d.id}">
+                                    <a class="btn btn-primary btn-sm mx-1" href="/DeliveryOrder/Edit/${d.id}">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a class="btn btn-warning btn-sm mx-1" asp-action="Details" asp-route-id="${d.id}">
+                                    <a class="btn btn-warning btn-sm mx-1" href="/DeliveryOrder/Detail/${d.id}">
                                         <i class="fas fa-info-circle"></i>
                                     </a>
-                                    <a class="btn btn-danger btn-sm mx-1" asp-action="Delete" asp-route-id="${d.id}">
+                                    <a class="btn btn-danger btn-sm mx-1" href="/DeliveryOrder/Delete/${d.id}">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
                                 </div>
@@ -295,14 +401,23 @@
                     }
 
                     var reqData = {
-                        "SearchValue": "",
+                        "SenderAddressSearch": null,
+                        "RecipientAddressSearch": null,
+                        "CreateDateSearch": null,
+                        "PaymentMethodSearch": null,
+                        "ShippingFeeSearch": null,
+                        "TotalAmountSearch": null,
+                        "OrderStatusSearch": null,
+                        "SearchValue": null,
+                        "IsManySearch": false,
                         "OrderBy": sortAttr,
                         "PageIndex": pageIndex
                     };
+
                     var queryString = $.param(reqData);
 
                     $.ajax({
-                        url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                        url: `/DeliveryOrder/Search?${queryString}`,
                         type: 'GET',
                         success: function (response) {
                             updateData(response);
@@ -317,15 +432,35 @@
         function handleSearch() {
             var searchTerm = $('#default-search').val();
 
+            var isManySearch = searchTerm !== null && searchTerm === "";
+            // Initiate many search value
+            var senderAddressSearchValue = $('#senderAddressSearch').val();
+            var recipientAddressSearchValue = $('#recipientAddressSearch').val();
+            var taxFeeSearchValue = $('#shippingFeeSearch').val();
+            // var createDateSearchValue = $('#createDateSearch').val();
+            var orderStatusSearch = $('#orderStatusSearch').val();
+            var deliveryDateSearchValue = $('#paymentMethodSearch').val();
+            var totalAmountSearchValue = $('#totalAmountSearch').val();
+            
+
             var reqData = {
-                "SearchValue": searchTerm,
-                "OrderBy": "",
-                "PageIndex": pageIndex
+                "SenderAddressSearch": senderAddressSearchValue,
+                "RecipientAddressSearch": recipientAddressSearchValue,
+                // "CreateDateSearch": createDateSearchValue,
+                "OrderStatusSearch": orderStatusSearch,
+                "PaymentMethodSearch": deliveryDateSearchValue,
+                "ShippingFeeSearch": taxFeeSearchValue,
+                "TotalAmountSearch": totalAmountSearchValue,
+                "SearchValue": searchTerm, 
+                "OrderBy": null,
+                "IsManySearch": isManySearch,
+                "PageIndex": pageIndex 
             };
+
             var queryString = $.param(reqData);
 
             $.ajax({
-                url: `/DeliveryOrder/IndexWithAjax?${queryString}`,
+                url: `/DeliveryOrder/Search?${queryString}`,
                 type: 'GET',
                 success: function (response) {
                     updateData(response);
@@ -334,5 +469,64 @@
             });
         }
 
+        // Handle toggle filter click 
+        function handleToggleFilterClick(){
+            var toggleFilter = $('#toggleFilter');
+            var filterPanel = $('.filterPanel');
+            var searchBox = $('.search-box');
+
+            toggleFilter.on('click', function () {
+                if (filterPanel.hasClass('d-none')) {
+                    filterPanel.removeClass('d-none').addClass('d-block'); 
+                    toggleFilter.attr('src', 'https://img.icons8.com/?size=100&id=26124&format=png&color=000000');
+                    searchBox.removeClass('w-25').addClass('w-50');
+                } else {
+                    filterPanel.removeClass('d-block').addClass('d-none'); 
+                    toggleFilter.attr('src', 'https://img.icons8.com/?size=100&id=26139&format=png&color=000000');
+                    searchBox.removeClass('w-50').addClass('w-25');
+                }
+            });
+        }
+
+        // Handle search box reset
+        function handleReset(){
+            $('#btn-filter-reset').on('click', function () {
+                $('#default-search').val('');
+                $('#senderAddressSearch').val('');
+                $('#recipientAddressSearch').val('');
+                $('#shippingFeeSearch').val('');
+                // $('#createDateSearch').val('');
+                $('#orderStatusSearch').val('');
+                $('#paymentMethodSearch').val('');
+                $('#totalAmountSearch').val('');
+
+
+                var reqData = {
+                    "SenderAddressSearch": null,
+                    "RecipientAddressSearch": null,
+                    // "CreateDateSearch": null,
+                    "OrderStatusSearch": null,
+                    "PaymentMethodSearch": null,
+                    "ShippingFeeSearch": null,
+                    "TotalAmountSearch": null,
+                    "SearchValue": null,
+                    "OrderBy": null,
+                    "IsManySearch": false,
+                    "PageIndex": 1
+                };
+
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/DeliveryOrder/Search?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage);
+                    }
+                });
+            });
+
+        }
     </script>
 }
