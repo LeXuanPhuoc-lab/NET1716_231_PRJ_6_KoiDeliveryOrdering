@@ -130,4 +130,12 @@ public static class ApiRoute
         public const string Update = Base + "/truck";
         public const string Remove = Base + "/truck/{id}";
     }
+    public static class OrderAssignment
+    {
+        public const string GetById = Base + "/OrderAssignment/{id}";
+        public const string GetAll = Base + "/OrderAssignment";
+        public const string Insert = Base + "/OrderAssignment";
+        public const string Update = Base + "/OrderAssignment";
+        public const string Remove = Base + "/OrderAssignment/{id}";
+    }
 }
