@@ -3,6 +3,7 @@ namespace KoiDeliveryOrdering.API.Payloads;
 public static class ApiRoute
 {
     private const string Base = "api";
+    public const string APIUrl = "http://localhost:7000";
 
     public static class User
     {
@@ -27,9 +28,12 @@ public static class ApiRoute
         public const string GetAllAppointmentTime = Base + "/delivery-orders/appointment";
         public const string GetAllVoucherByUsername = Base + "/delivery-orders/vouchers/{username}";
 
-        public const string GetProvinceByCodeLocal = Base + "/delivery-orders/provinces/{code}";
-        public const string GetDistrictByCodeLocal = Base + "/delivery-orders/districts/{code}";
-        public const string GetWardByCodeLocal = Base + "/delivery-orders/ward/{code}";
+        public const string GetAllProvinceLocal = Base + "/delivery-orders/provinces";
+        public const string GetAllDistrictLocal = Base + "/delivery-orders/districts";
+        public const string GetAllWardLocal = Base + "/delivery-orders/wards";
+        public const string GetProvinceByCodeLocal = Base + "/delivery-orders/provinces/q";
+        public const string GetDistrictByCodeLocal = Base + "/delivery-orders/districts/q";
+        public const string GetWardByCodeLocal = Base + "/delivery-orders/wards/q";
     }
 
     public static class VietnameProvincesOnline
@@ -38,6 +42,14 @@ public static class ApiRoute
         public const string GetListProvinces = VPOnlineBaseUrl + "/p";
         public const string GetProvinceByCode = VPOnlineBaseUrl + "/p/{code}";
         public const string GetDistrictByCode = VPOnlineBaseUrl + "/d/{code}";
+    }
+
+    public static class GiaoHangNhanh
+    {
+        public const string GHNBaseUrl = "https://online-gateway.ghn.vn/shiip/public-api/master-data";
+        public const string GetProvince = GHNBaseUrl + "/province";
+        public const string GetDistrict = GHNBaseUrl + "/district";
+        public const string GetWard = GHNBaseUrl + "/ward";
     }
 
     public static class NominatimMap

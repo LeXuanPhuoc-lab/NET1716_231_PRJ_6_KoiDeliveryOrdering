@@ -10,13 +10,23 @@ using static KoiDeliveryOrdering.API.Payloads.ApiRoute;
 using KoiDeliveryOrdering.MVCWebApp.Payloads.Responses;
 using KoiDeliveryOrdering.API.Payloads.Requests;
 using KoiDeliveryOrdering.MVCWebApp.Utils;
+using KoiDeliveryOrdering.MVCWebApp.Payloads.Filters;
+using KoiDeliveryOrdering.Business.Models;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+
 
 namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 {
     public class DeliveryOrderController : Controller
     {
-        public List<ShippingFeeModel> ShippingFees { get; set; } = new();
+        private readonly AppSettings _appSettings;
+        public DeliveryOrderController(IOptionsMonitor<AppSettings> monitor)
+        {
+            _appSettings = monitor.CurrentValue;
+        }
 
+        public List<ShippingFeeModel> ShippingFees { get; set; } = new();
 
         // GET: DeliveryOrder
         public async Task<IActionResult> Index()
@@ -52,7 +62,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
         }
 
         // GET: DeliveryOrder (With condition)
-        public async Task<IActionResult> IndexWithAjax(string searchValue, string orderBy, int pageIndex = 1)
+        public async Task<IActionResult> Search(DeliveryOrderFilter req)
         {
             using (var httpClient = new HttpClient())
             {
@@ -69,34 +79,99 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 
                             if (deliveryOrders != null && deliveryOrders.Any())
                             {
-                                // Searching (if any)
-                                if (!string.IsNullOrEmpty(searchValue))
+                                // Check whether is many search or not 
+                                if (req.IsManySearch.HasValue && !req.IsManySearch.Value)
                                 {
-                                    searchValue = searchValue.Trim();
+                                    // Searching (if any)
+                                    if (!string.IsNullOrEmpty(req.SearchValue))
+                                    {
+                                        var searchValue = req.SearchValue.Trim();
 
-                                    // Try to parse number 
-                                    decimal parsedAmount;
-                                    bool isNumericSearch = decimal.TryParse(searchValue, out parsedAmount);
+                                        // Try to parse number 
+                                        decimal parsedAmount;
+                                        bool isNumericSearch = decimal.TryParse(searchValue, out parsedAmount);
 
-                                    // Perform the search using LINQ
+                                        // Try to parse bool
+                                        bool parseBool;
+                                        bool isBoolean = bool.TryParse(searchValue, out parseBool);
+
+                                        // Perform the search 
+                                        deliveryOrders = deliveryOrders
+                                            .Where(order =>
+                                                // Recipient Information
+                                                order.RecipientName.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                order.RecipientPhone.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                order.RecipientAddress.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+
+                                                // Sender Address
+                                                string.Join(", ",
+                                                    order.SenderInformation.Street,
+                                                    order.SenderInformation.Ward,
+                                                    order.SenderInformation.District,
+                                                    order.SenderInformation.CityProvince)
+                                                .Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+
+                                                // Tax Fee, Total Amount, Promotion
+                                                (isNumericSearch && order.TotalAmount == parsedAmount) ||
+                                                (isNumericSearch && order.TaxFee == parsedAmount) ||
+                                                (isNumericSearch && order.ShippingFee != null && order.ShippingFee.BaseFee == parsedAmount) ||
+                                                (isNumericSearch && order.VoucherPromotion != null && order.VoucherPromotion.PromotionRate == parsedAmount) ||
+
+                                                // IsInternational, IsSenderPay
+                                                (isBoolean && order.IsSenderPurchase == parseBool) ||
+                                                (isBoolean && order.IsInternational == parseBool) ||
+
+                                                // Other info
+                                                (order.Payment != null && order.Payment.PaymentMethod.Contains(searchValue, StringComparison.OrdinalIgnoreCase)) ||
+                                                (order.OrderStatus.Contains(searchValue, StringComparison.OrdinalIgnoreCase)))
+                                            .ToList();
+                                    }
+                                }else if(req.IsManySearch.HasValue && req.IsManySearch.Value)
+                                {
+                                    // Perform the many search 
                                     deliveryOrders = deliveryOrders
                                         .Where(order =>
-                                            order.RecipientName.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                            order.RecipientPhone.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                            order.RecipientAddress.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
-                                            (isNumericSearch && order.TotalAmount == parsedAmount))
+                                            // Recipient Address 
+                                            (string.IsNullOrEmpty(req.SenderAddressSearch) ||
+                                             order.RecipientAddress.Contains(req.SenderAddressSearch, StringComparison.OrdinalIgnoreCase)) &&
+
+                                            // Sender Address 
+                                            (string.IsNullOrEmpty(req.RecipientAddressSearch) ||
+                                             string.Join(", ",
+                                                order.SenderInformation.Street,
+                                                order.SenderInformation.Ward,
+                                                order.SenderInformation.District,
+                                                order.SenderInformation.CityProvince)
+                                            .Contains(req.RecipientAddressSearch, StringComparison.OrdinalIgnoreCase)) &&
+
+                                            // Order Status 
+                                            (string.IsNullOrEmpty(req.OrderStatusSearch) ||
+                                             order.OrderStatus.Contains(req.OrderStatusSearch, StringComparison.OrdinalIgnoreCase)) &&
+
+                                            // Payment Method
+                                            (string.IsNullOrEmpty(req.PaymentMethodSearch) ||
+                                             (order.Payment != null &&
+                                              order.Payment.PaymentMethod.Equals(req.PaymentMethodSearch))) &&
+
+                                            // Shipping Fee
+                                            (!req.ShippingFeeSearch.HasValue ||
+                                             order.ShippingFee != null && order.ShippingFee.BaseFee == req.ShippingFeeSearch.Value) &&
+
+                                            // Total Amount 
+                                            (!req.TotalAmountSearch.HasValue ||
+                                                order.TotalAmount == req.TotalAmountSearch.Value))
                                         .ToList();
                                 }
 
                                 // Sorting (if any)
-                                if (!string.IsNullOrEmpty(orderBy))
+                                if (!string.IsNullOrEmpty(req.OrderBy))
                                 {
-                                    deliveryOrders = SortingHelper.SortDeliveryOrderByColumn(deliveryOrders ?? new(), orderBy).ToList();
+                                    deliveryOrders = SortingHelper.SortDeliveryOrderByColumn(deliveryOrders ?? new(), req.OrderBy).ToList();
                                 }
 
                                 // Progress paging 
                                 var pagination =
-                                    PaginatedList<DeliveryOrderModel>.Paging(deliveryOrders ?? new(), pageIndex,
+                                    PaginatedList<DeliveryOrderModel>.Paging(deliveryOrders ?? new(), req.PageIndex,
                                         5); // Default 5 record each page
 
                                 // Set ViewData
@@ -162,7 +237,8 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             ViewData["PaymentId"] = new SelectList(await this.GetAllPaymentAsync(), "PaymentId", "PaymentMethod");
             ViewData["OrderStatus"] = new SelectList(await this.GetAllDeliveryOrderStatusesAsync(), "OrderStatus");
             ViewData["DeliveryAppointments"] = new SelectList(await this.GetAllDeliveryAppointmentAsync(), "RecipientAppointmentTime");
-            ViewData["Provinces"] = new SelectList(await this.GetProvincesAsync(), "Code", "Name");
+            //ViewData["Provinces"] = new SelectList(await this.GetProvincesAsync(), "Code", "Name");
+            ViewData["Provinces"] = new SelectList(await this.GetProvincesAsync(), "ProvinceId", "ProvinceName");
             ViewData["AnimalType"] = new SelectList(await this.GetAllAnimalTypeAsync(), "AnimalTypeId", "AnimalTypeDesc");
 
             // Add Voucher Promotion View Data
@@ -413,92 +489,107 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             return new List<AnimalTypeModel>();
         }
 
-        public async Task<List<ProvinceModel>> GetProvincesAsync()
+        public async Task<List<GHNProvinceModel>> GetProvincesAsync()
         {
             using (var httpClient = new HttpClient())
             {
-                using (var resp = await httpClient.GetAsync(ApiRoute.VietnameProvincesOnline.GetListProvinces))
+                using (var resp = await httpClient.GetAsync($"{ApiRoute.APIUrl}/{ApiRoute.DeliveryOrder.GetAllProvinceLocal}"))
                 {
                     if (resp.IsSuccessStatusCode)
                     {
                         var context = await resp.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<List<ProvinceModel>>(context.ToString());
-                        if (result != null)
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+
+                        if (result != null && result.Data != null && result.Status == Const.SUCCESS_READ_CODE)
                         {
-                            return result ?? new List<ProvinceModel>();
+                            var ghnProvinces = JsonConvert.DeserializeObject<List<GHNProvinceModel>>(
+                                result.Data.ToString()!);
+
+                            return ghnProvinces ?? new List<GHNProvinceModel>();
                         }
                     }
                 }
             }
 
-            return new List<ProvinceModel>();
+            return new List<GHNProvinceModel>();
         }
 
-        public async Task<ProvinceModel> GetProvinceByCodeAsync(int code)
+        public async Task<GHNProvinceModel> GetProvinceByCodeAsync(int code)
         {
             using (var httpClient = new HttpClient())
             {
                 using (var resp = await httpClient.GetAsync(
-                    VietnameProvincesOnline.VPOnlineBaseUrl + $"/p/{code}"))
+                    $"{ApiRoute.APIUrl}/{ApiRoute.DeliveryOrder.GetAllProvinceLocal}" + $"/q?code={code}"))
                 {
                     if (resp.IsSuccessStatusCode)
                     {
                         var context = await resp.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<ProvinceModel>(context.ToString());
-                        if (result != null)
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+
+                        if (result != null && result.Data != null && result.Status == Const.SUCCESS_READ_CODE)
                         {
-                            return result ?? new ProvinceModel();
+                            var ghnProvince = JsonConvert.DeserializeObject<GHNProvinceModel>(
+                                result.Data.ToString()!);
+
+                            return ghnProvince ?? new GHNProvinceModel();
                         }
                     }
                 }
             }
 
-            return new ProvinceModel();
+            return new GHNProvinceModel();
         }
 
-        public async Task<DistrictModel> GetDistrictByCodeAsync(int code)
+        public async Task<GHNDistrictModel> GetDistrictByCodeAsync(int code, int provinceCode)
         {
             using (var httpClient = new HttpClient())
             {
                 using (var resp = await httpClient.GetAsync(
-                    VietnameProvincesOnline.VPOnlineBaseUrl + $"/d/{code}"))
+                    $"{ApiRoute.APIUrl}/{ApiRoute.DeliveryOrder.GetAllDistrictLocal}" + $"/q?code={code}&provinceCode={provinceCode}"))
                 {
                     if (resp.IsSuccessStatusCode)
                     {
                         var context = await resp.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<DistrictModel>(context.ToString());
-                        if (result != null)
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+
+                        if (result != null && result.Data != null && result.Status == Const.SUCCESS_READ_CODE)
                         {
-                            return result ?? new DistrictModel();
+                            var ghnDistrict = JsonConvert.DeserializeObject<GHNDistrictModel>(
+                                result.Data.ToString()!);
+
+                            return ghnDistrict ?? new GHNDistrictModel();
                         }
                     }
                 }
             }
 
-            return new DistrictModel();
+            return new GHNDistrictModel();
         }
 
-        public async Task<WardModel> GetWardByCodeAsync(int code)
+        public async Task<GHNWardModel> GetWardByCodeAsync(int code, int districtCode)
         {
             using (var httpClient = new HttpClient())
             {
                 using (var resp = await httpClient.GetAsync(
-                    VietnameProvincesOnline.VPOnlineBaseUrl + $"/w/{code}"))
+                    $"{ApiRoute.APIUrl}/{ApiRoute.DeliveryOrder.GetAllWardLocal}" + $"/q?code={code}&districtCode={districtCode}"))
                 {
                     if (resp.IsSuccessStatusCode)
                     {
                         var context = await resp.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<WardModel>(context.ToString());
-                        if (result != null)
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+
+                        if (result != null && result.Data != null && result.Status == Const.SUCCESS_READ_CODE)
                         {
-                            return result ?? new WardModel();
+                            var ghnWard = JsonConvert.DeserializeObject<GHNWardModel>(
+                                result.Data.ToString()!);
+
+                            return ghnWard ?? new GHNWardModel();
                         }
-                        
                     }
                 }
             }
 
-            return new WardModel();
+            return new GHNWardModel();
         }
 
         public async Task<(string longtitude, string latitude)> GetLongAndLatByAddressAsync(string address)
@@ -551,28 +642,24 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
             }
 
             // Handling request address (Province, District, Ward) by code
-            if (!string.IsNullOrEmpty(deliveryOrderReq.ProvinceName) 
-                && int.TryParse(deliveryOrderReq.ProvinceName, out var provinceCode))
+            int.TryParse(deliveryOrderReq.ProvinceName, out var parsedProvinceCode);
+            int.TryParse(deliveryOrderReq.DistrictName, out var parsedDistrictCode);
+            int.TryParse(deliveryOrderReq.WardName, out var parsedWardCode);
+
+            if (parsedProvinceCode > 0 
+                && parsedDistrictCode > 0 
+                && parsedWardCode > 0)
             {
-                var provinceModel = await GetProvinceByCodeAsync(provinceCode);
+                var provinceModel = await GetProvinceByCodeAsync(parsedProvinceCode);
+                var districtModel = await GetDistrictByCodeAsync(parsedDistrictCode, parsedProvinceCode);
+                var wardModel = await GetWardByCodeAsync(parsedWardCode, parsedDistrictCode);
+
                 deliveryOrderReq.ProvinceName = 
-                    provinceModel != null ? provinceModel.Name : string.Empty;
-            }
-
-            if (!string.IsNullOrEmpty(deliveryOrderReq.DistrictName)
-                && int.TryParse(deliveryOrderReq.DistrictName, out var districtCode))
-            {
-                var districtModel = await GetDistrictByCodeAsync(districtCode);
+                    provinceModel != null ? provinceModel.ProvinceName : string.Empty;
                 deliveryOrderReq.DistrictName =
-                    districtModel != null ? districtModel.Name : string.Empty;
-            }
-
-            if (!string.IsNullOrEmpty(deliveryOrderReq.WardName)
-                && int.TryParse(deliveryOrderReq.WardName, out var wardCode))
-            {
-                var wardModel = await GetWardByCodeAsync(wardCode);
+                    districtModel != null ? districtModel.DistrictName : string.Empty;
                 deliveryOrderReq.WardName =
-                    wardModel != null ? wardModel.Name : string.Empty;
+                    wardModel != null ? wardModel.WardName : string.Empty;
             }
 
             // Retrieve longtitude and latitude base on pure address string
@@ -686,36 +773,27 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 
             // Handling request address (Province, District, Ward) by code (if any)
             var isUpdateAddress = false;
-            if (!string.IsNullOrEmpty(toUpdateDeliveryOrder.ToUpdateProvinceName)
-                && int.TryParse(toUpdateDeliveryOrder.ToUpdateProvinceName, out var provinceCode))
+            // Handling request address (Province, District, Ward) by code
+            int.TryParse(toUpdateDeliveryOrder.ToUpdateProvinceName, out var parsedProvinceCode);
+            int.TryParse(toUpdateDeliveryOrder.ToUpdateDistrictName, out var parsedDistrictCode);
+            int.TryParse(toUpdateDeliveryOrder.ToUpdateWardName, out var parsedWardCode);
+
+            if (parsedProvinceCode > 0
+                && parsedDistrictCode > 0
+                && parsedWardCode > 0)
             {
-                var provinceModel = await GetProvinceByCodeAsync(provinceCode);
+                var provinceModel = await GetProvinceByCodeAsync(parsedProvinceCode);
+                var districtModel = await GetDistrictByCodeAsync(parsedDistrictCode, parsedProvinceCode);
+                var wardModel = await GetWardByCodeAsync(parsedWardCode, parsedDistrictCode);
+
                 toUpdateDeliveryOrder.ProvinceName =
-                    provinceModel != null ? provinceModel.Name : string.Empty;
-
-                // Mark as update province 
-                isUpdateAddress = true;
-            }
-
-            if (!string.IsNullOrEmpty(toUpdateDeliveryOrder.ToUpdateDistrictName)
-                && int.TryParse(toUpdateDeliveryOrder.ToUpdateDistrictName, out var districtCode))
-            {
-                var districtModel = await GetDistrictByCodeAsync(districtCode);
+                    provinceModel != null ? provinceModel.ProvinceName : string.Empty;
                 toUpdateDeliveryOrder.DistrictName =
-                    districtModel != null ? districtModel.Name : string.Empty;
-
-                // Mark as update district 
-                isUpdateAddress = true;
-            }
-
-            if (!string.IsNullOrEmpty(toUpdateDeliveryOrder.ToUpdateWardName)
-                && int.TryParse(toUpdateDeliveryOrder.ToUpdateWardName, out var wardCode))
-            {
-                var wardModel = await GetWardByCodeAsync(wardCode);
+                    districtModel != null ? districtModel.DistrictName : string.Empty;
                 toUpdateDeliveryOrder.WardName =
-                    wardModel != null ? wardModel.Name : string.Empty;
+                    wardModel != null ? wardModel.WardName : string.Empty;
 
-                // Mark as update ward 
+                // Mark as update address
                 isUpdateAddress = true;
             }
 

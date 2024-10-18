@@ -343,15 +343,15 @@
             getPartOfAddress();
         });
 
-        function handleProvinceSelect(){
+        function handleProvinceSelect() {
             $('#provinceSelect').change(function () {
-                // Get selected value 
-                var selectedProvinceCode = $(this).val(); 
+                // Get selected value
+                var selectedProvinceCode = $(this).val();
                 console.log("Selected Province Code: " + selectedProvinceCode);
 
                 // Get all district by province code
                 $.ajax({
-                    url: 'http://localhost:7000/api/delivery-orders/provinces/' + selectedProvinceCode,
+                    url: 'http://localhost:7000/api/delivery-orders/districts?provinceCode=' + selectedProvinceCode,
                     type: "GET",
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
@@ -366,8 +366,9 @@
                         // Check if districts are returned
                         if (result.status == 1 && result.data != null) {
                             // Iterate through the districts and add each one as an option
-                            $.each(result.data.districts, function (index, district) {
-                                $('#districtSelect').append('<option value="' + district.code + '">' + district.name + '</option>');
+                            $.each(result.data, function (index, district) {
+                                // $('#districtSelect').append('<option value="' + district.code + '">' + district.name + '</option>');
+                                $('#districtSelect').append('<option value="' + district.districtId + '">' + district.districtName + '</option>');
                             });
 
                             $('#districtSelect').selectpicker('refresh');
@@ -385,7 +386,7 @@
             });
         }
 
-        function handleDistrictSelect(){
+        function handleDistrictSelect() {
             $('#districtSelect').change(function () {
                 // Get selected value
                 var selectedDistrictCode = $(this).val();
@@ -393,7 +394,7 @@
 
                 // Get all ward by district code
                 $.ajax({
-                    url: 'http://localhost:7000/api/delivery-orders/districts/' + selectedDistrictCode,
+                    url: 'http://localhost:7000/api/delivery-orders/wards?districtCode=' + selectedDistrictCode,
                     type: "GET",
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
@@ -408,8 +409,8 @@
                         // Check if wards are returned
                         if (result.status == 1 && result.data != null) {
                             // Iterate through the wards and add each one as an option
-                            $.each(result.data.wards, function (index, ward) {
-                                $('#wardSelect').append('<option value="' + ward.code + '">' + ward.name + '</option>');
+                            $.each(result.data, function (index, ward) {
+                                $('#wardSelect').append('<option value="' + ward.wardCode + '">' + ward.wardName + '</option>');
                             });
 
                             $('#wardSelect').selectpicker('refresh');
