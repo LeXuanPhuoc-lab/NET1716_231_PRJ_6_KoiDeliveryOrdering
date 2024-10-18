@@ -103,8 +103,8 @@ namespace KoiDeliveryOrdering.Service
                     return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
                 }
 
-                await _unitOfWork.TruckRepository.PrepareRemoveAsync(orderAssignment.OrderAssignmentId);
-                var isRemoved = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                await _unitOfWork.OrderAssignmentRepository.PrepareRemoveAsync(orderAssignment.OrderAssignmentId);
+                var isRemoved = await _unitOfWork.OrderAssignmentRepository.SaveChangeWithTransactionAsync() > 0;
 
                 if (!isRemoved)
                 {
