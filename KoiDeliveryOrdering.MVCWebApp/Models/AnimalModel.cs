@@ -18,7 +18,7 @@ namespace KoiDeliveryOrdering.MVCWebApp.Models
 
         public decimal? EstimatedPrice { get; set; }
 
-        public string? HealthStatus { get; set; }
+        public string? HealthStatus { get; set; } = "Good";
 
         public bool? IsAvailable { get; set; }
 

@@ -8,7 +8,7 @@ public class MappingRegistration : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<User, UserDto>();
+        config.NewConfig<UserDTO, UserDto>();
         // More mapping configuration here...
     }
 }

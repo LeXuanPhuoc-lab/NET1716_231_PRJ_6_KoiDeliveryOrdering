@@ -45,6 +45,7 @@ public static class Const
     public static int FAIL_REMOVE_CODE = -1;
     public static string FAIL_REMOVE_MSG = "REMOVE data fail";
 
+
     #endregion
 
     #region Warning Code

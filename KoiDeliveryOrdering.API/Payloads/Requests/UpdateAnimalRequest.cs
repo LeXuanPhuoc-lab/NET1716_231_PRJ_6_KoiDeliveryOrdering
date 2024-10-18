@@ -31,4 +31,26 @@ namespace KoiDeliveryOrdering.API.Payloads.Requests
         [Required]
         public int AnimalTypeId { get; set; }
     }
+    public static class UpdateAnimalExtension 
+    {
+        public static Animal ToAnimal(this UpdateAnimalRequest request)
+        {
+            var animal = new Animal()
+            {
+                Id = request.Id,
+                HealthStatus = request.HealthStatus,
+                Age = request.Age,
+                AnimalTypeId = request.AnimalTypeId,
+                Breed = request.Breed,
+                ColorPattern = request.ColorPattern,
+                Size = request.Size,
+                Description = request.Description,
+                EstimatedPrice = request.EstimatedPrice,
+                ImageUrl = request.ImageUrl,
+                IsAvailable = request.IsAvailable,
+                OriginCountry = request.OriginCountry,
+            };
+            return animal;
+        }
+    }
 }

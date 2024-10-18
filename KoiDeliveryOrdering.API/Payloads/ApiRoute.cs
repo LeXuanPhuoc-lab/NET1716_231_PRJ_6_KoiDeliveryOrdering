@@ -7,9 +7,14 @@ public static class ApiRoute
 
     public static class User
     {
-        public const string GetById = Base + "/users/{id:Guid}";
+        public const string GetById = Base + "/users/{userId:Guid}";
         public const string GetAll = Base + "/users";
         public const string GetByUsername = Base + "/users/{username}";
+        public const string Remove = Base + "/users/{id}/remove";
+        public const string Insert = Base + "/users/insert";
+        public const string Update = Base + "/users/update";
+
+        
 
         // This only use before implementing (Sign in/Sign up)
         public const string GetAllSenderInformationAsync = Base + "/users/sender-informations";
@@ -61,6 +66,11 @@ public static class ApiRoute
     {
         public const string GetAllAnimalType = Base + "/animals/types";
         public const string GetAllHealthStatus = Base + "/animals/health-statuses";
+        public const string GetAll = Base + "/animals";
+        public const string GetById = Base + "/animals/{id}";
+        public const string Delete = Base + "/animals/{id}";
+        public const string Create = Base +"/animals";
+        public const string Update = Base + "/animals";
     }
 
     public static class Document
@@ -96,5 +106,28 @@ public static class ApiRoute
         public const string Insert = Base + "/care-task/insert";
         public const string Update = Base + "/care-task/update";
         public const string Remove = Base + "/care-task/{id}/remove";
+    }
+
+    public static class HereMap
+    {
+        public const string BaseUrl = "https://geocode.search.hereapi.com/v1/geocode?q={address}&apiKey={apiKey}";
+    }
+
+    public static class Garage
+    {
+        public const string GetById = Base + "/garages/{id}";
+        public const string GetAll = Base + "/garages";
+        public const string Insert = Base + "/garages";
+        public const string Update = Base + "/garages";
+        public const string Remove = Base + "/garages/{id}";
+    }
+
+    public static class Truck
+    {
+        public const string GetById = Base + "/truck/{id}";
+        public const string GetAll = Base + "/truck";
+        public const string Insert = Base + "/truck";
+        public const string Update = Base + "/truck";
+        public const string Remove = Base + "/truck/{id}";
     }
 }

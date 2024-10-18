@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KoiDeliveryOrdering.Data.Repositories;
 
-public class UserRepository : GenericRepository<User>
+public class UserRepository : GenericRepository<UserDTO>
 {
     public UserRepository(KoiDeliveryOrderingDbContext dbContext) 
         : base(dbContext)
