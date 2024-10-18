@@ -1,0 +1,65 @@
+﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.OrderAssignmentModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedTruck)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Driver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishCarer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedTruck.TruckLicensePlate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryOrder.OrderStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Driver.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FishCarer.Email)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.OrderAssignmentId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.OrderAssignmentId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.OrderAssignmentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
