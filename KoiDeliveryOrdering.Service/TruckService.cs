@@ -22,7 +22,7 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var trucks = await _unitOfWork.TruckRepository.FindAllWithConditionAsync();
+                var trucks = await _unitOfWork.TruckRepository.FindAllWithConditionAsync(includeProperties: "Garage");
                 return trucks.Any()
                     ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, trucks)
                     : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<Truck>());

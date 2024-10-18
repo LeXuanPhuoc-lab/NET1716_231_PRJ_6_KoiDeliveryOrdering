@@ -1,8 +1,10 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
+using KoiDeliveryOrdering.Data.Context;
 using KoiDeliveryOrdering.Data.Entities;
 using KoiDeliveryOrdering.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindAllWithConditionAsync();
+                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindAllWithConditionAsync(includeProperties: "AssignedTruck,DeliveryOrder,Driver,FishCarer");
                 return orderAssignment.Any()
                     ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, orderAssignment)
                     : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<OrderAssignment>());
@@ -39,7 +41,7 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindOneWithConditionAsync(t => t.OrderAssignmentId == id);
+                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindOneWithConditionAsync(t => t.OrderAssignmentId == id, includeProperties: "AssignedTruck,DeliveryOrder,Driver,FishCarer");
                 return orderAssignment != null
                     ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, orderAssignment)
                     : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new OrderAssignment());
