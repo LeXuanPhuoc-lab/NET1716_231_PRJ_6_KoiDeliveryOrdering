@@ -1,19 +1,23 @@
 ﻿using KoiDeliveryOrdering.Business.Base;
 using KoiDeliveryOrdering.Common;
 using KoiDeliveryOrdering.Data;
+using KoiDeliveryOrdering.Data.Context;
 using KoiDeliveryOrdering.Data.Entities;
 using KoiDeliveryOrdering.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace KoiDeliveryOrdering.Service
 {
-    public class TruckService : ITruckService
+    public class OrderAssignmentService : IOrderAssignmentService
     {
         private readonly UnitOfWork _unitOfWork;
 
-        public TruckService(UnitOfWork unitOfWork)
+        public OrderAssignmentService(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -22,10 +26,10 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var trucks = await _unitOfWork.TruckRepository.FindAllWithConditionAsync(includeProperties: "Garage");
-                return trucks.Any()
-                    ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, trucks)
-                    : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<Truck>());
+                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindAllWithConditionAsync(includeProperties: "AssignedTruck,DeliveryOrder,Driver,FishCarer");
+                return orderAssignment.Any()
+                    ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, orderAssignment)
+                    : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new List<OrderAssignment>());
             }
             catch (Exception ex)
             {
@@ -37,10 +41,10 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var truck = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(t => t.TruckId == id);
-                return truck != null
-                    ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, truck)
-                    : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new Truck());
+                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindOneWithConditionAsync(t => t.OrderAssignmentId == id, includeProperties: "AssignedTruck,DeliveryOrder,Driver,FishCarer");
+                return orderAssignment != null
+                    ? new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, orderAssignment)
+                    : new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new OrderAssignment());
             }
             catch (Exception ex)
             {
@@ -48,31 +52,34 @@ namespace KoiDeliveryOrdering.Service
             }
         }
 
-        public async Task<IServiceResult> InsertAsync(Truck truck)
+        public async Task<IServiceResult> InsertAsync(OrderAssignment orderAssignment)
         {
             try
             {
-                await _unitOfWork.TruckRepository.PrepareInsertAsync(truck);
-                var isCreated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                await _unitOfWork.OrderAssignmentRepository.PrepareInsertAsync(orderAssignment);
+                var isCreated = await _unitOfWork.OrderAssignmentRepository.SaveChangeWithTransactionAsync() > 0;
+
                 if (!isCreated)
                 {
                     return new ServiceResult(Const.FAIL_INSERT_CODE, Const.FAIL_INSERT_MSG, false);
                 }
+
                 return new ServiceResult(Const.SUCCESS_INSERT_CODE, Const.SUCCESS_INSERT_MSG, true);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return new ServiceResult(Const.ERROR_EXCEPTION_CODE, ex.Message);
             }
         }
 
-        public async Task<IServiceResult> UpdateAsync(Truck truck)
+        public async Task<IServiceResult> UpdateAsync(OrderAssignment orderAssignment)
         {
             try
             {
-                _unitOfWork.TruckRepository.PrepareUpdate(truck);
-                var isUpdated = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
-                
+                _unitOfWork.OrderAssignmentRepository.PrepareUpdate(orderAssignment);
+                var isUpdated = await _unitOfWork.OrderAssignmentRepository.SaveChangeWithTransactionAsync() > 0;
+
                 if (!isUpdated)
                 {
                     return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, false);
@@ -90,16 +97,16 @@ namespace KoiDeliveryOrdering.Service
         {
             try
             {
-                var truckEntity = await _unitOfWork.TruckRepository.FindOneWithConditionAsync(d =>
-                    d.TruckId.Equals(id));
+                var orderAssignment = await _unitOfWork.OrderAssignmentRepository.FindOneWithConditionAsync(d =>
+                    d.OrderAssignmentId.Equals(id));
 
-                if (truckEntity == null)
+                if (orderAssignment == null)
                 {
                     return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
                 }
 
-                await _unitOfWork.TruckRepository.PrepareRemoveAsync(truckEntity.TruckId);
-                var isRemoved = await _unitOfWork.TruckRepository.SaveChangeWithTransactionAsync() > 0;
+                await _unitOfWork.OrderAssignmentRepository.PrepareRemoveAsync(orderAssignment.OrderAssignmentId);
+                var isRemoved = await _unitOfWork.OrderAssignmentRepository.SaveChangeWithTransactionAsync() > 0;
 
                 if (!isRemoved)
                 {
