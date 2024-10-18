@@ -38,7 +38,7 @@ namespace KoiDeliveryOrdering.Business
         {
             try
             {
-                var dailyCareScheduleEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAndThenIncludeAsync(
+                var userEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAndThenIncludeAsync(
                     filter: x => x.DailyCareScheduleId == id,
                     includes: new()
                     {
@@ -47,12 +47,12 @@ namespace KoiDeliveryOrdering.Business
                     }
                 );
 
-                if (dailyCareScheduleEntity == null)
+                if (userEntity == null)
                 {
                     return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, new DailyCareSchedule());
                 }
 
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, dailyCareScheduleEntity);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, userEntity);
             }
             catch (Exception ex)
             {
@@ -84,16 +84,16 @@ namespace KoiDeliveryOrdering.Business
         {
             try
             {
-                var dailyCareScheduleEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAsync(d =>
+                var userEntity = await unitOfWork.DailyCareScheduleRepository.FindOneWithConditionAsync(d =>
                     d.DailyCareScheduleId == id);
 
                 // Check exist daily care schedule
-                if (dailyCareScheduleEntity == null)
+                if (userEntity == null)
                 {
                     return new ServiceResult(Const.FAIL_REMOVE_CODE, Const.FAIL_REMOVE_MSG, false);
                 }
 
-                await unitOfWork.DailyCareScheduleRepository.PrepareRemoveAsync(dailyCareScheduleEntity.DailyCareScheduleId);
+                await unitOfWork.DailyCareScheduleRepository.PrepareRemoveAsync(userEntity.DailyCareScheduleId);
                 var isRemoved = await unitOfWork.DailyCareScheduleRepository.SaveChangeWithTransactionAsync() > 0;
 
                 if (!isRemoved)

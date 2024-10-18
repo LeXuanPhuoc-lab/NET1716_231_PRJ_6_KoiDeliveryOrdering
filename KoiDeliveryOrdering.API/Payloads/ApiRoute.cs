@@ -6,9 +6,14 @@ public static class ApiRoute
 
     public static class User
     {
-        public const string GetById = Base + "/users/{id:Guid}";
+        public const string GetById = Base + "/users/{userId:Guid}";
         public const string GetAll = Base + "/users";
         public const string GetByUsername = Base + "/users/{username}";
+        public const string Remove = Base + "/users/{id}/remove";
+        public const string Insert = Base + "/users/insert";
+        public const string Update = Base + "/users/update";
+
+        
 
         // This only use before implementing (Sign in/Sign up)
         public const string GetAllSenderInformationAsync = Base + "/users/sender-informations";
@@ -49,6 +54,11 @@ public static class ApiRoute
     {
         public const string GetAllAnimalType = Base + "/animals/types";
         public const string GetAllHealthStatus = Base + "/animals/health-statuses";
+        public const string GetAll = Base + "/animals";
+        public const string GetById = Base + "/animals/{id}";
+        public const string Delete = Base + "/animals/{id}";
+        public const string Create = Base +"/animals";
+        public const string Update = Base + "/animals";
     }
 
     public static class Document

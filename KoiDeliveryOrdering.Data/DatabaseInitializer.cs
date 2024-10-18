@@ -99,9 +99,9 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
     //      Seeding Users
     private async Task SeedUserAsync()
     {
-        List<User> users = new()
+        List<UserDTO> users = new()
         {
-            new User()
+            new UserDTO()
             {
                 Username = "admin",
                 Password = "Admin123",
