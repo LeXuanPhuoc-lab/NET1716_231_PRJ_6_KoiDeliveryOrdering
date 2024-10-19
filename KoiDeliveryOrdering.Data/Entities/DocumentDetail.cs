@@ -11,11 +11,11 @@ public partial class DocumentDetail
 
     public string ItemName { get; set; } = null!;
 
-    public decimal ItemWeight { get; set; }
+    public double ItemWeight { get; set; }
 
     public string ItemCategory { get; set; } = null!;
 
-    public decimal ItemEstimatePrice { get; set; }
+    public double ItemEstimatePrice { get; set; }
 
     public int? ItemQuantity { get; set; }
 

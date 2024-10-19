@@ -83,6 +83,8 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
             if (!dbContext.CareTasks.Any()) await SeedCareTasksAsync();
             // Staff
             if (!dbContext.Staff.Any()) await SeedStaffAsync();
+            // Document
+            if (!dbContext.Documents.Any()) await SeedDocumentAsync();
 
             // More seeding here...
             // Each table need to create private method to seeding data
@@ -161,184 +163,182 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
     private async Task SeedStaffAsync()
     {
         List<Staff> staffList = new()
-    {
-        new Staff()
         {
-            StaffId = Guid.NewGuid(),
-            FullName = "Nguyen Van A",
-            Email = "nguyenvana@example.com",
-            DateOfBirth = new DateTime(1990, 1, 1),
-            Phone = "0987654321",
-            AvatarImage = "avatar_nguyenvana.jpg",
-            IdentityCard = "123456789",
-            CreateDate = DateTime.Now,
-            Address = "456 Another Street",
-            Longitude = 105.8342,
-            Latitude = 21.0285,
-            Username = "nguyenvana",
-            Password = "@Password123",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Tran Thi B",
-            Email = "tranthib@example.com",
-            DateOfBirth = new DateTime(1985, 5, 5),
-            Phone = "0987654322",
-            AvatarImage = "avatar_tranthib.jpg",
-            IdentityCard = "987654321",
-            CreateDate = DateTime.Now.AddMonths(-1),
-            Address = "789 Example Road",
-            Longitude = 105.8442,
-            Latitude = 21.0385,
-            Username = "tranthib",
-            Password = "@Password1234",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Le Van C",
-            Email = "levanc@example.com",
-            DateOfBirth = new DateTime(1992, 3, 3),
-            Phone = "0987654323",
-            AvatarImage = "avatar_levanc.jpg",
-            IdentityCard = "123123123",
-            CreateDate = DateTime.Now.AddMonths(-2),
-            Address = "123 Example Avenue",
-            Longitude = 105.8542,
-            Latitude = 21.0485,
-            Username = "levanc",
-            Password = "@Password1235",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Pham Thi D",
-            Email = "phamthid@example.com",
-            DateOfBirth = new DateTime(1988, 7, 7),
-            Phone = "0987654324",
-            AvatarImage = "avatar_phamthid.jpg",
-            IdentityCard = "321321321",
-            CreateDate = DateTime.Now.AddMonths(-3),
-            Address = "321 Another Road",
-            Longitude = 105.8642,
-            Latitude = 21.0585,
-            Username = "phamthid",
-            Password = "@Password1236",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Hoang Van E",
-            Email = "hoangvane@example.com",
-            DateOfBirth = new DateTime(1995, 8, 8),
-            Phone = "0987654325",
-            AvatarImage = "avatar_hoangvane.jpg",
-            IdentityCard = "456456456",
-            CreateDate = DateTime.Now.AddMonths(-4),
-            Address = "654 Example Street",
-            Longitude = 105.8742,
-            Latitude = 21.0685,
-            Username = "hoangvane",
-            Password = "@Password1237",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Nguyen Thi F",
-            Email = "nguyenthif@example.com",
-            DateOfBirth = new DateTime(1993, 6, 6),
-            Phone = "0987654326",
-            AvatarImage = "avatar_nguyenthif.jpg",
-            IdentityCard = "654654654",
-            CreateDate = DateTime.Now.AddMonths(-5),
-            Address = "987 Another Street",
-            Longitude = 105.8842,
-            Latitude = 21.0785,
-            Username = "nguyenthif",
-            Password = "@Password1238",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Vu Van G",
-            Email = "vuvang@example.com",
-            DateOfBirth = new DateTime(1980, 12, 12),
-            Phone = "0987654327",
-            AvatarImage = "avatar_vuvang.jpg",
-            IdentityCard = "987987987",
-            CreateDate = DateTime.Now.AddMonths(-6),
-            Address = "654 Another Avenue",
-            Longitude = 105.8942,
-            Latitude = 21.0885,
-            Username = "vuvang",
-            Password = "@Password1239",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Mai Thi H",
-            Email = "maithih@example.com",
-            DateOfBirth = new DateTime(1987, 9, 9),
-            Phone = "0987654328",
-            AvatarImage = "avatar_maithih.jpg",
-            IdentityCard = "321654987",
-            CreateDate = DateTime.Now.AddMonths(-7),
-            Address = "159 Example Place",
-            Longitude = 105.9042,
-            Latitude = 21.0985,
-            Username = "maithih",
-            Password = "@Password1240",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Tran Van I",
-            Email = "tranvani@example.com",
-            DateOfBirth = new DateTime(1994, 2, 2),
-            Phone = "0987654329",
-            AvatarImage = "avatar_tranvanI.jpg",
-            IdentityCard = "654123987",
-            CreateDate = DateTime.Now.AddMonths(-8),
-            Address = "753 Example Way",
-            Longitude = 105.9142,
-            Latitude = 21.1085,
-            Username = "tranvanI",
-            Password = "@Password1241",
-            IsActive = true,
-        },
-        new Staff()
-        {
-            StaffId = Guid.NewGuid(),
-            FullName = "Nguyen Van J",
-            Email = "nguyenvanj@example.com",
-            DateOfBirth = new DateTime(1996, 4, 4),
-            Phone = "0987654330",
-            AvatarImage = "avatar_nguyenvanj.jpg",
-            IdentityCard = "789321456",
-            CreateDate = DateTime.Now.AddMonths(-9),
-            Address = "852 Another Way",
-            Longitude = 105.9242,
-            Latitude = 21.1185,
-            Username = "nguyenvanj",
-            Password = "@Password1242",
-            IsActive = true,
-        },
-    };
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Nguyen Van A",
+                Email = "nguyenvana@example.com",
+                DateOfBirth = new DateTime(1990, 1, 1),
+                Phone = "0987654321",
+                AvatarImage = "avatar_nguyenvana.jpg",
+                IdentityCard = "123456789",
+                CreateDate = DateTime.Now,
+                Address = "456 Another Street",
+                Longitude = 105.8342,
+                Latitude = 21.0285,
+                Username = "nguyenvana",
+                Password = "@Password123",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Tran Thi B",
+                Email = "tranthib@example.com",
+                DateOfBirth = new DateTime(1985, 5, 5),
+                Phone = "0987654322",
+                AvatarImage = "avatar_tranthib.jpg",
+                IdentityCard = "987654321",
+                CreateDate = DateTime.Now.AddMonths(-1),
+                Address = "789 Example Road",
+                Longitude = 105.8442,
+                Latitude = 21.0385,
+                Username = "tranthib",
+                Password = "@Password1234",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Le Van C",
+                Email = "levanc@example.com",
+                DateOfBirth = new DateTime(1992, 3, 3),
+                Phone = "0987654323",
+                AvatarImage = "avatar_levanc.jpg",
+                IdentityCard = "123123123",
+                CreateDate = DateTime.Now.AddMonths(-2),
+                Address = "123 Example Avenue",
+                Longitude = 105.8542,
+                Latitude = 21.0485,
+                Username = "levanc",
+                Password = "@Password1235",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Pham Thi D",
+                Email = "phamthid@example.com",
+                DateOfBirth = new DateTime(1988, 7, 7),
+                Phone = "0987654324",
+                AvatarImage = "avatar_phamthid.jpg",
+                IdentityCard = "321321321",
+                CreateDate = DateTime.Now.AddMonths(-3),
+                Address = "321 Another Road",
+                Longitude = 105.8642,
+                Latitude = 21.0585,
+                Username = "phamthid",
+                Password = "@Password1236",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Hoang Van E",
+                Email = "hoangvane@example.com",
+                DateOfBirth = new DateTime(1995, 8, 8),
+                Phone = "0987654325",
+                AvatarImage = "avatar_hoangvane.jpg",
+                IdentityCard = "456456456",
+                CreateDate = DateTime.Now.AddMonths(-4),
+                Address = "654 Example Street",
+                Longitude = 105.8742,
+                Latitude = 21.0685,
+                Username = "hoangvane",
+                Password = "@Password1237",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Nguyen Thi F",
+                Email = "nguyenthif@example.com",
+                DateOfBirth = new DateTime(1993, 6, 6),
+                Phone = "0987654326",
+                AvatarImage = "avatar_nguyenthif.jpg",
+                IdentityCard = "654654654",
+                CreateDate = DateTime.Now.AddMonths(-5),
+                Address = "987 Another Street",
+                Longitude = 105.8842,
+                Latitude = 21.0785,
+                Username = "nguyenthif",
+                Password = "@Password1238",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Vu Van G",
+                Email = "vuvang@example.com",
+                DateOfBirth = new DateTime(1980, 12, 12),
+                Phone = "0987654327",
+                AvatarImage = "avatar_vuvang.jpg",
+                IdentityCard = "987987987",
+                CreateDate = DateTime.Now.AddMonths(-6),
+                Address = "654 Another Avenue",
+                Longitude = 105.8942,
+                Latitude = 21.0885,
+                Username = "vuvang",
+                Password = "@Password1239",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Mai Thi H",
+                Email = "maithih@example.com",
+                DateOfBirth = new DateTime(1987, 9, 9),
+                Phone = "0987654328",
+                AvatarImage = "avatar_maithih.jpg",
+                IdentityCard = "321654987",
+                CreateDate = DateTime.Now.AddMonths(-7),
+                Address = "159 Example Place",
+                Longitude = 105.9042,
+                Latitude = 21.0985,
+                Username = "maithih",
+                Password = "@Password1240",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Tran Van I",
+                Email = "tranvani@example.com",
+                DateOfBirth = new DateTime(1994, 2, 2),
+                Phone = "0987654329",
+                AvatarImage = "avatar_tranvanI.jpg",
+                IdentityCard = "654123987",
+                CreateDate = DateTime.Now.AddMonths(-8),
+                Address = "753 Example Way",
+                Longitude = 105.9142,
+                Latitude = 21.1085,
+                Username = "tranvanI",
+                Password = "@Password1241",
+                IsActive = true,
+            },
+            new Staff()
+            {
+                StaffId = Guid.NewGuid(),
+                FullName = "Nguyen Van J",
+                Email = "nguyenvanj@example.com",
+                DateOfBirth = new DateTime(1996, 4, 4),
+                Phone = "0987654330",
+                AvatarImage = "avatar_nguyenvanj.jpg",
+                IdentityCard = "789321456",
+                CreateDate = DateTime.Now.AddMonths(-9),
+                Address = "852 Another Way",
+                Longitude = 105.9242,
+                Latitude = 21.1185,
+                Username = "nguyenvanj",
+                Password = "@Password1242",
+                IsActive = true,
+            },
+        };
 
         await dbContext.Staff.AddRangeAsync(staffList);
         await dbContext.SaveChangesAsync();
     }
-
-
 
 
     //  Summary:
@@ -655,8 +655,8 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
         {
             new Document
             {
-                DocumentNumber = "DOC001",
-                DocumentType = "Invoice",
+                DocumentNumber = "DOC001534",
+                DocumentType = "Import",
                 IssueDate = new DateOnly(2023, 1, 15),
                 ExpirationDate = new DateOnly(2024, 1, 15),
                 ConsigneeName = "ABC Company",
@@ -665,18 +665,37 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Global Exports Ltd.",
                 ExporterPhone = "+1987654321",
                 ExporterAddress = "789 Business Rd, Shelbyville",
-                DispatchMethod = "Air",
+                DispatchMethod = "air",
                 // FinalDestination = "New York, USA",
                 // TransportationNo = "TRANS001",
-                TransportationType = "Airplane",
+                TransportationType = "airplan",
+                DeliveryOrderId = 1,
                 // PortOfLoading = "London Heathrow Airport",
                 // PortOfDischarge = "JFK International Airport",
-
-                ShippingFee = 1500.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 1.4,
+                        ItemQuantity = 2,
+                        ItemEstimatePrice = 1.4 * 2 * 7000,
+                        ItemName = "Black Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.3,
+                        ItemQuantity = 4,
+                        ItemEstimatePrice = 0.3 * 4 * 7000,
+                        ItemName = "Medicine Koi",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 28000m,
             },
             new Document
             {
-                DocumentNumber = "DOC002",
+                DocumentNumber = "DOC002345",
                 DocumentType = "Packing List",
                 IssueDate = new DateOnly(2023, 2, 1),
                 ExpirationDate = null,
@@ -686,18 +705,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "FastShip Logistics",
                 ExporterPhone = "+1234098765",
                 ExporterAddress = "12 Logistic Ln, Gotham City",
-                DispatchMethod = "Sea",
+                DispatchMethod = "sea",
                 // FinalDestination = "San Francisco, USA",
                 // TransportationNo = "TRANS002",
-                TransportationType = "Ship",
+                TransportationType = "ship",
+                DeliveryOrderId = 2,
                 // PortOfLoading = "Port of Rotterdam",
                 // PortOfDischarge = "Port of Oakland",
 
-                ShippingFee = 2000.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 2.0, ItemQuantity = 1, ItemEstimatePrice = 2.0 * 1 * 7000,
+                        ItemName = "Platinum Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.5, ItemQuantity = 3, ItemEstimatePrice = 0.5 * 3 * 7000,
+                        ItemName = "Blue Koi Net",
+                        ItemCategory = "Fish"
+                    }
+                },
+                ShippingFee = 24500m
             },
             new Document
             {
-                DocumentNumber = "DOC003",
+                DocumentNumber = "DOC003456",
                 DocumentType = "Bill of Lading",
                 IssueDate = new DateOnly(2023, 3, 10),
                 ExpirationDate = new DateOnly(2023, 9, 10),
@@ -707,18 +742,33 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "TradeMasters Inc.",
                 ExporterPhone = "+9988776655",
                 ExporterAddress = "99 Export Blvd, Central City",
-                DispatchMethod = "Road",
+                DispatchMethod = "road",
+                DeliveryOrderId = 3,
                 // FinalDestination = "Chicago, USA",
                 // TransportationNo = "TRANS003",
-                TransportationType = "Truck",
+                TransportationType = "truck",
                 // PortOfLoading = "Houston Port",
                 // PortOfDischarge = "Chicago Terminal",
 
-                ShippingFee = 1200.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 1.2, ItemQuantity = 2, ItemEstimatePrice = 1.2 * 2 * 7000, ItemName = "Red Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.4, ItemQuantity = 5, ItemEstimatePrice = 0.4 * 5 * 7000,
+                        ItemName = "Feeding Bucket",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 30800m
             },
             new Document
             {
-                DocumentNumber = "DOC004",
+                DocumentNumber = "DOC004567",
                 DocumentType = "Certificate of Origin",
                 IssueDate = new DateOnly(2023, 4, 5),
                 ExpirationDate = null,
@@ -728,18 +778,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Origin Exports",
                 ExporterPhone = "+5647382910",
                 ExporterAddress = "55 Heritage St, Emerald City",
-                DispatchMethod = "Rail",
+                DispatchMethod = "rail",
+                DeliveryOrderId = 4,
                 // FinalDestination = "Dallas, USA",
                 // TransportationNo = "TRANS004",
-                TransportationType = "Train",
+                TransportationType = "train",
                 // PortOfLoading = "Los Angeles Terminal",
                 // PortOfDischarge = "Dallas Terminal",
 
-                ShippingFee = 800.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 1.7, ItemQuantity = 1, ItemEstimatePrice = 1.7 * 1 * 7000,
+                        ItemName = "Golden Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.7, ItemQuantity = 2, ItemEstimatePrice = 0.7 * 2 * 7000,
+                        ItemName = "Koi Care Kit",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 21700m
             },
             new Document
             {
-                DocumentNumber = "DOC005",
+                DocumentNumber = "DOC005678",
                 DocumentType = "Commercial Invoice",
                 IssueDate = new DateOnly(2023, 5, 18),
                 ExpirationDate = new DateOnly(2024, 5, 18),
@@ -749,18 +815,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Global Trade Ltd.",
                 ExporterPhone = "+7849301023",
                 ExporterAddress = "600 Export Way, Metropolis",
-                DispatchMethod = "Air",
+                DispatchMethod = "air",
+                DeliveryOrderId = 5,
                 // FinalDestination = "Seattle, USA",
                 // TransportationNo = "TRANS005",
-                TransportationType = "Airplane",
+                TransportationType = "airplane",
                 // PortOfLoading = "Paris Charles de Gaulle Airport",
                 // PortOfDischarge = "Seattle-Tacoma International Airport",
 
-                ShippingFee = 1700.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 0.9, ItemQuantity = 3, ItemEstimatePrice = 0.9 * 3 * 7000,
+                        ItemName = "Butterfly Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.2, ItemQuantity = 10, ItemEstimatePrice = 0.2 * 10 * 7000,
+                        ItemName = "Koi Fish Food",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 32900m
             },
             new Document
             {
-                DocumentNumber = "DOC006",
+                DocumentNumber = "DOC006789",
                 DocumentType = "Export Declaration",
                 IssueDate = new DateOnly(2023, 6, 25),
                 ExpirationDate = null,
@@ -770,18 +852,33 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Export Partners Ltd.",
                 ExporterPhone = "+3213214321",
                 ExporterAddress = "99 Export Street, Central City",
-                DispatchMethod = "Sea",
+                DispatchMethod = "sea",
+                DeliveryOrderId = 6,
                 // FinalDestination = "Miami, USA",
                 // TransportationNo = "TRANS006",
-                TransportationType = "Ship",
+                TransportationType = "ship",
                 // PortOfLoading = "Shanghai Port",
                 // PortOfDischarge = "Port of Miami",
 
-                ShippingFee = 2500.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 1.1, ItemQuantity = 1, ItemEstimatePrice = 1.1 * 1 * 7000, ItemName = "Snow Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.6, ItemQuantity = 2, ItemEstimatePrice = 0.6 * 2 * 7000,
+                        ItemName = "Aquarium Heater",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 16100m
             },
             new Document
             {
-                DocumentNumber = "DOC007",
+                DocumentNumber = "DOC007890",
                 DocumentType = "Insurance Certificate",
                 IssueDate = new DateOnly(2023, 7, 12),
                 ExpirationDate = new DateOnly(2024, 7, 12),
@@ -791,18 +888,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Assured Exports Inc.",
                 ExporterPhone = "+6546547654",
                 ExporterAddress = "32 Insurance Blvd, Star City",
-                DispatchMethod = "Road",
+                DispatchMethod = "road",
+                DeliveryOrderId = 7,
                 // FinalDestination = "Los Angeles, USA",
                 // TransportationNo = "TRANS007",
-                TransportationType = "Truck",
+                TransportationType = "truck",
                 // PortOfLoading = "Houston Port",
                 // PortOfDischarge = "Los Angeles Terminal",
 
-                ShippingFee = 1000.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 2.5, ItemQuantity = 2, ItemEstimatePrice = 2.5 * 2 * 7000,
+                        ItemName = "Big Head Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.8, ItemQuantity = 3, ItemEstimatePrice = 0.8 * 3 * 7000,
+                        ItemName = "Water Filter",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 51800m
             },
             new Document
             {
-                DocumentNumber = "DOC008",
+                DocumentNumber = "DOC008901",
                 DocumentType = "Shipping Order",
                 IssueDate = new DateOnly(2023, 8, 20),
                 ExpirationDate = null,
@@ -812,18 +925,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "WorldWide Shippers",
                 ExporterPhone = "+8908908901",
                 ExporterAddress = "77 Global Rd, Emerald City",
-                DispatchMethod = "Air",
+                DispatchMethod = "air",
+                DeliveryOrderId = 8,
                 // FinalDestination = "Denver, USA",
                 // TransportationNo = "TRANS008",
-                TransportationType = "Airplane",
+                TransportationType = "airplane",
                 // PortOfLoading = "Frankfurt Airport",
                 // PortOfDischarge = "Denver International Airport",
 
-                ShippingFee = 1800.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 1.6, ItemQuantity = 4, ItemEstimatePrice = 1.6 * 4 * 7000,
+                        ItemName = "Orange Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.3, ItemQuantity = 5, ItemEstimatePrice = 0.3 * 5 * 7000,
+                        ItemName = "Koi Pond Pump",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 55300m
             },
             new Document
             {
-                DocumentNumber = "DOC009",
+                DocumentNumber = "DOC009012",
                 DocumentType = "Proforma Invoice",
                 IssueDate = new DateOnly(2023, 9, 5),
                 ExpirationDate = new DateOnly(2024, 9, 5),
@@ -833,18 +962,34 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "ExportKing Ltd.",
                 ExporterPhone = "+8768768765",
                 ExporterAddress = "123 Export Avenue, Gotham City",
-                DispatchMethod = "Rail",
+                DispatchMethod = "rail",
+                DeliveryOrderId = 9,
                 // FinalDestination = "Boston, USA",
                 // TransportationNo = "TRANS009",
-                TransportationType = "Train",
+                TransportationType = "train",
                 // PortOfLoading = "Vancouver Terminal",
                 // PortOfDischarge = "Boston Terminal",
 
-                ShippingFee = 900.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 0.5, ItemQuantity = 6, ItemEstimatePrice = 0.5 * 6 * 7000,
+                        ItemName = "Silver Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 1.3, ItemQuantity = 1, ItemEstimatePrice = 1.3 * 1 * 7000,
+                        ItemName = "Koi Pond Liner",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 30100m
             },
             new Document
             {
-                DocumentNumber = "DOC010",
+                DocumentNumber = "DOC010123",
                 DocumentType = "Inspection Certificate",
                 IssueDate = new DateOnly(2023, 10, 15),
                 ExpirationDate = null,
@@ -854,14 +999,30 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
                 ExporterName = "Inspection Ready Exports",
                 ExporterPhone = "+3459872345",
                 ExporterAddress = "456 Verification Ln, Central City",
-                DispatchMethod = "Sea",
+                DispatchMethod = "sea",
+                DeliveryOrderId = 10,
                 // FinalDestination = "Houston, USA",
                 // TransportationNo = "TRANS010",
-                TransportationType = "Ship",
+                TransportationType = "ship",
                 // PortOfLoading = "Port of Singapore",
                 // PortOfDischarge = "Port of Houston",
 
-                ShippingFee = 2200.00m,
+                DocumentDetails = new List<DocumentDetail>()
+                {
+                    new()
+                    {
+                        ItemWeight = 0.7, ItemQuantity = 4, ItemEstimatePrice = 0.7 * 4 * 7000,
+                        ItemName = "Yellow Koi",
+                        ItemCategory = "Fish"
+                    },
+                    new()
+                    {
+                        ItemWeight = 0.9, ItemQuantity = 2, ItemEstimatePrice = 0.9 * 2 * 7000,
+                        ItemName = "Koi Treatment Kit",
+                        ItemCategory = "Accessory"
+                    }
+                },
+                ShippingFee = 32200m
             }
         };
 
@@ -943,44 +1104,44 @@ public class DatabaseInitializer(KoiDeliveryOrderingDbContext dbContext) : IData
     private async Task SeedCareTasksAsync()
     {
         List<CareTask> careTasks = new()
-    {
-        new CareTask
         {
-            TaskName = "Feed Dog",
-            Description = "Provide daily meals for the dog.",
-            Unit = "kg",
-            Priority = "High",
-            CreatedAt = DateTime.Now,
-            DueDate = DateTime.Now.AddDays(1),
-            AssignedTo = "John Doe",
-            IsRecurring = true,
-            Notes = "Feed the dog twice a day.",
-        },
-        new CareTask
-        {
-            TaskName = "Groom Cat",
-            Description = "Regular grooming for the Persian cat.",
-            Unit = null,
-            Priority = "Medium",
-            CreatedAt = DateTime.Now,
-            DueDate = DateTime.Now.AddDays(7),
-            AssignedTo = "Jane Smith",
-            IsRecurring = true,
-            Notes = "Groom the cat once a week.",
-        },
-        new CareTask
-        {
-            TaskName = "Clean Bird Cage",
-            Description = "Ensure the parrot's cage is clean.",
-            Unit = null,
-            Priority = "Low",
-            CreatedAt = DateTime.Now,
-            DueDate = DateTime.Now.AddDays(2),
-            AssignedTo = "Jim Brown",
-            IsRecurring = false,
-            Notes = "Use disinfectant to clean the cage.",
-        }
-    };
+            new CareTask
+            {
+                TaskName = "Feed Dog",
+                Description = "Provide daily meals for the dog.",
+                Unit = "kg",
+                Priority = "High",
+                CreatedAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(1),
+                AssignedTo = "John Doe",
+                IsRecurring = true,
+                Notes = "Feed the dog twice a day.",
+            },
+            new CareTask
+            {
+                TaskName = "Groom Cat",
+                Description = "Regular grooming for the Persian cat.",
+                Unit = null,
+                Priority = "Medium",
+                CreatedAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(7),
+                AssignedTo = "Jane Smith",
+                IsRecurring = true,
+                Notes = "Groom the cat once a week.",
+            },
+            new CareTask
+            {
+                TaskName = "Clean Bird Cage",
+                Description = "Ensure the parrot's cage is clean.",
+                Unit = null,
+                Priority = "Low",
+                CreatedAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(2),
+                AssignedTo = "Jim Brown",
+                IsRecurring = false,
+                Notes = "Use disinfectant to clean the cage.",
+            }
+        };
 
         await dbContext.CareTasks.AddRangeAsync(careTasks);
         await dbContext.SaveChangesAsync();

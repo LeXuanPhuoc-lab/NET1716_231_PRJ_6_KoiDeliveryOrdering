@@ -440,14 +440,12 @@ public partial class KoiDeliveryOrderingDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("item_category");
             entity.Property(e => e.ItemEstimatePrice)
-                .HasColumnType("decimal")
                 .HasColumnName("item_estimate_price");
             entity.Property(e => e.ItemName)
                 .HasMaxLength(255)
                 .HasColumnName("item_name");
             entity.Property(e => e.ItemQuantity).HasColumnName("item_quantity");
             entity.Property(e => e.ItemWeight)
-                .HasColumnType("decimal")
                 .HasColumnName("item_weight");
 
             entity.HasOne(d => d.Document).WithMany(p => p.DocumentDetails)
