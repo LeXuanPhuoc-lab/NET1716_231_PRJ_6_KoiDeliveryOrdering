@@ -19,12 +19,25 @@ namespace KoiDeliveryOrdering.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ServiceResult> GetAll()
+        public async Task<ServiceResult> GetAll(SearchDocumentQueryDto searchDto)
         {
             try
             {
                 var documents = await _unitOfWork.DocumentRepository
-                    .FindAll(false)
+                    // .FindAll(false)
+                    .FindByCondition(
+                        d =>
+                            d.DocumentNumber.ToLower().Contains(searchDto.DocumentNumber ?? "") &&
+                            d.DocumentType.ToLower().Contains(searchDto.DocumentType ?? "") &&
+                            (d.TransportationType == null ||
+                             d.TransportationType.ToLower().Contains(searchDto.TransportationType ?? "")), false)
+                    // .FindByCondition(d =>
+                    //     d.DocumentNumber.ToLower().Contains(
+                    //         searchDto.DocumentNumber!) ||
+                    //     d.DocumentType.ToLower().Contains(
+                    //         searchDto.DocumentType!) ||
+                    //     (d.TransportationType == null || d.TransportationType.Contains(
+                    //         searchDto.TransportationType!)),false)
                     .Include(d => d.DocumentDetails)
                     .ToListAsync();
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG,
