@@ -11,6 +11,13 @@
         <a asp-action="Create">Create New</a>
     </p>
 
+
+    <div>
+        <input id="search-document-number" name="documentNumber" placeholder="Document number..."/>
+        <input id="search-document-type" name="documentType" placeholder="Document type..."/>
+        <input id="search-transportation-type" name="transportationType" placeholder="Transportation type..."/>
+    </div>
+
     <div style="display: grid;width: 100%">
         <div style="overflow-x: auto">
             <table class="table">
@@ -36,7 +43,7 @@
                 </tr>
                 </thead>
                 <tbody id="document-table-body">
-                
+
                 </tbody>
             </table>
         </div>
@@ -46,15 +53,77 @@
 
 @section Scripts {
     <script>
+
+        let documentNumber="";
+        let documentType="";
+        let transportationType="";
+
+        function debounce(func, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        // Function to handle search and update results dynamically
+        function searchHandler(inputId) {
+            const searchTerm = document.getElementById(inputId).value;
+            
+            if (inputId==="search-document-number"){
+                documentNumber=searchTerm||"";
+            }
+            else if (inputId==="search-document-type"){
+                documentType=searchTerm||"";
+            }
+            else if (inputId==="search-transportation-type"){
+                transportationType=searchTerm||"";
+            }
+
+            callApiUsingJQuery()
+        }
+
+        // Add debounce to both search inputs
+        const debouncedSearch1 = debounce(() => searchHandler('search-document-number'), 500);
+        const debouncedSearch2 = debounce(() => searchHandler('search-document-type'), 500);
+        const debouncedSearch3 = debounce(() => searchHandler('search-transportation-type'), 500);
+
+        // Attach event listeners to input fields
+        document.getElementById('search-document-number').addEventListener('input', debouncedSearch1);
+        document.getElementById('search-document-type').addEventListener('input', debouncedSearch2);
+        document.getElementById('search-transportation-type').addEventListener('input', debouncedSearch3);
+        
+        
         // Sample Model Data, replace this with your real data
-        const model = [];
+        let model = [];
+
+        function handleChangeSearch(e){
+            switch (e.target.name){
+                case "documentNumber":{
+                    documentNumber=e.target.value;
+                    break;
+                }
+                case "documentType":{
+                    documentType=e.target.value;
+                    break;
+                }
+                case "transportationType":{
+                    transportationType=e.target.value;
+                    break;
+                }
+            }
+
+            console.log({documentNumber,documentType,transportationType})
+        }
         
         function callApiUsingJQuery() {
             $.ajax({
-                url: 'http://localhost:7000/api/documents',
+                url: `http://localhost:7000/api/documents?documentNumber=${documentNumber}&documentType=${documentType}&transportationType=${transportationType}`,
                 type: 'GET',
                 success: function(response) {
-                    model.push(...response.data)
+                    model=response.data
                     generateTable()
                 },
                 error: function(error) {
@@ -65,6 +134,10 @@
         
         function generateTable() {
             const table = document.getElementById("document-table-body");
+
+            // Clear the current table content before adding new rows
+            table.innerHTML = '';
+
             let index = 0;
 
             model.forEach(item => {
@@ -139,6 +212,7 @@
 
         // Call the function to generate the table
         callApiUsingJQuery()
+    
     
     
     </script>

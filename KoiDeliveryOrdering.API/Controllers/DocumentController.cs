@@ -18,9 +18,10 @@ namespace KoiDeliveryOrdering.API.Controllers
         }
 
         [HttpGet(ApiRoute.Document.GetAll)]
-        public async Task<IServiceResult> GetAll()
+        public async Task<IServiceResult> GetAll([FromQuery] SearchDocumentQueryDto searchDto)
         {
-            return await _documentService.GetAll();
+            Console.WriteLine(searchDto);
+            return await _documentService.GetAll(searchDto);
         }
 
         [HttpGet(ApiRoute.Document.GetById)]
@@ -40,7 +41,7 @@ namespace KoiDeliveryOrdering.API.Controllers
         {
             return await _documentService.UpdateDocument(id, dto);
         }
-        
+
         [HttpDelete(ApiRoute.Document.DeleteDocument)]
         public async Task<IServiceResult> DeleteDocument([FromRoute] int id)
         {
