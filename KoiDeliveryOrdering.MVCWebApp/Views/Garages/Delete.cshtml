@@ -73,3 +73,28 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('form').on('submit', function (event) {
+                event.preventDefault();
+
+                var garageId = $('#GarageId').val();
+
+                $.ajax({
+                    url: 'http://localhost:7000/api/garages/' + garageId,
+                    type: 'DELETE',
+                    success: function (response) {
+                        alert('Garage deleted successfully!');
+                        window.location.href = '@Url.Action("Index")';
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -6,6 +6,7 @@ using KoiDeliveryOrdering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Mapster;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace KoiDeliveryOrdering.API.Controllers
 {
@@ -49,6 +50,30 @@ namespace KoiDeliveryOrdering.API.Controllers
         public async Task<IServiceResult> DeleteGarageAsync(int id)
         {
             return await _garageService.RemoveAsync(id);
+        }
+
+        private async Task<(double? Latitude, double? Longitude)> GetCoordinatesFromHereAsync(string city, string street, string district, string ward)
+        {
+            string apiKey = "hhH7xYjbGaeyKOX-4EPSQglll7-HU79A0AAfkhte_D8";
+            string address = $"{street}, {ward}, {district}, {city}";
+            string url = ApiRoute.HereMap.BaseUrl;
+            url = url.Replace("{address}", address);
+            url = url.Replace("{apiKey}", apiKey);
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetStringAsync(url);
+                var json = JObject.Parse(response);
+
+                var location = json["items"]?[0]?["position"];
+                if (location != null)
+                {
+                    double latitude = (double)location["lat"];
+                    double longitude = (double)location["lng"];
+                    return (latitude, longitude);
+                }
+            }
+
+            return (null, null);
         }
     }
 }

@@ -1,43 +1,54 @@
-﻿@model IEnumerable<KoiDeliveryOrdering.MVCWebApp.Models.GarageModel>
+﻿@model KoiDeliveryOrdering.MVCWebApp.Utils.PaginatedList<GarageModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Garages</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+    <div class="row">
+        <div class="col-md-2 mb-2 position-relative d-flex" style="width: 100%;">
+            <input type="text" id="default-search" name="search"
+                   class="form-control bg-light py-2 p-5 h-auto rounded border border-2 shadow-sm"
+                   placeholder="Search by Garage Name, Manager Name, Phone, City Provine, Street, Ward, District" style="width: 550px;" />
+            <img src="https://img.icons8.com/?size=100&id=83218&format=png&color=000000" width="20" height="20"
+                 class="position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%);" />
+            <button class="btn btn-primary mx-3" role="button" onclick="handleSearch()">Search</button>
+        </div>
+    </div>
+    <a asp-action="Create" class="btn btn-primary ml-auto">Create New</a>
+</div>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.GarageName)
+               Garage Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Phone)
+                Phone
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ManagerName)
+                Manager Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CityProvince)
+                City Province
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Street)
+                Street
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.District)
+                District
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Ward)
+                Ward
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Longitude)
+                Longitude
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Latitude)
+                Latitude
             </th>
             <th></th>
         </tr>
@@ -81,3 +92,129 @@
 }
     </tbody>
 </table>
+<partial name="_Pagination" />
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var pageIndex = @ViewData["PageIndex"];
+            var totalPage = @ViewData["TotalPage"];
+
+            $('#back-page').on('click', function () {
+
+                pageIndex = --pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+                var searchTerm = $('#default-search').val();
+                var reqData = { "SearchValue": searchTerm, "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/Garages/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+            $('#next-page').on('click', function () {
+
+                pageIndex = ++pageIndex;
+                $(this).removeAttr("disabled");
+                $(this).css("opacity", "1");
+                var searchTerm = $('#default-search').val();
+                var reqData = { "SearchValue": searchTerm, "PageIndex": pageIndex }
+                var queryString = $.param(reqData);
+
+                $.ajax({
+                    url: `/Garages/IndexWithAjax?${queryString}`,
+                    type: 'GET',
+                    success: function (response) {
+                        updateData(response);
+                        updatePagingStatus(response.pageIndex, response.totalPage)
+                    }
+                });
+            })
+
+            updatePagingStatus(pageIndex, totalPage);
+        });
+
+        function updateData(response) {
+            let tableBody = document.querySelector('tbody');
+            tableBody.innerHTML = ''; 
+
+            var garages = response.garages;
+
+            garages.forEach(g => {
+                tableBody.innerHTML +=
+                    `
+                            <tr>
+                                <td>${g.garageName}</td>
+                                <td>${g.phone}</td>
+                                <td>${g.managerName}</td>
+                                <td>${g.cityProvince}</td>
+                                <td>${g.street}</td>
+                                <td>${g.district}</td>
+                                <td>${g.ward}</td>
+                                <td>${g.longitude}</td>
+                                <td>${g.latitude}</td>
+                                <td>
+                                    <a href="/Garages/Edit/${g.garageId}">Edit</a> |
+                                    <a href="/Garages/Details/${g.garageId}">Details</a> |
+                                    <a href="/Garages/Delete/${g.garageId}">Delete</a>
+                                </td>
+                            </tr>
+                            `;
+            });
+        }
+
+        function updatePagingStatus(pageIndexParam, totalPageParam) {
+            if (pageIndexParam !== undefined && totalPageParam !== undefined) {
+                pageIndex = pageIndexParam;
+                totalPage = totalPageParam;
+            }
+
+            $('#current-index').text(`${pageIndex}`);
+            $('#total-page').text(`${totalPage}`);
+
+            $('#next-page').removeAttr("disabled");
+            $('#next-page').css("opacity", "1");
+            $('#back-page').removeAttr("disabled");
+            $('#back-page').css("opacity", "1");
+
+            if (pageIndex <= 1) {
+                $('#back-page').attr("disabled", "disabled");
+                $('#back-page').css("opacity", "0.5");
+
+                $('#next-page').removeAttr("disabled");
+                $('#next-page').css("opacity", "1");
+            }
+            if (pageIndex >= totalPage) {
+                $('#next-page').attr("disabled", "disabled");
+                $('#next-page').css("opacity", "0.5");
+            }
+        }
+
+        function handleSearch() {
+            var searchTerm = $('#default-search').val();
+
+            var reqData = {
+                "SearchValue": searchTerm,
+                "PageIndex": pageIndex
+            };
+            var queryString = $.param(reqData);
+
+            $.ajax({
+                url: `/Garages/IndexWithAjax?${queryString}`,
+                type: 'GET',
+                success: function (response) {
+                    updateData(response);
+                    updatePagingStatus(response.pageIndex, response.totalPage);
+                }
+            });
+        }
+
+    </script>
+}

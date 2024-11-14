@@ -74,6 +74,7 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
+app.UseCors("Cors");
 // Register database initializer
 app.Lifetime.ApplicationStarted.Register(() => Task.Run(async () => await app.InitializeDatabaseAsync()));
 // Configure exception handler
@@ -82,7 +83,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseCors("Cors");
 // app.UseAuthorization();
 app.MapControllers();
 app.Run();

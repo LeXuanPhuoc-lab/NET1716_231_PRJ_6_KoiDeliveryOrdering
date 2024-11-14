@@ -17,6 +17,7 @@ using KoiDeliveryOrdering.API.Payloads;
 using KoiDeliveryOrdering.API.Models;
 using static KoiDeliveryOrdering.API.Payloads.ApiRoute;
 using KoiDeliveryOrdering.API.Payloads.Requests;
+using KoiDeliveryOrdering.MVCWebApp.Utils;
 
 namespace KoiDeliveryOrdering.MVCWebApp.Controllers
 {
@@ -38,12 +39,82 @@ namespace KoiDeliveryOrdering.MVCWebApp.Controllers
                             var garages = JsonConvert.DeserializeObject<List<GarageModel>>(
                                 result.Data.ToString());
 
-                            return View(garages);
+                            var pagination =
+                                PaginatedList<GarageModel>.Paging(garages ?? new(), 1,
+                                    5);
+
+                            ViewData["PageIndex"] = pagination.PageIndex;
+                            ViewData["TotalPage"] = pagination.TotalPage;
+
+                            return View(pagination);
                         }
                     }
                 }
             }
-            return View(new List<GarageModel>());
+            return View(new PaginatedList<GarageModel>(new (), 1, 1));
+        }
+
+        public async Task<IActionResult> IndexWithAjax(string searchValue, int pageIndex = 1)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(Const.APIEndpoint + "garages"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var context = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<ServiceResult>(context.ToString());
+                        if (result != null && result.Data != null)
+                        {
+                            var garages = JsonConvert.DeserializeObject<List<GarageModel>>(
+                                result.Data.ToString());
+
+                            if (garages != null && garages.Any())
+                            {
+                                if (!string.IsNullOrEmpty(searchValue))
+                                {
+                                    searchValue = searchValue.Trim();
+                                    var searchReq = searchValue.Split(',');
+                                    if(searchReq.Length == 3)
+                                    {
+                                        garages = garages.Where(garage =>
+                                            garage.GarageName.Contains(searchReq[0].Trim()) &&
+                                            garage.ManagerName.Contains(searchReq[1].Trim()) &&
+                                            garage.CityProvince.Contains(searchReq[2].Trim())
+                                        ).ToList();
+                                    } else
+                                    {
+                                        garages = garages
+                                            .Where(garage =>
+                                                garage.GarageName.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.Phone.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.ManagerName.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.CityProvince.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.Street.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.District.Contains(searchValue, StringComparison.OrdinalIgnoreCase) ||
+                                                garage.Ward.Contains(searchValue, StringComparison.OrdinalIgnoreCase)
+                                                )
+                                            .ToList();
+                                    }
+                                }
+
+                                var pagination =
+                                    PaginatedList<GarageModel>.Paging(garages ?? new(), pageIndex,
+                                        5);
+
+                                ViewData["PageIndex"] = pagination.PageIndex;
+                                ViewData["TotalPage"] = pagination.TotalPage;
+
+                                return new JsonResult(new
+                                { PageIndex = pagination.PageIndex, TotalPage = pagination.TotalPage, Garages = pagination });
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new JsonResult(new
+            { PageIndex = 1, TotalPage = 1, DailyCareSchedules = new List<DailyCareScheduleModels>() });
         }
 
         // GET: Garages/Details/5
